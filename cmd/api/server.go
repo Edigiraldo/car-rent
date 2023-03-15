@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/Edigiraldo/car-rent/internal/infrastructure/driver_adapters/handlers"
 	"github.com/gorilla/mux"
 )
 
@@ -46,12 +45,8 @@ func (b *Server) Config() *Config {
 	return b.config
 }
 
-func (b *Server) BindRoutes() {
-	b.router.HandleFunc("/ping", handlers.Pong).Methods(http.MethodGet)
-}
-
 func (b *Server) Start() {
-	b.BindRoutes()
+	BindRoutes(b)
 	log.Printf("Starting server on port %s\n", b.Config().Port)
 
 	port := fmt.Sprintf(":%s", b.Config().Port)
