@@ -9,7 +9,7 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "./cmd/api/",
+            "program": "${workspaceFolder}/cmd/api/",
             "cwd": "${workspaceFolder}"
         }
     ]
