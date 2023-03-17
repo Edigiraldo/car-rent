@@ -12,4 +12,7 @@ build-server:
 run-server:
 	docker run -d --rm -p 5050:5050 --name car-rent-api car-rent-api-img
 
+stop:
+	docker stop car-rent-api postgres_db
+
 all: build-db run-db build-server run-server
