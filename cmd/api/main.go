@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -27,6 +28,9 @@ func main() {
 		Port:        PORT,
 		DatabaseURL: DATABASE_URL,
 	}
+
+	fmt.Println("Config:", config)
+
 	s, err := NewServer(config)
 	if err != nil {
 		log.Fatal(err)

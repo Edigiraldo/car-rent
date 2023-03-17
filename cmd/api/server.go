@@ -41,16 +41,16 @@ func NewServer(config Config) (*Server, error) {
 	return server, nil
 }
 
-func (b *Server) Config() *Config {
-	return b.config
-}
-
 func (b *Server) Start() {
-	BindRoutes(b)
-	log.Printf("Starting server on port %s\n", b.Config().Port)
+	if err := initializeDependencies(*b.config); err != nil {
+		log.Fatal("error while starting server: ", err)
+	}
 
-	port := fmt.Sprintf(":%s", b.Config().Port)
+	BindRoutes(b)
+	log.Printf("starting server on port %s\n", b.config.Port)
+
+	port := fmt.Sprintf(":%s", b.config.Port)
 	if err := http.ListenAndServe(port, b.router); err != nil {
-		log.Fatal("Error while starting server: ", err)
+		log.Fatal("error while starting server: ", err)
 	}
 }
