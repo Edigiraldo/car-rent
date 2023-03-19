@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/Edigiraldo/car-rent/internal/core/ports"
@@ -23,11 +23,15 @@ func (ch *Cars) Register(w http.ResponseWriter, r *http.Request) {
 	car, err := dtos.CarFromBody(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+
+		return
 	}
 
 	if err = ch.CarsService.Register(r.Context(), car.ToDomain()); err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")

@@ -31,10 +31,10 @@ func TestRegister(t *testing.T) {
 		withError bool
 	}
 	tests := []struct {
-		name  string
-		args  args
-		wants wants
-		mocks func(*carsDependencies)
+		name     string
+		args     args
+		wants    wants
+		setMocks func(*carsDependencies)
 	}{
 		{
 			name: "returns nil error when car struct is populated appropriately",
@@ -52,7 +52,7 @@ func TestRegister(t *testing.T) {
 			wants: wants{
 				withError: false,
 			},
-			mocks: func(d *carsDependencies) {
+			setMocks: func(d *carsDependencies) {
 				d.carsRepository.EXPECT().InsertCar(gomock.Any(), gomock.Any()).Return(nil)
 			},
 		},
@@ -72,7 +72,7 @@ func TestRegister(t *testing.T) {
 			wants: wants{
 				withError: true,
 			},
-			mocks: func(d *carsDependencies) {
+			setMocks: func(d *carsDependencies) {
 				d.carsRepository.EXPECT().InsertCar(gomock.Any(), gomock.Any()).Return(errors.New("type Luxu is not allowed"))
 			},
 		},
@@ -83,7 +83,7 @@ func TestRegister(t *testing.T) {
 			mockCtlr := gomock.NewController(t)
 			carsRepo := mocks.NewMockDatabase(mockCtlr)
 			d := NewCarsDependencies(carsRepo)
-			test.mocks(d)
+			test.setMocks(d)
 
 			carsService := NewCars(carsRepo)
 			err := carsService.Register(test.args.ctx, test.args.car)
