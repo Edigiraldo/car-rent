@@ -2,10 +2,16 @@ package dtos
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 
 	"github.com/Edigiraldo/car-rent/internal/core/domain"
 	"github.com/google/uuid"
+)
+
+var (
+	ErrInvalidCarType   = "invalid car type"
+	ErrInvalidCarStatus = "invalid car status"
 )
 
 type Car struct {
@@ -50,5 +56,30 @@ func CarFromBody(body io.Reader) (Car, error) {
 	if err != nil {
 		return Car{}, err
 	}
+
+	if !isValidCarType(car.Type) {
+		return Car{}, errors.New(ErrInvalidCarType)
+	}
+
+	if !isValidCarStatus(car.Status) {
+		return Car{}, errors.New(ErrInvalidCarStatus)
+	}
+
 	return car, nil
+}
+
+func isValidCarType(carType CarType) bool {
+	switch carType {
+	case Sedan, Luxury, SportsCar, Limousine:
+		return true
+	}
+	return false
+}
+
+func isValidCarStatus(carStatus CarStatus) bool {
+	switch carStatus {
+	case Available, Unavailable:
+		return true
+	}
+	return false
 }
