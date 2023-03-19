@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/Edigiraldo/car-rent/internal/core/domain"
 	"github.com/Edigiraldo/car-rent/internal/infrastructure/driver_adapters/handlers/dtos"
 	mocks "github.com/Edigiraldo/car-rent/internal/pkg/mocks"
 	"github.com/golang/mock/gomock"
@@ -54,7 +55,7 @@ func TestCarsRegister(t *testing.T) {
 				statusCode: http.StatusOK,
 			},
 			setMocks: func(d *carsDependencies) {
-				d.carsService.EXPECT().Register(gomock.Any(), car.ToDomain()).Return(nil)
+				d.carsService.EXPECT().Register(gomock.Any(), car.ToDomain()).Return(domain.Car{}, nil)
 			},
 		},
 		{
@@ -79,7 +80,7 @@ func TestCarsRegister(t *testing.T) {
 				statusCode: http.StatusInternalServerError,
 			},
 			setMocks: func(d *carsDependencies) {
-				d.carsService.EXPECT().Register(gomock.Any(), car.ToDomain()).Return(errors.New("error registering car"))
+				d.carsService.EXPECT().Register(gomock.Any(), car.ToDomain()).Return(domain.Car{}, errors.New("error registering car"))
 			},
 		},
 	}

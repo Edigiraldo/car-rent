@@ -86,7 +86,7 @@ func TestRegister(t *testing.T) {
 			test.setMocks(d)
 
 			carsService := NewCars(carsRepo)
-			err := carsService.Register(test.args.ctx, test.args.car)
+			_, err := carsService.Register(test.args.ctx, test.args.car)
 
 			assert.Equal(t, test.wants.withError, err != nil)
 		})

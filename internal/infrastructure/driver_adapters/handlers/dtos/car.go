@@ -18,7 +18,7 @@ var (
 )
 
 type Car struct {
-	ID             uuid.UUID `json:"id"`
+	ID             uuid.UUID `json:"id,omitempty"`
 	Type           CarType   `json:"type"`
 	Seats          int16     `json:"seats"`
 	HourlyRentCost float64   `json:"hourly_rent_cost"`
@@ -51,6 +51,15 @@ func (c Car) ToDomain() domain.Car {
 		City:           c.City,
 		Status:         domain.CarStatus(c.Status),
 	}
+}
+
+func (c *Car) FromDomain(dc domain.Car) {
+	c.ID = dc.ID
+	c.Type = CarType(c.Type)
+	c.Seats = dc.Seats
+	c.HourlyRentCost = dc.HourlyRentCost
+	c.City = dc.City
+	c.Status = CarStatus(c.Status)
 }
 
 func CarFromBody(body io.Reader) (Car, error) {

@@ -5,6 +5,7 @@ import (
 
 	"github.com/Edigiraldo/car-rent/internal/core/domain"
 	"github.com/Edigiraldo/car-rent/internal/core/ports"
+	"github.com/google/uuid"
 )
 
 type Cars struct {
@@ -17,6 +18,12 @@ func NewCars(cr ports.CarsRepo) *Cars {
 	}
 }
 
-func (c *Cars) Register(ctx context.Context, car domain.Car) error {
-	return c.carsRepository.InsertCar(ctx, car)
+func (c *Cars) Register(ctx context.Context, car domain.Car) (domain.Car, error) {
+	car.ID = uuid.New()
+
+	if err := c.carsRepository.InsertCar(ctx, car); err != nil {
+		return domain.Car{}, err
+	}
+
+	return car, nil
 }

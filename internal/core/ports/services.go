@@ -9,5 +9,5 @@ import (
 //mockgen -source=internal/core/ports/services.go -destination=internal/pkg/mocks/services.go
 
 type CarsService interface {
-	Register(ctx context.Context, car domain.Car) error
+	Register(ctx context.Context, car domain.Car) (domain.Car, error)
 }

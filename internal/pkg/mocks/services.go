@@ -36,11 +36,12 @@ func (m *MockCarsService) EXPECT() *MockCarsServiceMockRecorder {
 }
 
 // Register mocks base method.
-func (m *MockCarsService) Register(ctx context.Context, car domain.Car) error {
+func (m *MockCarsService) Register(ctx context.Context, car domain.Car) (domain.Car, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Register", ctx, car)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(domain.Car)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // Register indicates an expected call of Register.
