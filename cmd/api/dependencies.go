@@ -7,13 +7,17 @@ import (
 )
 
 func initializeDependencies(config Config) error {
-	carsRepository, err := postgres.NewPostgresDB(config.DatabaseURL)
+	// Initialize repos
+	postgresDB, err := postgres.NewPostgresDB(config.DatabaseURL)
 	if err != nil {
 		return err
 	}
+	carsRepository := postgres.NewCarsRepository(postgresDB.GetDBHandle())
 
+	// Initialize services
 	carsService := services.NewCars(carsRepository)
 
+	//Initialize handlers
 	healthHandler = handlers.NewHealth()
 	carsHandler = handlers.NewCars(carsService)
 

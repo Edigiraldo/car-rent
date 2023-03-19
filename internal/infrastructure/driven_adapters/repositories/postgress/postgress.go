@@ -27,6 +27,10 @@ func NewPostgresDB(URI string) (*PostgresDB, error) {
 	}, nil
 }
 
+func (p *PostgresDB) GetDBHandle() *sql.DB {
+	return p.db
+}
+
 func (p *PostgresDB) Close() error {
 	return p.db.Close()
 }

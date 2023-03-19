@@ -8,10 +8,10 @@ import (
 )
 
 type Cars struct {
-	carsRepository ports.Database
+	carsRepository ports.CarsRepo
 }
 
-func NewCars(cr ports.Database) *Cars {
+func NewCars(cr ports.CarsRepo) *Cars {
 	return &Cars{
 		carsRepository: cr,
 	}
