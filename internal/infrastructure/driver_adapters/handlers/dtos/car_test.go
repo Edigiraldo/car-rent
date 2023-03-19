@@ -22,6 +22,21 @@ func TestCarFromBody(t *testing.T) {
 		wants wants
 	}{
 		{
+			name: "returns invalid car type when received one is not one of the expected values",
+			args: args{
+				car: Car{
+					Type:           "Seda",
+					Seats:          4,
+					HourlyRentCost: 21.1,
+					City:           "Los Angeles",
+					Status:         "Available",
+				},
+			},
+			wants: wants{
+				err: errors.New(ErrInvalidCarType),
+			},
+		},
+		{
 			name: "returns car structure when body structure is as expected",
 			args: args{
 				car: Car{
@@ -37,18 +52,48 @@ func TestCarFromBody(t *testing.T) {
 			},
 		},
 		{
-			name: "returns invalid car type when received one is not one of the expected values",
+			name: "returns invalid seats number when received one is not greater than zero",
 			args: args{
 				car: Car{
-					Type:           "Seda",
-					Seats:          4,
+					Type:           "Sedan",
+					Seats:          -4,
 					HourlyRentCost: 21.1,
 					City:           "Los Angeles",
 					Status:         "Available",
 				},
 			},
 			wants: wants{
-				err: errors.New(ErrInvalidCarType),
+				err: errors.New(ErrInvalidSeatsNumber),
+			},
+		},
+		{
+			name: "returns invalid hourly rent cost when received one is not greater than zero",
+			args: args{
+				car: Car{
+					Type:           "Sedan",
+					Seats:          4,
+					HourlyRentCost: -21.1,
+					City:           "Los Angeles",
+					Status:         "Available",
+				},
+			},
+			wants: wants{
+				err: errors.New(ErrInvalidHourlyRentCost),
+			},
+		},
+		{
+			name: "returns invalid empty city error when it is not provided",
+			args: args{
+				car: Car{
+					Type:           "Sedan",
+					Seats:          4,
+					HourlyRentCost: 21.1,
+					City:           "",
+					Status:         "Available",
+				},
+			},
+			wants: wants{
+				err: errors.New(ErrEmptyCity),
 			},
 		},
 		{

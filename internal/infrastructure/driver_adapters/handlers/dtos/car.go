@@ -10,8 +10,11 @@ import (
 )
 
 var (
-	ErrInvalidCarType   = "invalid car type"
-	ErrInvalidCarStatus = "invalid car status"
+	ErrInvalidSeatsNumber    = "seats number must be greater than 0"
+	ErrInvalidHourlyRentCost = "hourly rent cost must be greater than 0"
+	ErrEmptyCity             = "city name cannot be empty"
+	ErrInvalidCarType        = "invalid car type"
+	ErrInvalidCarStatus      = "invalid car status"
 )
 
 type Car struct {
@@ -55,6 +58,18 @@ func CarFromBody(body io.Reader) (Car, error) {
 	err := json.NewDecoder(body).Decode(&car)
 	if err != nil {
 		return Car{}, err
+	}
+
+	if car.Seats <= 0 {
+		return Car{}, errors.New(ErrInvalidSeatsNumber)
+	}
+
+	if car.HourlyRentCost <= 0 {
+		return Car{}, errors.New(ErrInvalidHourlyRentCost)
+	}
+
+	if car.City == "" {
+		return Car{}, errors.New(ErrEmptyCity)
 	}
 
 	if !isValidCarType(car.Type) {
