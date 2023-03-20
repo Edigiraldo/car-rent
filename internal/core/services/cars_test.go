@@ -13,10 +13,10 @@ import (
 )
 
 type carsDependencies struct {
-	carsRepository *mocks.MockDatabase
+	carsRepository *mocks.MockCarsRepo
 }
 
-func NewCarsDependencies(carsRepo *mocks.MockDatabase) *carsDependencies {
+func NewCarsDependencies(carsRepo *mocks.MockCarsRepo) *carsDependencies {
 	return &carsDependencies{
 		carsRepository: carsRepo,
 	}
@@ -53,7 +53,7 @@ func TestRegister(t *testing.T) {
 				withError: false,
 			},
 			setMocks: func(d *carsDependencies) {
-				d.carsRepository.EXPECT().InsertCar(gomock.Any(), gomock.Any()).Return(nil)
+				d.carsRepository.EXPECT().Insert(gomock.Any(), gomock.Any()).Return(nil)
 			},
 		},
 		{
@@ -73,7 +73,7 @@ func TestRegister(t *testing.T) {
 				withError: true,
 			},
 			setMocks: func(d *carsDependencies) {
-				d.carsRepository.EXPECT().InsertCar(gomock.Any(), gomock.Any()).Return(errors.New("type Luxu is not allowed"))
+				d.carsRepository.EXPECT().Insert(gomock.Any(), gomock.Any()).Return(errors.New("type Luxu is not allowed"))
 			},
 		},
 	}
@@ -81,7 +81,7 @@ func TestRegister(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			mockCtlr := gomock.NewController(t)
-			carsRepo := mocks.NewMockDatabase(mockCtlr)
+			carsRepo := mocks.NewMockCarsRepo(mockCtlr)
 			d := NewCarsDependencies(carsRepo)
 			test.setMocks(d)
 

@@ -10,6 +10,7 @@ import (
 
 	domain "github.com/Edigiraldo/car-rent/internal/core/domain"
 	gomock "github.com/golang/mock/gomock"
+	uuid "github.com/google/uuid"
 )
 
 // MockDatabase is a mock of Database interface.
@@ -49,16 +50,66 @@ func (mr *MockDatabaseMockRecorder) Close() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Close", reflect.TypeOf((*MockDatabase)(nil).Close))
 }
 
-// InsertCar mocks base method.
-func (m *MockDatabase) InsertCar(ctx context.Context, dc domain.Car) error {
+// GetDBHandle mocks base method.
+func (m *MockDatabase) GetDBHandle() {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "InsertCar", ctx, dc)
+	m.ctrl.Call(m, "GetDBHandle")
+}
+
+// GetDBHandle indicates an expected call of GetDBHandle.
+func (mr *MockDatabaseMockRecorder) GetDBHandle() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDBHandle", reflect.TypeOf((*MockDatabase)(nil).GetDBHandle))
+}
+
+// MockCarsRepo is a mock of CarsRepo interface.
+type MockCarsRepo struct {
+	ctrl     *gomock.Controller
+	recorder *MockCarsRepoMockRecorder
+}
+
+// MockCarsRepoMockRecorder is the mock recorder for MockCarsRepo.
+type MockCarsRepoMockRecorder struct {
+	mock *MockCarsRepo
+}
+
+// NewMockCarsRepo creates a new mock instance.
+func NewMockCarsRepo(ctrl *gomock.Controller) *MockCarsRepo {
+	mock := &MockCarsRepo{ctrl: ctrl}
+	mock.recorder = &MockCarsRepoMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockCarsRepo) EXPECT() *MockCarsRepoMockRecorder {
+	return m.recorder
+}
+
+// Get mocks base method.
+func (m *MockCarsRepo) Get(ctx context.Context, ID uuid.UUID) (domain.Car, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Get", ctx, ID)
+	ret0, _ := ret[0].(domain.Car)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Get indicates an expected call of Get.
+func (mr *MockCarsRepoMockRecorder) Get(ctx, ID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockCarsRepo)(nil).Get), ctx, ID)
+}
+
+// Insert mocks base method.
+func (m *MockCarsRepo) Insert(ctx context.Context, dc domain.Car) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Insert", ctx, dc)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// InsertCar indicates an expected call of InsertCar.
-func (mr *MockDatabaseMockRecorder) InsertCar(ctx, dc interface{}) *gomock.Call {
+// Insert indicates an expected call of Insert.
+func (mr *MockCarsRepoMockRecorder) Insert(ctx, dc interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertCar", reflect.TypeOf((*MockDatabase)(nil).InsertCar), ctx, dc)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockCarsRepo)(nil).Insert), ctx, dc)
 }

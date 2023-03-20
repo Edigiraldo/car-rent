@@ -55,11 +55,11 @@ func (c Car) ToDomain() domain.Car {
 
 func (c *Car) FromDomain(dc domain.Car) {
 	c.ID = dc.ID
-	c.Type = CarType(c.Type)
+	c.Type = CarType(dc.Type)
 	c.Seats = dc.Seats
 	c.HourlyRentCost = dc.HourlyRentCost
 	c.City = dc.City
-	c.Status = CarStatus(c.Status)
+	c.Status = CarStatus(dc.Status)
 }
 
 func CarFromBody(body io.Reader) (Car, error) {

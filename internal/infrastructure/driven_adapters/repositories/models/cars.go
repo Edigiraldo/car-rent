@@ -30,6 +30,17 @@ const (
 	Unavailable CarStatus = "Unavailable"
 )
 
+func (c *Car) ToDomain() domain.Car {
+	return domain.Car{
+		ID:             c.ID,
+		Type:           domain.CarType(c.Type),
+		Seats:          c.Seats,
+		HourlyRentCost: c.HourlyRentCost,
+		City:           c.City,
+		Status:         domain.CarStatus(c.Status),
+	}
+}
+
 func LoadCarFromDomain(dc domain.Car) Car {
 	return Car{
 		ID:             dc.ID,

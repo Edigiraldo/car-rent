@@ -69,6 +69,18 @@ func (m *MockCarsController) EXPECT() *MockCarsControllerMockRecorder {
 	return m.recorder
 }
 
+// Get mocks base method.
+func (m *MockCarsController) Get(w http.ResponseWriter, r *http.Request) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "Get", w, r)
+}
+
+// Get indicates an expected call of Get.
+func (mr *MockCarsControllerMockRecorder) Get(w, r interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockCarsController)(nil).Get), w, r)
+}
+
 // Register mocks base method.
 func (m *MockCarsController) Register(w http.ResponseWriter, r *http.Request) {
 	m.ctrl.T.Helper()
