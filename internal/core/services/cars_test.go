@@ -22,7 +22,7 @@ func NewCarsDependencies(carsRepo *mocks.MockCarsRepo) *carsDependencies {
 	}
 }
 
-func TestRegister(t *testing.T) {
+func TestCarsRegister(t *testing.T) {
 	type args struct {
 		ctx context.Context
 		car domain.Car
@@ -88,6 +88,76 @@ func TestRegister(t *testing.T) {
 			carsService := NewCars(carsRepo)
 			_, err := carsService.Register(test.args.ctx, test.args.car)
 
+			assert.Equal(t, test.wants.withError, err != nil)
+		})
+	}
+}
+
+func TestCarsGet(t *testing.T) {
+	car := domain.Car{
+		ID:             uuid.New(),
+		Type:           "Sedan",
+		Seats:          4,
+		HourlyRentCost: 21.1,
+		City:           "Los Angeles",
+		Status:         "Available",
+	}
+
+	type args struct {
+		ctx context.Context
+		ID  uuid.UUID
+	}
+	type wants struct {
+		car       domain.Car
+		withError bool
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wants    wants
+		setMocks func(*carsDependencies)
+	}{
+		{
+			name: "returns nil error when car was found by the given id",
+			args: args{
+				ctx: context.TODO(),
+				ID:  car.ID,
+			},
+			wants: wants{
+				car:       car,
+				withError: false,
+			},
+			setMocks: func(d *carsDependencies) {
+				d.carsRepository.EXPECT().Get(gomock.Any(), car.ID).Return(car, nil)
+			},
+		},
+		{
+			name: "returns an error when car was not found by the given id",
+			args: args{
+				ctx: context.TODO(),
+				ID:  car.ID,
+			},
+			wants: wants{
+				car:       domain.Car{},
+				withError: true,
+			},
+			setMocks: func(d *carsDependencies) {
+				d.carsRepository.EXPECT().Get(gomock.Any(), car.ID).Return(domain.Car{}, errors.New(ErrCarNotFound))
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			mockCtlr := gomock.NewController(t)
+			carsRepo := mocks.NewMockCarsRepo(mockCtlr)
+			d := NewCarsDependencies(carsRepo)
+			test.setMocks(d)
+
+			carsService := NewCars(carsRepo)
+			car, err := carsService.Get(test.args.ctx, test.args.ID)
+
+			assert.Equal(t, test.wants.car, car)
 			assert.Equal(t, test.wants.withError, err != nil)
 		})
 	}
