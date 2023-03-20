@@ -6,12 +6,16 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
 
 	"github.com/Edigiraldo/car-rent/internal/core/domain"
+	"github.com/Edigiraldo/car-rent/internal/core/services"
 	"github.com/Edigiraldo/car-rent/internal/infrastructure/driver_adapters/handlers/dtos"
 	mocks "github.com/Edigiraldo/car-rent/internal/pkg/mocks"
 	"github.com/golang/mock/gomock"
+	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -102,6 +106,110 @@ func TestCarsRegister(t *testing.T) {
 
 			carsHandler := NewCars(carsSrv)
 			carsHandler.Register(rr, req)
+
+			assert.Equal(t, test.wants.statusCode, rr.Code)
+		})
+	}
+}
+
+func TestCarsGet(t *testing.T) {
+	car := dtos.Car{
+		ID:             uuid.New(),
+		Type:           "Sedan",
+		Seats:          4,
+		HourlyRentCost: 21.1,
+		City:           "Los Angeles",
+		Status:         "Available",
+	}
+
+	type args struct {
+		requestID string
+	}
+	type wants struct {
+		statusCode int
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wants    wants
+		setMocks func(*carsDependencies)
+	}{
+		{
+			name: "returns status code 200 when id is properly set and car was found",
+			args: args{
+				requestID: car.ID.String(),
+			},
+			wants: wants{
+				statusCode: http.StatusOK,
+			},
+			setMocks: func(d *carsDependencies) {
+				d.carsService.EXPECT().Get(gomock.Any(), car.ID).Return(car.ToDomain(), nil)
+			},
+		},
+		{
+			name: "returns 400 status code when path param id is not an uuid",
+			args: args{
+				requestID: "this-is-an-not-uuid",
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			setMocks: func(d *carsDependencies) {
+			},
+		},
+		{
+			name: "returns 404 status code when the car was not found",
+			args: args{
+				requestID: car.ID.String(),
+			},
+			wants: wants{
+				statusCode: http.StatusNotFound,
+			},
+			setMocks: func(d *carsDependencies) {
+				d.carsService.EXPECT().Get(gomock.Any(), car.ID).Return(domain.Car{}, errors.New(services.ErrCarNotFound))
+			},
+		},
+		{
+			name: "returns 500 status code when there is a server error",
+			args: args{
+				requestID: car.ID.String(),
+			},
+			wants: wants{
+				statusCode: http.StatusInternalServerError,
+			},
+			setMocks: func(d *carsDependencies) {
+				d.carsService.EXPECT().Get(gomock.Any(), car.ID).Return(domain.Car{}, errors.New("error getting car"))
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			mockCtlr := gomock.NewController(t)
+			carsSrv := mocks.NewMockCarsService(mockCtlr)
+			d := NewCarsDependencies(carsSrv)
+			test.setMocks(d)
+
+			baseURL := "/api/v1/"
+			values := url.Values{}
+			values.Set("id", test.args.requestID)
+			urlObj, _ := url.Parse(baseURL + "cars/" + values.Encode())
+
+			req, err := http.NewRequest("GET", urlObj.String(), nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// Include request vars for gorilla mux to interpret path params
+			vars := map[string]string{
+				"id": test.args.requestID,
+			}
+			req = mux.SetURLVars(req, vars)
+
+			rr := httptest.NewRecorder()
+
+			carsHandler := NewCars(carsSrv)
+			carsHandler.Get(rr, req)
 
 			assert.Equal(t, test.wants.statusCode, rr.Code)
 		})
