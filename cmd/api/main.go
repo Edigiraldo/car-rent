@@ -9,7 +9,9 @@ import (
 )
 
 func main() {
-	err := godotenv.Load(".env")
+	envPath := getEnvPath()
+
+	err := godotenv.Load(envPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -37,4 +39,17 @@ func main() {
 	}
 
 	s.Start()
+}
+
+func getEnvPath() string {
+	ENVIRONMENT := os.Getenv("ENVIRONMENT")
+	switch ENVIRONMENT {
+	case "local":
+		return ".env.local"
+	case "debug":
+		return ".env.debug"
+	default:
+		return ".env"
+	}
+
 }

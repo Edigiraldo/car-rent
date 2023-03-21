@@ -21,7 +21,7 @@ FROM scratch AS runner
 
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /ect/ssl/certs/
 
-COPY .env ./
+COPY .env.local ./
 COPY --from=builder /car-rent /car-rent
 
 EXPOSE 5050

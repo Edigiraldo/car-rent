@@ -9,6 +9,10 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
+            "env": {
+                "ENVIRONMENT": "debug"
+            },
+
             "program": "${workspaceFolder}/cmd/api/",
             "cwd": "${workspaceFolder}"
         }
