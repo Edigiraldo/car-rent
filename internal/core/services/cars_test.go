@@ -162,3 +162,69 @@ func TestCarsGet(t *testing.T) {
 		})
 	}
 }
+
+func TestCarsFullUpdate(t *testing.T) {
+	car := domain.Car{
+		ID:             uuid.New(),
+		Type:           "Luxury",
+		Seats:          6,
+		HourlyRentCost: 56.5,
+		City:           "Austin",
+		Status:         "Available",
+	}
+
+	type args struct {
+		ctx context.Context
+		car domain.Car
+	}
+	type wants struct {
+		err error
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wants    wants
+		setMocks func(*carsDependencies)
+	}{
+		{
+			name: "returns nil error when car update was successfully updated",
+			args: args{
+				ctx: context.TODO(),
+				car: car,
+			},
+			wants: wants{
+				err: nil,
+			},
+			setMocks: func(d *carsDependencies) {
+				d.carsRepository.EXPECT().FullUpdate(gomock.Any(), car).Return(nil)
+			},
+		},
+		{
+			name: "returns an error when car update fails",
+			args: args{
+				ctx: context.TODO(),
+				car: car,
+			},
+			wants: wants{
+				err: errors.New("failure while updating car"),
+			},
+			setMocks: func(d *carsDependencies) {
+				d.carsRepository.EXPECT().FullUpdate(gomock.Any(), car).Return(errors.New("failure while updating car"))
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			mockCtlr := gomock.NewController(t)
+			carsRepo := mocks.NewMockCarsRepo(mockCtlr)
+			d := NewCarsDependencies(carsRepo)
+			test.setMocks(d)
+
+			carsService := NewCars(carsRepo)
+			err := carsService.FullUpdate(test.args.ctx, test.args.car)
+
+			assert.Equal(t, test.wants.err, err)
+		})
+	}
+}
