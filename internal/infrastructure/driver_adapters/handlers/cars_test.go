@@ -51,12 +51,12 @@ func TestCarsRegister(t *testing.T) {
 		setMocks func(*carsDependencies)
 	}{
 		{
-			name: "returns status code 200 when body is appropriate",
+			name: "returns status code 201 when body is appropriate",
 			args: args{
 				car: car,
 			},
 			wants: wants{
-				statusCode: http.StatusOK,
+				statusCode: http.StatusCreated,
 			},
 			setMocks: func(d *carsDependencies) {
 				d.carsService.EXPECT().Register(gomock.Any(), car.ToDomain()).Return(domain.Car{}, nil)

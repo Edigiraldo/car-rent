@@ -47,6 +47,7 @@ func (ch *Cars) Register(w http.ResponseWriter, r *http.Request) {
 	car.FromDomain(newCar)
 
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(car)
 }
 
