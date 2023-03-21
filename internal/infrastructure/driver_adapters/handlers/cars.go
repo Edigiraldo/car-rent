@@ -80,3 +80,38 @@ func (ch *Cars) Get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(car)
 }
+
+func (ch *Cars) FullUpdate(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	id := params["id"]
+	ID, err := uuid.Parse(id)
+	if err != nil {
+		http.Error(w, ErrInvalidID, http.StatusBadRequest)
+
+		return
+	}
+
+	car, err := dtos.CarFromBody(r.Body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+
+		return
+	}
+
+	// Get the ID from path param
+	car.ID = ID
+
+	if err = ch.CarsService.FullUpdate(r.Context(), car.ToDomain()); err != nil {
+		if err.Error() == services.ErrCarNotFound {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else {
+			http.Error(w, ErrInternalServerError, http.StatusInternalServerError)
+			log.Println(err)
+		}
+
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(car)
+}

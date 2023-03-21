@@ -41,3 +41,25 @@ func (cr *CarsRepo) Get(ctx context.Context, ID uuid.UUID) (dc domain.Car, err e
 
 	return car.ToDomain(), nil
 }
+
+// Updates car row. If car was not found returns an error.
+func (cr *CarsRepo) FullUpdate(ctx context.Context, dc domain.Car) error {
+	car := models.LoadCarFromDomain(dc)
+
+	result, err := cr.db.ExecContext(ctx, "UPDATE cars SET type=$1, seats=$2, hourly_rent_cost=$3, city=$4, status=$5 WHERE id=$6",
+		car.Type, car.Seats, car.HourlyRentCost, car.City, car.Status, car.ID)
+	if err != nil {
+		return err
+	}
+
+	numUpdatedRows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if numUpdatedRows == 0 {
+		return errors.New(services.ErrCarNotFound)
+	}
+
+	return nil
+}

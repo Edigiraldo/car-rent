@@ -85,6 +85,20 @@ func (m *MockCarsRepo) EXPECT() *MockCarsRepoMockRecorder {
 	return m.recorder
 }
 
+// FullUpdate mocks base method.
+func (m *MockCarsRepo) FullUpdate(ctx context.Context, dc domain.Car) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FullUpdate", ctx, dc)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// FullUpdate indicates an expected call of FullUpdate.
+func (mr *MockCarsRepoMockRecorder) FullUpdate(ctx, dc interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FullUpdate", reflect.TypeOf((*MockCarsRepo)(nil).FullUpdate), ctx, dc)
+}
+
 // Get mocks base method.
 func (m *MockCarsRepo) Get(ctx context.Context, ID uuid.UUID) (domain.Car, error) {
 	m.ctrl.T.Helper()

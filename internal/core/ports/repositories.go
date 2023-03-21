@@ -17,4 +17,5 @@ type Database interface {
 type CarsRepo interface {
 	Insert(ctx context.Context, dc domain.Car) (err error)
 	Get(ctx context.Context, ID uuid.UUID) (dc domain.Car, err error)
+	FullUpdate(ctx context.Context, dc domain.Car) error
 }
