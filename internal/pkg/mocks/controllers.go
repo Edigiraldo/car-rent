@@ -69,6 +69,18 @@ func (m *MockCarsController) EXPECT() *MockCarsControllerMockRecorder {
 	return m.recorder
 }
 
+// Delete mocks base method.
+func (m *MockCarsController) Delete(w http.ResponseWriter, r *http.Request) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "Delete", w, r)
+}
+
+// Delete indicates an expected call of Delete.
+func (mr *MockCarsControllerMockRecorder) Delete(w, r interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockCarsController)(nil).Delete), w, r)
+}
+
 // FullUpdate mocks base method.
 func (m *MockCarsController) FullUpdate(w http.ResponseWriter, r *http.Request) {
 	m.ctrl.T.Helper()

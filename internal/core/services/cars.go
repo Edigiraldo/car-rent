@@ -48,3 +48,7 @@ func (c *Cars) Get(ctx context.Context, ID uuid.UUID) (domain.Car, error) {
 func (c *Cars) FullUpdate(ctx context.Context, car domain.Car) error {
 	return c.carsRepository.FullUpdate(ctx, car)
 }
+
+func (c *Cars) Delete(ctx context.Context, id uuid.UUID) error {
+	return c.carsRepository.Delete(ctx, id)
+}

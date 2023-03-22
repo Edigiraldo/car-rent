@@ -63,3 +63,9 @@ func (cr *CarsRepo) FullUpdate(ctx context.Context, dc domain.Car) error {
 
 	return nil
 }
+
+func (cr *CarsRepo) Delete(ctx context.Context, id uuid.UUID) error {
+	_, err := cr.db.ExecContext(ctx, "Delete FROM cars WHERE id=$1", id)
+
+	return err
+}

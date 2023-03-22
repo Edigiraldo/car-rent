@@ -13,4 +13,5 @@ type CarsService interface {
 	Register(ctx context.Context, car domain.Car) (domain.Car, error)
 	Get(ctx context.Context, id uuid.UUID) (domain.Car, error)
 	FullUpdate(ctx context.Context, dc domain.Car) error
+	Delete(ctx context.Context, id uuid.UUID) error
 }

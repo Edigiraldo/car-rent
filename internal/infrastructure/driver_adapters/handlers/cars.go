@@ -115,3 +115,23 @@ func (ch *Cars) FullUpdate(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(car)
 }
+
+func (ch *Cars) Delete(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	id := params["id"]
+	ID, err := uuid.Parse(id)
+	if err != nil {
+		http.Error(w, ErrInvalidID, http.StatusBadRequest)
+
+		return
+	}
+
+	err = ch.CarsService.Delete(r.Context(), ID)
+	if err != nil {
+		http.Error(w, ErrInternalServerError, http.StatusInternalServerError)
+		log.Println(err)
+
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
