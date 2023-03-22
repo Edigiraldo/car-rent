@@ -8,7 +8,7 @@ import (
 	"github.com/Edigiraldo/car-rent/internal/core/domain"
 	"github.com/Edigiraldo/car-rent/internal/core/ports"
 	"github.com/Edigiraldo/car-rent/internal/core/services"
-	"github.com/Edigiraldo/car-rent/internal/infrastructure/driver_adapters/handlers/dtos"
+	"github.com/Edigiraldo/car-rent/internal/infrastructure/driver_adapters/dtos"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )

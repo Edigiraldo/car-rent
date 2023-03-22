@@ -11,7 +11,7 @@ import (
 
 	"github.com/Edigiraldo/car-rent/internal/core/domain"
 	"github.com/Edigiraldo/car-rent/internal/core/services"
-	"github.com/Edigiraldo/car-rent/internal/infrastructure/driver_adapters/handlers/dtos"
+	"github.com/Edigiraldo/car-rent/internal/infrastructure/driver_adapters/dtos"
 	mocks "github.com/Edigiraldo/car-rent/internal/pkg/mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
