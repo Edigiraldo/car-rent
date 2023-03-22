@@ -342,3 +342,96 @@ func TestCarsFullUpdate(t *testing.T) {
 		})
 	}
 }
+
+func TestCarsDelete(t *testing.T) {
+	car := dtos.Car{
+		ID:             uuid.New(),
+		Type:           "Sedan",
+		Seats:          4,
+		HourlyRentCost: 21.1,
+		City:           "Los Angeles",
+		Status:         "Available",
+	}
+
+	type args struct {
+		requestID string
+	}
+	type wants struct {
+		statusCode int
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wants    wants
+		setMocks func(*carsDependencies)
+	}{
+		{
+			name: "returns status code 204 when car register was deleted successfully",
+			args: args{
+				requestID: car.ID.String(),
+			},
+			wants: wants{
+				statusCode: http.StatusNoContent,
+			},
+			setMocks: func(d *carsDependencies) {
+				d.carsService.EXPECT().Delete(gomock.Any(), car.ID).Return(nil)
+			},
+		},
+		{
+			name: "returns 400 status code when path param id is not an uuid",
+			args: args{
+				requestID: "this-is-an-not-uuid",
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			setMocks: func(d *carsDependencies) {
+			},
+		},
+		{
+			name: "returns 500 status code when there is a server error",
+			args: args{
+				requestID: car.ID.String(),
+			},
+			wants: wants{
+				statusCode: http.StatusInternalServerError,
+			},
+			setMocks: func(d *carsDependencies) {
+				d.carsService.EXPECT().Delete(gomock.Any(), car.ID).Return(errors.New("error getting car"))
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			mockCtlr := gomock.NewController(t)
+			carsSrv := mocks.NewMockCarsService(mockCtlr)
+			d := NewCarsDependencies(carsSrv)
+			test.setMocks(d)
+
+			baseURL := "/api/v1/"
+			values := url.Values{}
+			values.Set("id", test.args.requestID)
+			urlObj, _ := url.Parse(baseURL + "cars/" + values.Encode())
+			URL := urlObj.String()
+
+			req, err := http.NewRequest(http.MethodDelete, URL, nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// Include request vars for gorilla mux to interpret path params
+			vars := map[string]string{
+				"id": test.args.requestID,
+			}
+			req = mux.SetURLVars(req, vars)
+
+			rr := httptest.NewRecorder()
+
+			carsHandler := NewCars(carsSrv)
+			carsHandler.Delete(rr, req)
+
+			assert.Equal(t, test.wants.statusCode, rr.Code)
+		})
+	}
+}
