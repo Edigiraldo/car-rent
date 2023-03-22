@@ -228,3 +228,60 @@ func TestCarsFullUpdate(t *testing.T) {
 		})
 	}
 }
+
+func TestCarsDelete(t *testing.T) {
+	type args struct {
+		ctx context.Context
+		ID  uuid.UUID
+	}
+	type wants struct {
+		err error
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wants    wants
+		setMocks func(*carsDependencies)
+	}{
+		{
+			name: "returns nil error when car deletion was successful",
+			args: args{
+				ctx: context.TODO(),
+				ID:  uuid.New(),
+			},
+			wants: wants{
+				err: nil,
+			},
+			setMocks: func(d *carsDependencies) {
+				d.carsRepository.EXPECT().Delete(gomock.Any(), gomock.Any()).Return(nil)
+			},
+		},
+		{
+			name: "returns an error when car deletion fails",
+			args: args{
+				ctx: context.TODO(),
+				ID:  uuid.New(),
+			},
+			wants: wants{
+				err: errors.New("failure while updating car"),
+			},
+			setMocks: func(d *carsDependencies) {
+				d.carsRepository.EXPECT().Delete(gomock.Any(), gomock.Any()).Return(errors.New("failure while updating car"))
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			mockCtlr := gomock.NewController(t)
+			carsRepo := mocks.NewMockCarsRepo(mockCtlr)
+			d := NewCarsDependencies(carsRepo)
+			test.setMocks(d)
+
+			carsService := NewCars(carsRepo)
+			err := carsService.Delete(test.args.ctx, test.args.ID)
+
+			assert.Equal(t, test.wants.err, err)
+		})
+	}
+}
