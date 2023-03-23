@@ -6,6 +6,7 @@ import (
 
 	"github.com/Edigiraldo/car-rent/internal/core/domain"
 	"github.com/Edigiraldo/car-rent/internal/core/ports"
+	"github.com/Edigiraldo/car-rent/internal/pkg/constants"
 	"github.com/google/uuid"
 )
 
@@ -57,9 +58,9 @@ func (c *Cars) Delete(ctx context.Context, id uuid.UUID) error {
 // from_car_id is the last document retrieved in the last page
 func (c *Cars) List(ctx context.Context, city string, from_car_id string) ([]domain.Car, error) {
 	if from_car_id == "" {
-		from_car_id = "00000000-0000-0000-0000-000000000000"
+		from_car_id = constants.NULL_UUID
 	}
-	cars, err := c.carsRepository.List(ctx, city, from_car_id, 20)
+	cars, err := c.carsRepository.List(ctx, city, from_car_id, constants.CARS_PER_PAGE)
 	if err != nil {
 		return []domain.Car{}, nil
 	}

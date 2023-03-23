@@ -1,0 +1,6 @@
+package constants
+
+const (
+	CARS_PER_PAGE = 20
+	NULL_UUID     = "00000000-0000-0000-0000-000000000000"
+)
