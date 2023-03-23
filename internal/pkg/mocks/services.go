@@ -79,6 +79,21 @@ func (mr *MockCarsServiceMockRecorder) Get(ctx, id interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockCarsService)(nil).Get), ctx, id)
 }
 
+// List mocks base method.
+func (m *MockCarsService) List(ctx context.Context, city, from_car_id string) ([]domain.Car, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "List", ctx, city, from_car_id)
+	ret0, _ := ret[0].([]domain.Car)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// List indicates an expected call of List.
+func (mr *MockCarsServiceMockRecorder) List(ctx, city, from_car_id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockCarsService)(nil).List), ctx, city, from_car_id)
+}
+
 // Register mocks base method.
 func (m *MockCarsService) Register(ctx context.Context, car domain.Car) (domain.Car, error) {
 	m.ctrl.T.Helper()

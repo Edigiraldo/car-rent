@@ -14,4 +14,5 @@ type CarsService interface {
 	Get(ctx context.Context, id uuid.UUID) (domain.Car, error)
 	FullUpdate(ctx context.Context, dc domain.Car) error
 	Delete(ctx context.Context, id uuid.UUID) error
+	List(ctx context.Context, city string, from_car_id string) ([]domain.Car, error)
 }

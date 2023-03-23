@@ -141,3 +141,18 @@ func (mr *MockCarsRepoMockRecorder) Insert(ctx, dc interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockCarsRepo)(nil).Insert), ctx, dc)
 }
+
+// List mocks base method.
+func (m *MockCarsRepo) List(ctx context.Context, city, from_car_id string, limit uint16) ([]domain.Car, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "List", ctx, city, from_car_id, limit)
+	ret0, _ := ret[0].([]domain.Car)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// List indicates an expected call of List.
+func (mr *MockCarsRepoMockRecorder) List(ctx, city, from_car_id, limit interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockCarsRepo)(nil).List), ctx, city, from_car_id, limit)
+}

@@ -16,6 +16,7 @@ import (
 var (
 	ErrInvalidID           = "id could not be converted to uuid"
 	ErrInternalServerError = "internal server error"
+	ErrCityQueryParamEmpty = "city query param can not be empty"
 )
 
 type Cars struct {
@@ -134,4 +135,42 @@ func (ch *Cars) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
+}
+
+// Lists cars from a city in pages of 20 elements. from_car_id parameter
+// is taken as the last seen car in a previous page.
+func (ch *Cars) List(w http.ResponseWriter, r *http.Request) {
+	city := r.URL.Query().Get("city")
+	if city == "" {
+		http.Error(w, ErrCityQueryParamEmpty, http.StatusBadRequest)
+
+		return
+	}
+	from_car_id := r.URL.Query().Get("from_car_id")
+
+	cars, err := ch.CarsService.List(r.Context(), city, from_car_id)
+	if err != nil {
+		http.Error(w, ErrInternalServerError, http.StatusInternalServerError)
+		log.Println(err)
+
+		return
+	}
+
+	listCarsResponse := getListCarsResponse(cars)
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(listCarsResponse)
+}
+
+// Gets a list of cars and builds the user response
+func getListCarsResponse(cars []domain.Car) (listCarsResponse dtos.ListCarsResponse) {
+	listCarsResponse.Cars = make([]dtos.Car, 0)
+	for _, domainCar := range cars {
+		car := dtos.Car{}
+		car.FromDomain(domainCar)
+
+		listCarsResponse.Cars = append(listCarsResponse.Cars, car)
+	}
+
+	return listCarsResponse
 }

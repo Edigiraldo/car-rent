@@ -13,4 +13,5 @@ type CarsController interface {
 	Get(w http.ResponseWriter, r *http.Request)
 	FullUpdate(w http.ResponseWriter, r *http.Request)
 	Delete(w http.ResponseWriter, r *http.Request)
+	List(w http.ResponseWriter, r *http.Request)
 }

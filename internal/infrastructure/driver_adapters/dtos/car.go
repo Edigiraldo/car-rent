@@ -17,6 +17,10 @@ var (
 	ErrInvalidCarStatus      = "invalid car status"
 )
 
+type ListCarsResponse struct {
+	Cars []Car `json:"cars"`
+}
+
 type Car struct {
 	ID             uuid.UUID `json:"id,omitempty"`
 	Type           CarType   `json:"type"`

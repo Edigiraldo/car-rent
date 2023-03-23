@@ -10,7 +10,7 @@ run-db:
 	docker run -d --rm --network=cars-service-network -e POSTGRES_PASSWORD=postgres --name postgres_db postgres_db-img
 
 run-debug-db:
-	docker run -d --rm --network=cars-service-network -e POSTGRES_PASSWORD=postgres -p 5432:5432 --name postgres_db postgres_db-img
+	docker run -d --rm -e POSTGRES_PASSWORD=postgres -p 5432:5432 --name postgres_db postgres_db-img
 
 build-server:
 	docker build . -f build/server/Dockerfile.local -t car-rent-api-img

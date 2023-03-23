@@ -19,4 +19,5 @@ type CarsRepo interface {
 	Get(ctx context.Context, ID uuid.UUID) (dc domain.Car, err error)
 	FullUpdate(ctx context.Context, dc domain.Car) error
 	Delete(ctx context.Context, id uuid.UUID) error
+	List(ctx context.Context, city string, from_car_id string, limit uint16) ([]domain.Car, error)
 }

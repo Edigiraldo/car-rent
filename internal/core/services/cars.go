@@ -52,3 +52,17 @@ func (c *Cars) FullUpdate(ctx context.Context, car domain.Car) error {
 func (c *Cars) Delete(ctx context.Context, id uuid.UUID) error {
 	return c.carsRepository.Delete(ctx, id)
 }
+
+// List cars by city name.
+// from_car_id is the last document retrieved in the last page
+func (c *Cars) List(ctx context.Context, city string, from_car_id string) ([]domain.Car, error) {
+	if from_car_id == "" {
+		from_car_id = "00000000-0000-0000-0000-000000000000"
+	}
+	cars, err := c.carsRepository.List(ctx, city, from_car_id, 20)
+	if err != nil {
+		return []domain.Car{}, nil
+	}
+
+	return cars, nil
+}
