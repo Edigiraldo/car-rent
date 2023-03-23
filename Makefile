@@ -21,4 +21,13 @@ run-server:
 stop:
 	docker stop car-rent-api postgres_db
 
+compose-up:
+	docker compose -f docker-compose.local.yml up -d
+
+compose-down:
+	docker compose -f docker-compose.local.yml down
+
+compose-logs:
+	docker compose -f docker-compose.local.yml logs -f
+
 all: create-network build-db run-db build-server run-server

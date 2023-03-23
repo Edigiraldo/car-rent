@@ -2,4 +2,8 @@
 
 Run the following command to create docker containers:
 
- ```make all```
+ ```make compose-up```
+
+To turn servers down:
+
+ ```make compose-down```

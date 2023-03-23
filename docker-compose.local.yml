@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  car-rent-api:
+    build:
+      dockerfile: build/server/Dockerfile.local
+    depends_on:
+     - postgres_db
+    networks:
+      - cars-service-network
+    environment:
+      - ENVIRONMENT=local
+    ports:
+      - 5050:5050
+  postgres_db:
+    build:
+      dockerfile: build/postgres/Dockerfile.local
+    networks:
+      - cars-service-network
+    environment:
+      - POSTGRES_PASSWORD=postgres
+
+networks:
+  cars-service-network:
+    driver: bridge
