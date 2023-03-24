@@ -62,7 +62,7 @@ func (c *Cars) List(ctx context.Context, city string, from_car_id string) ([]dom
 	}
 	cars, err := c.carsRepository.List(ctx, city, from_car_id, constants.CARS_PER_PAGE)
 	if err != nil {
-		return []domain.Car{}, nil
+		return []domain.Car{}, err
 	}
 
 	return cars, nil

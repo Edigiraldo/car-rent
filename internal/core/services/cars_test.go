@@ -285,3 +285,101 @@ func TestCarsDelete(t *testing.T) {
 		})
 	}
 }
+
+func TestCarsList(t *testing.T) {
+	foundCars := []domain.Car{
+		{
+			ID:             uuid.New(),
+			Type:           "Sedan",
+			Seats:          5,
+			HourlyRentCost: 90,
+			City:           "New York",
+			Status:         "Available",
+		},
+		{
+			ID:             uuid.New(),
+			Type:           "Sedan",
+			Seats:          5,
+			HourlyRentCost: 100,
+			City:           "New York",
+			Status:         "Available",
+		},
+	}
+
+	type args struct {
+		ctx         context.Context
+		city        string
+		from_car_id string
+	}
+	type wants struct {
+		cars []domain.Car
+		err  error
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wants    wants
+		setMocks func(*carsDependencies)
+	}{
+		{
+			name: "returns nil error when city and from_car_id are set and repository did not fail",
+			args: args{
+				ctx:         context.TODO(),
+				city:        "New York",
+				from_car_id: "5ae5d956-5a8d-40dd-9aef-5340fda345e8",
+			},
+			wants: wants{
+				cars: foundCars,
+				err:  nil,
+			},
+			setMocks: func(d *carsDependencies) {
+				d.carsRepository.EXPECT().List(gomock.Any(), "New York", "5ae5d956-5a8d-40dd-9aef-5340fda345e8", gomock.Any()).Return(foundCars, nil)
+			},
+		},
+		{
+			name: "Calls repository with nil UUID when from_car_id was not set",
+			args: args{
+				ctx:         context.TODO(),
+				city:        "New York",
+				from_car_id: "",
+			},
+			wants: wants{
+				cars: foundCars,
+				err:  nil,
+			},
+			setMocks: func(d *carsDependencies) {
+				d.carsRepository.EXPECT().List(gomock.Any(), "New York", "00000000-0000-0000-0000-000000000000", gomock.Any()).Return(foundCars, nil)
+			},
+		},
+		{
+			name: "returns an error when city and from_car_id are set but repository fails",
+			args: args{
+				ctx:         context.TODO(),
+				city:        "New York",
+				from_car_id: "5ae5d956-5a8d-40dd-9aef-5340fda345e8",
+			},
+			wants: wants{
+				cars: []domain.Car{},
+				err:  errors.New("there was some internal error"),
+			},
+			setMocks: func(d *carsDependencies) {
+				d.carsRepository.EXPECT().List(gomock.Any(), "New York", "5ae5d956-5a8d-40dd-9aef-5340fda345e8", gomock.Any()).Return([]domain.Car{}, errors.New("there was some internal error"))
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			mockCtlr := gomock.NewController(t)
+			carsRepo := mocks.NewMockCarsRepo(mockCtlr)
+			d := NewCarsDependencies(carsRepo)
+			test.setMocks(d)
+
+			carsService := NewCars(carsRepo)
+			cars, err := carsService.List(test.args.ctx, test.args.city, test.args.from_car_id)
+
+			assert.Equal(t, test.wants.cars, cars)
+			assert.Equal(t, test.wants.err, err)
+		})
+	}
+}
