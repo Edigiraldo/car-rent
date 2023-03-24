@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"errors"
 
 	"github.com/Edigiraldo/car-rent/internal/core/domain"
 	"github.com/Edigiraldo/car-rent/internal/core/ports"
@@ -37,9 +36,6 @@ func (c *Cars) Register(ctx context.Context, car domain.Car) (domain.Car, error)
 func (c *Cars) Get(ctx context.Context, ID uuid.UUID) (domain.Car, error) {
 	dc, err := c.carsRepository.Get(ctx, ID)
 	if err != nil {
-		if err.Error() == ErrCarNotFound {
-			return domain.Car{}, errors.New(ErrCarNotFound)
-		}
 		return domain.Car{}, err
 	}
 
