@@ -193,9 +193,7 @@ func TestCarsGet(t *testing.T) {
 			test.setMocks(d)
 
 			baseURL := "/api/v1/"
-			values := url.Values{}
-			values.Set("id", test.args.requestID)
-			urlObj, _ := url.Parse(baseURL + "cars/" + values.Encode())
+			urlObj, _ := url.Parse(baseURL + "cars/" + test.args.requestID)
 			URL := urlObj.String()
 
 			req, err := http.NewRequest(http.MethodGet, URL, nil)
@@ -316,9 +314,7 @@ func TestCarsFullUpdate(t *testing.T) {
 			test.setMocks(d)
 
 			baseURL := "/api/v1/"
-			values := url.Values{}
-			values.Set("id", test.args.requestID)
-			urlObj, _ := url.Parse(baseURL + "cars/" + values.Encode())
+			urlObj, _ := url.Parse(baseURL + "cars/" + test.args.requestID)
 			URL := urlObj.String()
 
 			body, _ := json.Marshal(test.args.car)
@@ -410,9 +406,7 @@ func TestCarsDelete(t *testing.T) {
 			test.setMocks(d)
 
 			baseURL := "/api/v1/"
-			values := url.Values{}
-			values.Set("id", test.args.requestID)
-			urlObj, _ := url.Parse(baseURL + "cars/" + values.Encode())
+			urlObj, _ := url.Parse(baseURL + "cars/" + test.args.requestID)
 			URL := urlObj.String()
 
 			req, err := http.NewRequest(http.MethodDelete, URL, nil)
@@ -431,6 +425,139 @@ func TestCarsDelete(t *testing.T) {
 			carsHandler := NewCars(carsSrv)
 			carsHandler.Delete(rr, req)
 
+			assert.Equal(t, test.wants.statusCode, rr.Code)
+		})
+	}
+}
+
+func TestCarsList(t *testing.T) {
+	foundCars := []domain.Car{
+		{
+			ID:             uuid.New(),
+			Type:           "Sedan",
+			Seats:          5,
+			HourlyRentCost: 90,
+			City:           "New York",
+			Status:         "Available",
+		},
+		{
+			ID:             uuid.New(),
+			Type:           "Sedan",
+			Seats:          5,
+			HourlyRentCost: 100,
+			City:           "New York",
+			Status:         "Available",
+		},
+	}
+
+	type args struct {
+		city        string
+		from_car_id string
+	}
+	type wants struct {
+		statusCode int
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wants    wants
+		setMocks func(*carsDependencies)
+	}{
+		{
+			name: "returns status code 200 when city and from_car_id are provided and service works with no error",
+			args: args{
+				city:        "New York",
+				from_car_id: "5ae5d956-5a8d-40dd-9aef-5340fda345e8",
+			},
+			wants: wants{
+				statusCode: http.StatusOK,
+			},
+			setMocks: func(d *carsDependencies) {
+				d.carsService.EXPECT().List(gomock.Any(), "New York", "5ae5d956-5a8d-40dd-9aef-5340fda345e8").Return(foundCars, nil)
+			},
+		},
+		{
+			name: "returns status code 400 when city query param is empty",
+			args: args{
+				city:        "",
+				from_car_id: "5ae5d956-5a8d-40dd-9aef-5340fda345e8",
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			setMocks: func(d *carsDependencies) {
+			},
+		},
+		{
+			name: "returns status code 200 when city param arrives and service works with no error",
+			args: args{
+				city:        "New York",
+				from_car_id: "",
+			},
+			wants: wants{
+				statusCode: http.StatusOK,
+			},
+			setMocks: func(d *carsDependencies) {
+				d.carsService.EXPECT().List(gomock.Any(), "New York", "").Return(foundCars, nil)
+			},
+		},
+		{
+			name: "returns 500 status code when there is a server error",
+			args: args{
+				city:        "New York",
+				from_car_id: "5ae5d956-5a8d-40dd-9aef-5340fda345e8",
+			},
+			wants: wants{
+				statusCode: http.StatusInternalServerError,
+			},
+			setMocks: func(d *carsDependencies) {
+				d.carsService.EXPECT().List(gomock.Any(), "New York", "5ae5d956-5a8d-40dd-9aef-5340fda345e8").Return([]domain.Car{}, errors.New("error getting cars list"))
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			mockCtlr := gomock.NewController(t)
+			carsSrv := mocks.NewMockCarsService(mockCtlr)
+			d := NewCarsDependencies(carsSrv)
+			test.setMocks(d)
+
+			baseURL := "/api/v1/"
+			values := url.Values{}
+			values.Set("city", test.args.city)
+			values.Set("from_car_id", test.args.from_car_id)
+			urlObj, _ := url.Parse(baseURL + "cars/?" + values.Encode())
+			URL := urlObj.String()
+
+			req, err := http.NewRequest(http.MethodGet, URL, nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// Include request vars for gorilla mux to interpret path params
+			vars := map[string]string{
+				"city":        test.args.city,
+				"from_car_id": test.args.from_car_id,
+			}
+			req = mux.SetURLVars(req, vars)
+
+			rr := httptest.NewRecorder()
+
+			carsHandler := NewCars(carsSrv)
+			carsHandler.List(rr, req)
+
+			if rr.Result().StatusCode == http.StatusOK {
+				body := dtos.ListCarsResponse{}
+				err = json.Unmarshal(rr.Body.Bytes(), &body)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if len(body.Cars) != 0 {
+					assert.Equal(t, foundCars[0].ID, body.Cars[0].ID)
+					assert.Equal(t, len(foundCars), len(body.Cars))
+				}
+			}
 			assert.Equal(t, test.wants.statusCode, rr.Code)
 		})
 	}
