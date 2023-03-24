@@ -16,7 +16,8 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.20
-        GOPATH: ${{ github.workspace }}
+        env:
+          GOPATH: ${{ github.workspace }}
 
       - name: Run tests
         run: go test ./...
