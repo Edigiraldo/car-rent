@@ -7,9 +7,10 @@ import (
 var Values ConstantValues
 
 type ConstantValues struct {
-	CARS_PER_PAGE uint16    `mapstructure:"CARS_PER_PAGE"`
-	NULL_UUID     string    `mapstructure:"NULL_UUID"`
-	CAR_TYPES     CAR_TYPES `mapstructure:"CAR_TYPES"`
+	CARS_PER_PAGE uint16       `mapstructure:"CARS_PER_PAGE"`
+	NULL_UUID     string       `mapstructure:"NULL_UUID"`
+	CAR_TYPES     CAR_TYPES    `mapstructure:"CAR_TYPES"`
+	CAR_STATUSES  CAR_STATUSES `mapstructure:"CAR_STATUSES"`
 }
 
 func InitValues() error {
@@ -27,6 +28,7 @@ func InitValues() error {
 
 	// initializes lists of values of structs to have iterable objects
 	initializeCarTypesValues()
+	initializeCarStatusesValues()
 
 	return nil
 }

@@ -6,5 +6,9 @@
       "LUXURY": "Luxury",
       "SPORTS CAR": "Sports Car",
       "LIMOUSINE": "Limousine"
+    },
+    "CAR_STATUSES": {
+      "AVAILABLE": "Available",
+      "UNAVAILABLE": "Unavailable"
     }
 }
