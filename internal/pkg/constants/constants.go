@@ -1,6 +1,8 @@
 package constants
 
 import (
+	"os"
+
 	"github.com/spf13/viper"
 )
 
@@ -29,6 +31,19 @@ func InitValues() error {
 	// initializes lists of values of structs to have iterable objects
 	initializeCarTypesValues()
 	initializeCarStatusesValues()
+
+	return nil
+}
+
+// Loads constants from a directory that is not in the root of the project
+func InitValuesFrom(PathToRoot string) error {
+	if err := os.Chdir(PathToRoot); err != nil {
+		return err
+	}
+
+	if err := InitValues(); err != nil {
+		return err
+	}
 
 	return nil
 }

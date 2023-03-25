@@ -4,20 +4,16 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"os"
 	"testing"
 
 	"github.com/Edigiraldo/car-rent/internal/pkg/constants"
 	"github.com/stretchr/testify/assert"
 )
 
-func initConstantsFromDtos(t *testing.T) {
-	// Move path to root of project
-	if err := os.Chdir("./../../../.."); err != nil {
-		t.Fatal(err)
-	}
+var pathToRoot = "./../../../.."
 
-	if err := constants.InitValues(); err != nil {
+func initConstantsFromDtos(t *testing.T) {
+	if err := constants.InitValuesFrom(pathToRoot); err != nil {
 		t.Fatal(err)
 	}
 }

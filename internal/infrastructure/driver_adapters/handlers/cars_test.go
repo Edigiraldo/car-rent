@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"os"
 	"testing"
 
 	"github.com/Edigiraldo/car-rent/internal/core/domain"
@@ -21,6 +20,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var pathToRoot = "./../../../.."
+
 type carsDependencies struct {
 	carsService *mocks.MockCarsService
 }
@@ -32,12 +33,7 @@ func NewCarsDependencies(carsSrv *mocks.MockCarsService) *carsDependencies {
 }
 
 func initConstantsFromHandlers(t *testing.T) {
-	// Move path to root of project
-	if err := os.Chdir("./../../../.."); err != nil {
-		t.Fatal(err)
-	}
-
-	if err := constants.InitValues(); err != nil {
+	if err := constants.InitValuesFrom(pathToRoot); err != nil {
 		t.Fatal(err)
 	}
 }
