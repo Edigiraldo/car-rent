@@ -3,9 +3,11 @@ package services
 import (
 	"context"
 	"errors"
+	"os"
 	"testing"
 
 	"github.com/Edigiraldo/car-rent/internal/core/domain"
+	"github.com/Edigiraldo/car-rent/internal/pkg/constants"
 	mocks "github.com/Edigiraldo/car-rent/internal/pkg/mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
@@ -19,6 +21,16 @@ type carsDependencies struct {
 func NewCarsDependencies(carsRepo *mocks.MockCarsRepo) *carsDependencies {
 	return &carsDependencies{
 		carsRepository: carsRepo,
+	}
+}
+
+func initConstantsFromServices(t *testing.T) {
+	if err := os.Chdir("./../../.."); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := constants.InitValues(); err != nil {
+		t.Fatal(err)
 	}
 }
 
@@ -287,6 +299,8 @@ func TestCarsDelete(t *testing.T) {
 }
 
 func TestCarsList(t *testing.T) {
+	initConstantsFromServices(t)
+
 	foundCars := []domain.Car{
 		{
 			ID:             uuid.New(),

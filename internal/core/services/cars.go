@@ -54,9 +54,9 @@ func (c *Cars) Delete(ctx context.Context, id uuid.UUID) error {
 // from_car_id is the last document retrieved in the last page
 func (c *Cars) List(ctx context.Context, city string, from_car_id string) ([]domain.Car, error) {
 	if from_car_id == "" {
-		from_car_id = constants.NULL_UUID
+		from_car_id = constants.Values.NULL_UUID
 	}
-	cars, err := c.carsRepository.List(ctx, city, from_car_id, constants.CARS_PER_PAGE)
+	cars, err := c.carsRepository.List(ctx, city, from_car_id, constants.Values.CARS_PER_PAGE)
 	if err != nil {
 		return []domain.Car{}, err
 	}

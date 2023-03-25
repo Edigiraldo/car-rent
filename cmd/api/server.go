@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/Edigiraldo/car-rent/internal/pkg/constants"
 	"github.com/gorilla/mux"
 )
 
@@ -43,7 +44,11 @@ func NewServer(config Config) (*Server, error) {
 
 func (b *Server) Start() {
 	if err := initializeDependencies(*b.config); err != nil {
-		log.Fatal("error while starting server: ", err)
+		log.Fatal("error while initializing dependencies: ", err)
+	}
+
+	if err := constants.InitValues(); err != nil {
+		log.Fatal("error while loading constants file: ", err)
 	}
 
 	BindRoutes(b)
