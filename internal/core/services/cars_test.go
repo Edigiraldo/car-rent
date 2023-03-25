@@ -25,6 +25,7 @@ func NewCarsDependencies(carsRepo *mocks.MockCarsRepo) *carsDependencies {
 }
 
 func initConstantsFromServices(t *testing.T) {
+	// Move path to root of project
 	if err := os.Chdir("./../../.."); err != nil {
 		t.Fatal(err)
 	}

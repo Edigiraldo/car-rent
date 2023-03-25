@@ -6,6 +6,8 @@ import (
 	"io"
 
 	"github.com/Edigiraldo/car-rent/internal/core/domain"
+	"github.com/Edigiraldo/car-rent/internal/pkg/constants"
+	"github.com/Edigiraldo/car-rent/pkg/utils"
 	"github.com/google/uuid"
 )
 
@@ -23,47 +25,31 @@ type ListCarsResponse struct {
 
 type Car struct {
 	ID             uuid.UUID `json:"id,omitempty"`
-	Type           CarType   `json:"type"`
+	Type           string    `json:"type"`
 	Seats          int16     `json:"seats"`
 	HourlyRentCost float64   `json:"hourly_rent_cost"`
 	City           string    `json:"city"`
-	Status         CarStatus `json:"status"`
+	Status         string    `json:"status"`
 }
-
-type CarType string
-
-const (
-	Sedan     CarType = "Sedan"
-	Luxury    CarType = "Luxury"
-	SportsCar CarType = "Sports Car"
-	Limousine CarType = "Limousine"
-)
-
-type CarStatus string
-
-const (
-	Available   CarStatus = "Available"
-	Unavailable CarStatus = "Unavailable"
-)
 
 func (c Car) ToDomain() domain.Car {
 	return domain.Car{
 		ID:             c.ID,
-		Type:           domain.CarType(c.Type),
+		Type:           c.Type,
 		Seats:          c.Seats,
 		HourlyRentCost: c.HourlyRentCost,
 		City:           c.City,
-		Status:         domain.CarStatus(c.Status),
+		Status:         c.Status,
 	}
 }
 
 func (c *Car) FromDomain(dc domain.Car) {
 	c.ID = dc.ID
-	c.Type = CarType(dc.Type)
+	c.Type = dc.Type
 	c.Seats = dc.Seats
 	c.HourlyRentCost = dc.HourlyRentCost
 	c.City = dc.City
-	c.Status = CarStatus(dc.Status)
+	c.Status = dc.Status
 }
 
 func CarFromBody(body io.Reader) (Car, error) {
@@ -96,18 +82,14 @@ func CarFromBody(body io.Reader) (Car, error) {
 	return car, nil
 }
 
-func isValidCarType(carType CarType) bool {
-	switch carType {
-	case Sedan, Luxury, SportsCar, Limousine:
-		return true
-	}
-	return false
+func isValidCarType(carType string) bool {
+	carTypes := constants.Values.CAR_TYPES.Values()
+
+	return utils.IsInSlice(carTypes, carType)
 }
 
-func isValidCarStatus(carStatus CarStatus) bool {
-	switch carStatus {
-	case Available, Unavailable:
-		return true
-	}
-	return false
+func isValidCarStatus(carStatus string) bool {
+	carStatuses := constants.Values.CAR_STATUSES.Values()
+
+	return utils.IsInSlice(carStatuses, carStatus)
 }

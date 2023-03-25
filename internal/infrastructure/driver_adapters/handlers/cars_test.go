@@ -7,11 +7,13 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"testing"
 
 	"github.com/Edigiraldo/car-rent/internal/core/domain"
 	"github.com/Edigiraldo/car-rent/internal/core/services"
 	"github.com/Edigiraldo/car-rent/internal/infrastructure/driver_adapters/dtos"
+	"github.com/Edigiraldo/car-rent/internal/pkg/constants"
 	mocks "github.com/Edigiraldo/car-rent/internal/pkg/mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
@@ -29,7 +31,20 @@ func NewCarsDependencies(carsSrv *mocks.MockCarsService) *carsDependencies {
 	}
 }
 
+func initConstantsFromHandlers(t *testing.T) {
+	// Move path to root of project
+	if err := os.Chdir("./../../../.."); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := constants.InitValues(); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestCarsRegister(t *testing.T) {
+	initConstantsFromHandlers(t)
+
 	car := dtos.Car{
 		Type:           "Sedan",
 		Seats:          4,
@@ -218,6 +233,8 @@ func TestCarsGet(t *testing.T) {
 }
 
 func TestCarsFullUpdate(t *testing.T) {
+	initConstantsFromHandlers(t)
+
 	car := dtos.Car{
 		ID:             uuid.New(),
 		Type:           "Sedan",
