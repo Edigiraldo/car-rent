@@ -21,3 +21,7 @@ type CarsRepo interface {
 	Delete(ctx context.Context, id uuid.UUID) error
 	List(ctx context.Context, city string, from_car_id string, limit uint16) ([]domain.Car, error)
 }
+
+type UsersRepo interface {
+	Insert(ctx context.Context, du domain.User) (err error)
+}

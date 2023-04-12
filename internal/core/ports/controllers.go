@@ -15,3 +15,7 @@ type CarsController interface {
 	Delete(w http.ResponseWriter, r *http.Request)
 	List(w http.ResponseWriter, r *http.Request)
 }
+
+type UsersController interface {
+	SignUp(w http.ResponseWriter, r *http.Request)
+}

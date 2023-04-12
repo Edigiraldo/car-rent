@@ -16,3 +16,7 @@ type CarsService interface {
 	Delete(ctx context.Context, id uuid.UUID) error
 	List(ctx context.Context, city string, from_car_id string) ([]domain.Car, error)
 }
+
+type UsersService interface {
+	Register(ctx context.Context, car domain.User) (domain.User, error)
+}

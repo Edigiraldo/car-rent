@@ -13,13 +13,16 @@ func initializeDependencies(config Config) error {
 		return err
 	}
 	carsRepository := postgres.NewCarsRepository(postgresDB.GetDBHandle())
+	usersRepository := postgres.NewUsersRepository(postgresDB.GetDBHandle())
 
 	// Initialize services
 	carsService := services.NewCars(carsRepository)
+	usersService := services.NewUsers(usersRepository)
 
 	//Initialize handlers
 	healthHandler = handlers.NewHealth()
 	carsHandler = handlers.NewCars(carsService)
+	usersHandler = handlers.NewUsers(usersService)
 
 	return nil
 }

@@ -10,5 +10,13 @@
     "CAR_STATUSES": {
       "AVAILABLE": "Available",
       "UNAVAILABLE": "Unavailable"
+    },
+    "USER_TYPES": {
+      "CUSTOMER": "Customer",
+      "ADMIN": "Admin"
+    },
+    "USER_STATUSES": {
+      "ACTIVE": "Active",
+      "INACTIVE": "Inactive"
     }
 }
