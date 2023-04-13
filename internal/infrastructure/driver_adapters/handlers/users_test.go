@@ -64,7 +64,11 @@ func TestUsersSingUp(t *testing.T) {
 			name: "returns 400 status code when user type in body is not allowed",
 			args: args{
 				user: dtos.User{
-					Type: "Not an allowed type",
+					FirstName: "Richard",
+					LastName:  "Feynman",
+					Email:     "richard.feynman@caltech.edu.us",
+					Type:      "Not an allowed type",
+					Status:    "Active",
 				},
 			},
 			wants: wants{
