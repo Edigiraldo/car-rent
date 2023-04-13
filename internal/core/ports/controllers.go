@@ -18,4 +18,5 @@ type CarsController interface {
 
 type UsersController interface {
 	SignUp(w http.ResponseWriter, r *http.Request)
+	Get(w http.ResponseWriter, r *http.Request)
 }

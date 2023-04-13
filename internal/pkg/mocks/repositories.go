@@ -180,6 +180,21 @@ func (m *MockUsersRepo) EXPECT() *MockUsersRepoMockRecorder {
 	return m.recorder
 }
 
+// Get mocks base method.
+func (m *MockUsersRepo) Get(ctx context.Context, ID uuid.UUID) (domain.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Get", ctx, ID)
+	ret0, _ := ret[0].(domain.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Get indicates an expected call of Get.
+func (mr *MockUsersRepoMockRecorder) Get(ctx, ID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockUsersRepo)(nil).Get), ctx, ID)
+}
+
 // Insert mocks base method.
 func (m *MockUsersRepo) Insert(ctx context.Context, du domain.User) error {
 	m.ctrl.T.Helper()

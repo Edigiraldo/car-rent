@@ -24,4 +24,5 @@ type CarsRepo interface {
 
 type UsersRepo interface {
 	Insert(ctx context.Context, du domain.User) (err error)
+	Get(ctx context.Context, ID uuid.UUID) (dc domain.User, err error)
 }

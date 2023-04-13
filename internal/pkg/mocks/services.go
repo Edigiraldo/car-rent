@@ -132,6 +132,21 @@ func (m *MockUsersService) EXPECT() *MockUsersServiceMockRecorder {
 	return m.recorder
 }
 
+// Get mocks base method.
+func (m *MockUsersService) Get(ctx context.Context, id uuid.UUID) (domain.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Get", ctx, id)
+	ret0, _ := ret[0].(domain.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Get indicates an expected call of Get.
+func (mr *MockUsersServiceMockRecorder) Get(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockUsersService)(nil).Get), ctx, id)
+}
+
 // Register mocks base method.
 func (m *MockUsersService) Register(ctx context.Context, car domain.User) (domain.User, error) {
 	m.ctrl.T.Helper()

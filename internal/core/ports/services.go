@@ -19,4 +19,5 @@ type CarsService interface {
 
 type UsersService interface {
 	Register(ctx context.Context, car domain.User) (domain.User, error)
+	Get(ctx context.Context, id uuid.UUID) (domain.User, error)
 }
