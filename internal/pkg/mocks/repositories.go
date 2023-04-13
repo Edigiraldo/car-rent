@@ -156,3 +156,40 @@ func (mr *MockCarsRepoMockRecorder) List(ctx, city, from_car_id, limit interface
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockCarsRepo)(nil).List), ctx, city, from_car_id, limit)
 }
+
+// MockUsersRepo is a mock of UsersRepo interface.
+type MockUsersRepo struct {
+	ctrl     *gomock.Controller
+	recorder *MockUsersRepoMockRecorder
+}
+
+// MockUsersRepoMockRecorder is the mock recorder for MockUsersRepo.
+type MockUsersRepoMockRecorder struct {
+	mock *MockUsersRepo
+}
+
+// NewMockUsersRepo creates a new mock instance.
+func NewMockUsersRepo(ctrl *gomock.Controller) *MockUsersRepo {
+	mock := &MockUsersRepo{ctrl: ctrl}
+	mock.recorder = &MockUsersRepoMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockUsersRepo) EXPECT() *MockUsersRepoMockRecorder {
+	return m.recorder
+}
+
+// Insert mocks base method.
+func (m *MockUsersRepo) Insert(ctx context.Context, du domain.User) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Insert", ctx, du)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Insert indicates an expected call of Insert.
+func (mr *MockUsersRepoMockRecorder) Insert(ctx, du interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockUsersRepo)(nil).Insert), ctx, du)
+}

@@ -108,3 +108,41 @@ func (mr *MockCarsServiceMockRecorder) Register(ctx, car interface{}) *gomock.Ca
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Register", reflect.TypeOf((*MockCarsService)(nil).Register), ctx, car)
 }
+
+// MockUsersService is a mock of UsersService interface.
+type MockUsersService struct {
+	ctrl     *gomock.Controller
+	recorder *MockUsersServiceMockRecorder
+}
+
+// MockUsersServiceMockRecorder is the mock recorder for MockUsersService.
+type MockUsersServiceMockRecorder struct {
+	mock *MockUsersService
+}
+
+// NewMockUsersService creates a new mock instance.
+func NewMockUsersService(ctrl *gomock.Controller) *MockUsersService {
+	mock := &MockUsersService{ctrl: ctrl}
+	mock.recorder = &MockUsersServiceMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockUsersService) EXPECT() *MockUsersServiceMockRecorder {
+	return m.recorder
+}
+
+// Register mocks base method.
+func (m *MockUsersService) Register(ctx context.Context, car domain.User) (domain.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Register", ctx, car)
+	ret0, _ := ret[0].(domain.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Register indicates an expected call of Register.
+func (mr *MockUsersServiceMockRecorder) Register(ctx, car interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Register", reflect.TypeOf((*MockUsersService)(nil).Register), ctx, car)
+}

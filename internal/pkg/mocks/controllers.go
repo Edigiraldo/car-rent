@@ -128,3 +128,38 @@ func (mr *MockCarsControllerMockRecorder) Register(w, r interface{}) *gomock.Cal
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Register", reflect.TypeOf((*MockCarsController)(nil).Register), w, r)
 }
+
+// MockUsersController is a mock of UsersController interface.
+type MockUsersController struct {
+	ctrl     *gomock.Controller
+	recorder *MockUsersControllerMockRecorder
+}
+
+// MockUsersControllerMockRecorder is the mock recorder for MockUsersController.
+type MockUsersControllerMockRecorder struct {
+	mock *MockUsersController
+}
+
+// NewMockUsersController creates a new mock instance.
+func NewMockUsersController(ctrl *gomock.Controller) *MockUsersController {
+	mock := &MockUsersController{ctrl: ctrl}
+	mock.recorder = &MockUsersControllerMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockUsersController) EXPECT() *MockUsersControllerMockRecorder {
+	return m.recorder
+}
+
+// SignUp mocks base method.
+func (m *MockUsersController) SignUp(w http.ResponseWriter, r *http.Request) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "SignUp", w, r)
+}
+
+// SignUp indicates an expected call of SignUp.
+func (mr *MockUsersControllerMockRecorder) SignUp(w, r interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignUp", reflect.TypeOf((*MockUsersController)(nil).SignUp), w, r)
+}
