@@ -40,3 +40,7 @@ func (us *Users) Get(ctx context.Context, ID uuid.UUID) (domain.User, error) {
 
 	return du, nil
 }
+
+func (us *Users) FullUpdate(ctx context.Context, user domain.User) error {
+	return us.usersRepository.FullUpdate(ctx, user)
+}

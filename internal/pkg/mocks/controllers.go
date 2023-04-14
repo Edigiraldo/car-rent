@@ -152,6 +152,18 @@ func (m *MockUsersController) EXPECT() *MockUsersControllerMockRecorder {
 	return m.recorder
 }
 
+// FullUpdate mocks base method.
+func (m *MockUsersController) FullUpdate(w http.ResponseWriter, r *http.Request) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "FullUpdate", w, r)
+}
+
+// FullUpdate indicates an expected call of FullUpdate.
+func (mr *MockUsersControllerMockRecorder) FullUpdate(w, r interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FullUpdate", reflect.TypeOf((*MockUsersController)(nil).FullUpdate), w, r)
+}
+
 // Get mocks base method.
 func (m *MockUsersController) Get(w http.ResponseWriter, r *http.Request) {
 	m.ctrl.T.Helper()

@@ -47,7 +47,7 @@ func (uh *Users) SignUp(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uh *Users) Get(w http.ResponseWriter, r *http.Request) {
-	var car dtos.User
+	var user dtos.User
 
 	params := mux.Vars(r)
 	id := params["id"]
@@ -70,8 +70,43 @@ func (uh *Users) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	car.FromDomain(du)
+	user.FromDomain(du)
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(car)
+	json.NewEncoder(w).Encode(user)
+}
+
+func (uh *Users) FullUpdate(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	id := params["id"]
+	ID, err := uuid.Parse(id)
+	if err != nil {
+		http.Error(w, ErrInvalidID, http.StatusBadRequest)
+
+		return
+	}
+
+	user, err := dtos.UserFromBody(r.Body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+
+		return
+	}
+
+	// Get the ID from path param
+	user.ID = ID
+
+	if err = uh.UsersService.FullUpdate(r.Context(), user.ToDomain()); err != nil {
+		if err.Error() == services.ErrUserNotFound {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else {
+			http.Error(w, ErrInternalServerError, http.StatusInternalServerError)
+			log.Println(err)
+		}
+
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(user)
 }

@@ -26,5 +26,5 @@ func BindRoutes(b *Server) {
 	// Users routes
 	b.router.HandleFunc("/api/v1/users", usersHandler.SignUp).Methods(http.MethodPost)
 	b.router.HandleFunc("/api/v1/users/{id}", usersHandler.Get).Methods(http.MethodGet)
-
+	b.router.HandleFunc("/api/v1/users/{id}", usersHandler.FullUpdate).Methods(http.MethodPut)
 }
