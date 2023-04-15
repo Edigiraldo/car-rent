@@ -44,3 +44,7 @@ func (us *Users) Get(ctx context.Context, ID uuid.UUID) (domain.User, error) {
 func (us *Users) FullUpdate(ctx context.Context, user domain.User) error {
 	return us.usersRepository.FullUpdate(ctx, user)
 }
+
+func (us *Users) Delete(ctx context.Context, id uuid.UUID) error {
+	return us.usersRepository.Delete(ctx, id)
+}

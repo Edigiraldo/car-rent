@@ -62,3 +62,9 @@ func (ur *UsersRepo) FullUpdate(ctx context.Context, dc domain.User) error {
 
 	return nil
 }
+
+func (ur *UsersRepo) Delete(ctx context.Context, id uuid.UUID) error {
+	_, err := ur.db.ExecContext(ctx, "DELETE FROM users WHERE id=$1", id)
+
+	return err
+}
