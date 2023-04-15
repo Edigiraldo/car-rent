@@ -222,3 +222,126 @@ func TestUsersGet(t *testing.T) {
 		})
 	}
 }
+
+func TestUsersFullUpdate(t *testing.T) {
+	initConstantsFromHandlers(t)
+
+	user := dtos.User{
+		FirstName: "Richard",
+		LastName:  "Feynman",
+		Email:     "richard.feynman@caltech.edu.us",
+		Type:      "Customer",
+		Status:    "Active",
+	}
+
+	type args struct {
+		requestID string
+		user      dtos.User
+	}
+	type wants struct {
+		statusCode int
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wants    wants
+		setMocks func(*usersDependencies)
+	}{
+		{
+			name: "returns status code 200 when user was successfully updated",
+			args: args{
+				requestID: user.ID.String(),
+				user:      user,
+			},
+			wants: wants{
+				statusCode: http.StatusOK,
+			},
+			setMocks: func(d *usersDependencies) {
+				d.usersService.EXPECT().FullUpdate(gomock.Any(), user.ToDomain()).Return(nil)
+			},
+		},
+		{
+			name: "returns 400 status code when path param id is not an uuid",
+			args: args{
+				requestID: "this-is-not-a-uuid",
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			setMocks: func(d *usersDependencies) {
+			},
+		},
+		{
+			name: "returns 400 status code when user status in body is not allowed",
+			args: args{
+				requestID: user.ID.String(),
+				user: dtos.User{
+					Status: "activ",
+				},
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			setMocks: func(d *usersDependencies) {
+			},
+		},
+		{
+			name: "returns 404 status code when user was not found by id",
+			args: args{
+				requestID: user.ID.String(),
+				user:      user,
+			},
+			wants: wants{
+				statusCode: http.StatusNotFound,
+			},
+			setMocks: func(d *usersDependencies) {
+				d.usersService.EXPECT().FullUpdate(gomock.Any(), user.ToDomain()).Return(errors.New(services.ErrUserNotFound))
+			},
+		},
+		{
+			name: "returns 500 status code when user service fails to update the user",
+			args: args{
+				requestID: user.ID.String(),
+				user:      user,
+			},
+			wants: wants{
+				statusCode: http.StatusInternalServerError,
+			},
+			setMocks: func(d *usersDependencies) {
+				d.usersService.EXPECT().FullUpdate(gomock.Any(), user.ToDomain()).Return(errors.New("error registering user"))
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			mockCtlr := gomock.NewController(t)
+			usersSrv := mocks.NewMockUsersService(mockCtlr)
+			d := NewUsersDependencies(usersSrv)
+			test.setMocks(d)
+
+			baseURL := "/api/v1/"
+			urlObj, _ := url.Parse(baseURL + "users/" + test.args.requestID)
+			URL := urlObj.String()
+
+			body, _ := json.Marshal(test.args.user)
+			req, err := http.NewRequest(http.MethodPut, URL, bytes.NewBuffer(body))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// Include request vars for gorilla mux to interpret path params
+			vars := map[string]string{
+				"id": test.args.requestID,
+			}
+			req = mux.SetURLVars(req, vars)
+
+			rr := httptest.NewRecorder()
+
+			usersHandler := NewUsers(usersSrv)
+			usersHandler.FullUpdate(rr, req)
+
+			assert.Equal(t, test.wants.statusCode, rr.Code)
+		})
+	}
+}
