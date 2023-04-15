@@ -345,3 +345,87 @@ func TestUsersFullUpdate(t *testing.T) {
 		})
 	}
 }
+
+func TestUsersDelete(t *testing.T) {
+	userID := uuid.New()
+
+	type args struct {
+		requestID string
+	}
+	type wants struct {
+		statusCode int
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wants    wants
+		setMocks func(*usersDependencies)
+	}{
+		{
+			name: "returns status code 204 when user register was deleted successfully",
+			args: args{
+				requestID: userID.String(),
+			},
+			wants: wants{
+				statusCode: http.StatusNoContent,
+			},
+			setMocks: func(d *usersDependencies) {
+				d.usersService.EXPECT().Delete(gomock.Any(), userID).Return(nil)
+			},
+		},
+		{
+			name: "returns 400 status code when path param id is not an uuid",
+			args: args{
+				requestID: "this-is-not-a-uuid",
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			setMocks: func(d *usersDependencies) {
+			},
+		},
+		{
+			name: "returns 500 status code when there is a server error",
+			args: args{
+				requestID: userID.String(),
+			},
+			wants: wants{
+				statusCode: http.StatusInternalServerError,
+			},
+			setMocks: func(d *usersDependencies) {
+				d.usersService.EXPECT().Delete(gomock.Any(), userID).Return(errors.New("error getting user"))
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			mockCtlr := gomock.NewController(t)
+			usersSrv := mocks.NewMockUsersService(mockCtlr)
+			d := NewUsersDependencies(usersSrv)
+			test.setMocks(d)
+
+			baseURL := "/api/v1/"
+			urlObj, _ := url.Parse(baseURL + "users/" + test.args.requestID)
+			URL := urlObj.String()
+
+			req, err := http.NewRequest(http.MethodDelete, URL, nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// Include request vars for gorilla mux to interpret path params
+			vars := map[string]string{
+				"id": test.args.requestID,
+			}
+			req = mux.SetURLVars(req, vars)
+
+			rr := httptest.NewRecorder()
+
+			usersHandler := NewUsers(usersSrv)
+			usersHandler.Delete(rr, req)
+
+			assert.Equal(t, test.wants.statusCode, rr.Code)
+		})
+	}
+}
