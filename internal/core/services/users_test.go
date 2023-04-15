@@ -227,3 +227,60 @@ func TestUsersFullUpdate(t *testing.T) {
 		})
 	}
 }
+
+func TestUsersDelete(t *testing.T) {
+	type args struct {
+		ctx context.Context
+		ID  uuid.UUID
+	}
+	type wants struct {
+		err error
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wants    wants
+		setMocks func(*usersDependencies)
+	}{
+		{
+			name: "returns nil error when user deletion was successful",
+			args: args{
+				ctx: context.TODO(),
+				ID:  uuid.New(),
+			},
+			wants: wants{
+				err: nil,
+			},
+			setMocks: func(d *usersDependencies) {
+				d.usersRepository.EXPECT().Delete(gomock.Any(), gomock.Any()).Return(nil)
+			},
+		},
+		{
+			name: "returns an error when user deletion fails",
+			args: args{
+				ctx: context.TODO(),
+				ID:  uuid.New(),
+			},
+			wants: wants{
+				err: errors.New("failure while updating user"),
+			},
+			setMocks: func(d *usersDependencies) {
+				d.usersRepository.EXPECT().Delete(gomock.Any(), gomock.Any()).Return(errors.New("failure while updating user"))
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			mockCtlr := gomock.NewController(t)
+			usersRepo := mocks.NewMockUsersRepo(mockCtlr)
+			d := NewUsersDependencies(usersRepo)
+			test.setMocks(d)
+
+			usersService := NewUsers(usersRepo)
+			err := usersService.Delete(test.args.ctx, test.args.ID)
+
+			assert.Equal(t, test.wants.err, err)
+		})
+	}
+}
