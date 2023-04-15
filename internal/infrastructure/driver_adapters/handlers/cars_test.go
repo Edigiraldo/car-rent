@@ -269,7 +269,7 @@ func TestCarsFullUpdate(t *testing.T) {
 		{
 			name: "returns 400 status code when path param id is not an uuid",
 			args: args{
-				requestID: "this-is-an-not-uuid",
+				requestID: "this-is-not-a-uuid",
 			},
 			wants: wants{
 				statusCode: http.StatusBadRequest,
