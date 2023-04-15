@@ -161,3 +161,69 @@ func TestUsersGet(t *testing.T) {
 		})
 	}
 }
+
+func TestUsersFullUpdate(t *testing.T) {
+	user := domain.User{
+		ID:        uuid.New(),
+		FirstName: "Richard",
+		LastName:  "Feynman",
+		Email:     "richard.feynman@caltech.edu.us",
+		Type:      "Customer",
+		Status:    "Active",
+	}
+
+	type args struct {
+		ctx  context.Context
+		user domain.User
+	}
+	type wants struct {
+		err error
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wants    wants
+		setMocks func(*usersDependencies)
+	}{
+		{
+			name: "returns nil error when user update was successfully updated",
+			args: args{
+				ctx:  context.TODO(),
+				user: user,
+			},
+			wants: wants{
+				err: nil,
+			},
+			setMocks: func(d *usersDependencies) {
+				d.usersRepository.EXPECT().FullUpdate(gomock.Any(), user).Return(nil)
+			},
+		},
+		{
+			name: "returns an error when user update fails",
+			args: args{
+				ctx:  context.TODO(),
+				user: user,
+			},
+			wants: wants{
+				err: errors.New("failure while updating user"),
+			},
+			setMocks: func(d *usersDependencies) {
+				d.usersRepository.EXPECT().FullUpdate(gomock.Any(), user).Return(errors.New("failure while updating user"))
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			mockCtlr := gomock.NewController(t)
+			usersRepo := mocks.NewMockUsersRepo(mockCtlr)
+			d := NewUsersDependencies(usersRepo)
+			test.setMocks(d)
+
+			usersService := NewUsers(usersRepo)
+			err := usersService.FullUpdate(test.args.ctx, test.args.user)
+
+			assert.Equal(t, test.wants.err, err)
+		})
+	}
+}
