@@ -199,3 +199,38 @@ func (mr *MockUsersControllerMockRecorder) SignUp(w, r interface{}) *gomock.Call
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignUp", reflect.TypeOf((*MockUsersController)(nil).SignUp), w, r)
 }
+
+// MockCitiesController is a mock of CitiesController interface.
+type MockCitiesController struct {
+	ctrl     *gomock.Controller
+	recorder *MockCitiesControllerMockRecorder
+}
+
+// MockCitiesControllerMockRecorder is the mock recorder for MockCitiesController.
+type MockCitiesControllerMockRecorder struct {
+	mock *MockCitiesController
+}
+
+// NewMockCitiesController creates a new mock instance.
+func NewMockCitiesController(ctrl *gomock.Controller) *MockCitiesController {
+	mock := &MockCitiesController{ctrl: ctrl}
+	mock.recorder = &MockCitiesControllerMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockCitiesController) EXPECT() *MockCitiesControllerMockRecorder {
+	return m.recorder
+}
+
+// ListNames mocks base method.
+func (m *MockCitiesController) ListNames(w http.ResponseWriter, r *http.Request) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "ListNames", w, r)
+}
+
+// ListNames indicates an expected call of ListNames.
+func (mr *MockCitiesControllerMockRecorder) ListNames(w, r interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListNames", reflect.TypeOf((*MockCitiesController)(nil).ListNames), w, r)
+}

@@ -189,3 +189,41 @@ func (mr *MockUsersServiceMockRecorder) Register(ctx, car interface{}) *gomock.C
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Register", reflect.TypeOf((*MockUsersService)(nil).Register), ctx, car)
 }
+
+// MockCitiesService is a mock of CitiesService interface.
+type MockCitiesService struct {
+	ctrl     *gomock.Controller
+	recorder *MockCitiesServiceMockRecorder
+}
+
+// MockCitiesServiceMockRecorder is the mock recorder for MockCitiesService.
+type MockCitiesServiceMockRecorder struct {
+	mock *MockCitiesService
+}
+
+// NewMockCitiesService creates a new mock instance.
+func NewMockCitiesService(ctrl *gomock.Controller) *MockCitiesService {
+	mock := &MockCitiesService{ctrl: ctrl}
+	mock.recorder = &MockCitiesServiceMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockCitiesService) EXPECT() *MockCitiesServiceMockRecorder {
+	return m.recorder
+}
+
+// ListNames mocks base method.
+func (m *MockCitiesService) ListNames(ctx context.Context) ([]string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListNames", ctx)
+	ret0, _ := ret[0].([]string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListNames indicates an expected call of ListNames.
+func (mr *MockCitiesServiceMockRecorder) ListNames(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListNames", reflect.TypeOf((*MockCitiesService)(nil).ListNames), ctx)
+}

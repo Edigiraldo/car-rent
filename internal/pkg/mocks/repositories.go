@@ -143,18 +143,18 @@ func (mr *MockCarsRepoMockRecorder) Insert(ctx, dc interface{}) *gomock.Call {
 }
 
 // List mocks base method.
-func (m *MockCarsRepo) List(ctx context.Context, city, from_car_id string, limit uint16) ([]domain.Car, error) {
+func (m *MockCarsRepo) List(ctx context.Context, cityName, from_car_id string, limit uint16) ([]domain.Car, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List", ctx, city, from_car_id, limit)
+	ret := m.ctrl.Call(m, "List", ctx, cityName, from_car_id, limit)
 	ret0, _ := ret[0].([]domain.Car)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // List indicates an expected call of List.
-func (mr *MockCarsRepoMockRecorder) List(ctx, city, from_car_id, limit interface{}) *gomock.Call {
+func (mr *MockCarsRepoMockRecorder) List(ctx, cityName, from_car_id, limit interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockCarsRepo)(nil).List), ctx, city, from_car_id, limit)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockCarsRepo)(nil).List), ctx, cityName, from_car_id, limit)
 }
 
 // MockUsersRepo is a mock of UsersRepo interface.
@@ -273,4 +273,34 @@ func (m *MockCitiesRepo) GetIdByName(ctx context.Context, name string) (uuid.UUI
 func (mr *MockCitiesRepoMockRecorder) GetIdByName(ctx, name interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetIdByName", reflect.TypeOf((*MockCitiesRepo)(nil).GetIdByName), ctx, name)
+}
+
+// GetNameByID mocks base method.
+func (m *MockCitiesRepo) GetNameByID(ctx context.Context, ID uuid.UUID) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetNameByID", ctx, ID)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetNameByID indicates an expected call of GetNameByID.
+func (mr *MockCitiesRepoMockRecorder) GetNameByID(ctx, ID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNameByID", reflect.TypeOf((*MockCitiesRepo)(nil).GetNameByID), ctx, ID)
+}
+
+// ListNames mocks base method.
+func (m *MockCitiesRepo) ListNames(ctx context.Context) ([]string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListNames", ctx)
+	ret0, _ := ret[0].([]string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListNames indicates an expected call of ListNames.
+func (mr *MockCitiesRepoMockRecorder) ListNames(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListNames", reflect.TypeOf((*MockCitiesRepo)(nil).ListNames), ctx)
 }
