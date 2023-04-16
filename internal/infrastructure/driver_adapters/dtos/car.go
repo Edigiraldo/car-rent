@@ -28,7 +28,7 @@ type Car struct {
 	Type           string    `json:"type"`
 	Seats          int16     `json:"seats"`
 	HourlyRentCost float64   `json:"hourly_rent_cost"`
-	City           string    `json:"city"`
+	CityName       string    `json:"city_name"`
 	Status         string    `json:"status"`
 }
 
@@ -38,7 +38,7 @@ func (c Car) ToDomain() domain.Car {
 		Type:           c.Type,
 		Seats:          c.Seats,
 		HourlyRentCost: c.HourlyRentCost,
-		City:           c.City,
+		CityName:       c.CityName,
 		Status:         c.Status,
 	}
 }
@@ -48,7 +48,7 @@ func (c *Car) FromDomain(dc domain.Car) {
 	c.Type = dc.Type
 	c.Seats = dc.Seats
 	c.HourlyRentCost = dc.HourlyRentCost
-	c.City = dc.City
+	c.CityName = dc.CityName
 	c.Status = dc.Status
 }
 
@@ -67,7 +67,7 @@ func CarFromBody(body io.Reader) (Car, error) {
 		return Car{}, errors.New(ErrInvalidHourlyRentCost)
 	}
 
-	if car.City == "" {
+	if car.CityName == "" {
 		return Car{}, errors.New(ErrEmptyCity)
 	}
 

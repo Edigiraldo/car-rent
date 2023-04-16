@@ -236,3 +236,41 @@ func (mr *MockUsersRepoMockRecorder) Insert(ctx, du interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockUsersRepo)(nil).Insert), ctx, du)
 }
+
+// MockCitiesRepo is a mock of CitiesRepo interface.
+type MockCitiesRepo struct {
+	ctrl     *gomock.Controller
+	recorder *MockCitiesRepoMockRecorder
+}
+
+// MockCitiesRepoMockRecorder is the mock recorder for MockCitiesRepo.
+type MockCitiesRepoMockRecorder struct {
+	mock *MockCitiesRepo
+}
+
+// NewMockCitiesRepo creates a new mock instance.
+func NewMockCitiesRepo(ctrl *gomock.Controller) *MockCitiesRepo {
+	mock := &MockCitiesRepo{ctrl: ctrl}
+	mock.recorder = &MockCitiesRepoMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockCitiesRepo) EXPECT() *MockCitiesRepoMockRecorder {
+	return m.recorder
+}
+
+// GetIdByName mocks base method.
+func (m *MockCitiesRepo) GetIdByName(ctx context.Context, name string) (uuid.UUID, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetIdByName", ctx, name)
+	ret0, _ := ret[0].(uuid.UUID)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetIdByName indicates an expected call of GetIdByName.
+func (mr *MockCitiesRepoMockRecorder) GetIdByName(ctx, name interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetIdByName", reflect.TypeOf((*MockCitiesRepo)(nil).GetIdByName), ctx, name)
+}

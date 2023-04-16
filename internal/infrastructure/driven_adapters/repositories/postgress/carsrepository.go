@@ -6,25 +6,34 @@ import (
 	"errors"
 
 	"github.com/Edigiraldo/car-rent/internal/core/domain"
+	"github.com/Edigiraldo/car-rent/internal/core/ports"
 	"github.com/Edigiraldo/car-rent/internal/core/services"
 	"github.com/Edigiraldo/car-rent/internal/infrastructure/driven_adapters/repositories/models"
 	"github.com/google/uuid"
 )
 
 type CarsRepo struct {
-	db *sql.DB
+	db               *sql.DB
+	citiesRepository ports.CitiesRepo
 }
 
-func NewCarsRepository(db *sql.DB) *CarsRepo {
+func NewCarsRepository(db *sql.DB, cr ports.CitiesRepo) *CarsRepo {
 	return &CarsRepo{
-		db: db,
+		db:               db,
+		citiesRepository: cr,
 	}
 }
 
 func (cr *CarsRepo) Insert(ctx context.Context, dc domain.Car) (err error) {
 	car := models.LoadCarFromDomain(dc)
-	_, err = cr.db.ExecContext(ctx, "INSERT INTO cars (id, type, seats, hourly_rent_cost, city, status) VALUES ($1, $2, $3, $4, $5, $6)",
-		car.ID, car.Type, car.Seats, car.HourlyRentCost, car.City, car.Status)
+
+	car.CityID, err = cr.citiesRepository.GetIdByName(ctx, dc.CityName)
+	if err != nil {
+		return err
+	}
+
+	_, err = cr.db.ExecContext(ctx, "INSERT INTO cars (id, type, seats, hourly_rent_cost, city_id, status) VALUES ($1, $2, $3, $4, $5, $6)",
+		car.ID, car.Type, car.Seats, car.HourlyRentCost, car.CityID, car.Status)
 
 	return err
 }
@@ -32,22 +41,31 @@ func (cr *CarsRepo) Insert(ctx context.Context, dc domain.Car) (err error) {
 func (cr *CarsRepo) Get(ctx context.Context, ID uuid.UUID) (dc domain.Car, err error) {
 	var car models.Car
 	if err := cr.db.QueryRowContext(ctx, "SELECT * FROM cars WHERE ID = $1", ID).
-		Scan(&car.ID, &car.Type, &car.Seats, &car.HourlyRentCost, &car.City, &car.Status); err != nil {
+		Scan(&car.ID, &car.Type, &car.Seats, &car.HourlyRentCost, &car.CityID, &car.Status); err != nil {
 		if err == sql.ErrNoRows {
 			return domain.Car{}, errors.New(services.ErrCarNotFound)
 		}
 		return domain.Car{}, err
 	}
 
-	return car.ToDomain(), nil
+	cityName, err := cr.citiesRepository.GetNameByID(ctx, car.CityID)
+	if err != nil {
+		return domain.Car{}, err
+	}
+
+	return car.ToDomain(cityName), nil
 }
 
 // Updates car row. If car was not found returns an error.
-func (cr *CarsRepo) FullUpdate(ctx context.Context, dc domain.Car) error {
+func (cr *CarsRepo) FullUpdate(ctx context.Context, dc domain.Car) (err error) {
 	car := models.LoadCarFromDomain(dc)
 
-	result, err := cr.db.ExecContext(ctx, "UPDATE cars SET type=$1, seats=$2, hourly_rent_cost=$3, city=$4, status=$5 WHERE id=$6",
-		car.Type, car.Seats, car.HourlyRentCost, car.City, car.Status, car.ID)
+	if car.CityID, err = cr.citiesRepository.GetIdByName(ctx, dc.CityName); err != nil {
+		return err
+	}
+
+	result, err := cr.db.ExecContext(ctx, "UPDATE cars SET type=$1, seats=$2, hourly_rent_cost=$3, city_id=$4, status=$5 WHERE id=$6",
+		car.Type, car.Seats, car.HourlyRentCost, car.CityID, car.Status, car.ID)
 	if err != nil {
 		return err
 	}
@@ -73,21 +91,26 @@ func (cr *CarsRepo) Delete(ctx context.Context, id uuid.UUID) error {
 // List cars by city name.
 // from_car_id is the last document retrieved in the last page.
 // limit is the number of documents per page.
-func (cr *CarsRepo) List(ctx context.Context, city string, from_car_id string, limit uint16) ([]domain.Car, error) {
+func (cr *CarsRepo) List(ctx context.Context, cityName string, from_car_id string, limit uint16) ([]domain.Car, error) {
 	var cars []domain.Car
 
-	rows, err := cr.db.QueryContext(ctx, "SELECT * FROM cars WHERE city=$1 AND ID > $2 ORDER BY ID ASC LIMIT $3", city, from_car_id, limit)
+	cityID, err := cr.citiesRepository.GetIdByName(ctx, cityName)
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := cr.db.QueryContext(ctx, "SELECT * FROM cars WHERE city_id=$1 AND id > $2 ORDER BY id ASC LIMIT $3", cityID, from_car_id, limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 	for rows.Next() {
 		car := models.Car{}
-		if err := rows.Scan(&car.ID, &car.Type, &car.Seats, &car.HourlyRentCost, &car.City, &car.Status); err != nil {
+		if err := rows.Scan(&car.ID, &car.Type, &car.Seats, &car.HourlyRentCost, &car.CityID, &car.Status); err != nil {
 			return nil, err
 		}
 
-		cars = append(cars, car.ToDomain())
+		cars = append(cars, car.ToDomain(cityName))
 	}
 
 	if err = rows.Err(); err != nil {

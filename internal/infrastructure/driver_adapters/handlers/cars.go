@@ -39,6 +39,10 @@ func (ch *Cars) Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if newCar, err = ch.CarsService.Register(r.Context(), car.ToDomain()); err != nil {
+		if err.Error() == services.ErrInvalidCityName {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		}
+
 		log.Println(err)
 		http.Error(w, ErrInternalServerError, http.StatusInternalServerError)
 
@@ -105,6 +109,8 @@ func (ch *Cars) FullUpdate(w http.ResponseWriter, r *http.Request) {
 	if err = ch.CarsService.FullUpdate(r.Context(), car.ToDomain()); err != nil {
 		if err.Error() == services.ErrCarNotFound {
 			http.Error(w, err.Error(), http.StatusNotFound)
+		} else if err.Error() == services.ErrInvalidCityName {
+			http.Error(w, err.Error(), http.StatusBadRequest)
 		} else {
 			http.Error(w, ErrInternalServerError, http.StatusInternalServerError)
 			log.Println(err)
@@ -149,7 +155,7 @@ func (ch *Cars) List(w http.ResponseWriter, r *http.Request) {
 	from_car_id := r.URL.Query().Get("from_car_id")
 
 	cars, err := ch.CarsService.List(r.Context(), city, from_car_id)
-	if err != nil {
+	if err != nil && err.Error() != services.ErrInvalidCityName {
 		http.Error(w, ErrInternalServerError, http.StatusInternalServerError)
 		log.Println(err)
 

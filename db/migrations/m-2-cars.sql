@@ -6,6 +6,6 @@ CREATE TABLE cars (
     type CAR_TYPES NOT NULL,
     seats SMALLINT NOT NULL,
     hourly_rent_cost NUMERIC(6, 2) NOT NULL,
-    city VARCHAR(100) NOT NULL,
+    city_id uuid NOT NULL REFERENCES cities(id),
     status CAR_STATUSES NOT NULL
 );

@@ -54,7 +54,7 @@ func TestCarsRegister(t *testing.T) {
 					Type:           "Luxury",
 					Seats:          6,
 					HourlyRentCost: 56.5,
-					City:           "Austin",
+					CityName:       "Austin",
 					Status:         "Available",
 				},
 			},
@@ -74,7 +74,7 @@ func TestCarsRegister(t *testing.T) {
 					Type:           "Luxu",
 					Seats:          6,
 					HourlyRentCost: 56.5,
-					City:           "Austin",
+					CityName:       "Austin",
 					Status:         "Available",
 				},
 			},
@@ -108,7 +108,7 @@ func TestCarsGet(t *testing.T) {
 		Type:           "Sedan",
 		Seats:          4,
 		HourlyRentCost: 21.1,
-		City:           "Los Angeles",
+		CityName:       "Los Angeles",
 		Status:         "Available",
 	}
 
@@ -178,7 +178,7 @@ func TestCarsFullUpdate(t *testing.T) {
 		Type:           "Luxury",
 		Seats:          6,
 		HourlyRentCost: 56.5,
-		City:           "Austin",
+		CityName:       "Austin",
 		Status:         "Available",
 	}
 
@@ -304,7 +304,7 @@ func TestCarsList(t *testing.T) {
 			Type:           "Sedan",
 			Seats:          5,
 			HourlyRentCost: 90,
-			City:           "New York",
+			CityName:       "New York",
 			Status:         "Available",
 		},
 		{
@@ -312,7 +312,7 @@ func TestCarsList(t *testing.T) {
 			Type:           "Sedan",
 			Seats:          5,
 			HourlyRentCost: 100,
-			City:           "New York",
+			CityName:       "New York",
 			Status:         "Available",
 		},
 	}

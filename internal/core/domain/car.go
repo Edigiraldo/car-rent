@@ -7,6 +7,6 @@ type Car struct {
 	Type           string    `json:"type"`
 	Seats          int16     `json:"seats"`
 	HourlyRentCost float64   `json:"hourly_rent_cost"`
-	City           string    `json:"city"`
+	CityName       string    `json:"city_name"`
 	Status         string    `json:"status"`
 }
