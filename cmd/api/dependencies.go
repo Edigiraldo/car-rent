@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/Edigiraldo/car-rent/internal/core/ports"
 	"github.com/Edigiraldo/car-rent/internal/core/services"
-	postgres "github.com/Edigiraldo/car-rent/internal/infrastructure/driven_adapters/repositories/postgress"
+	"github.com/Edigiraldo/car-rent/internal/infrastructure/driven_adapters/repositories/postgres"
 	"github.com/Edigiraldo/car-rent/internal/infrastructure/driver_adapters/handlers"
 )
 
