@@ -43,9 +43,11 @@ func NewServer(config Config) (*Server, error) {
 }
 
 func (b *Server) Start() {
-	if err := initializeDependencies(*b.config); err != nil {
+	carsRentDB, err := initializeDependencies(*b.config)
+	if err != nil {
 		log.Fatal("error while initializing dependencies: ", err)
 	}
+	defer carsRentDB.Close()
 
 	if err := constants.InitValues(); err != nil {
 		log.Fatal("error while loading constants file: ", err)

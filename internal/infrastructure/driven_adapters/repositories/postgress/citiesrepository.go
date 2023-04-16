@@ -5,22 +5,23 @@ import (
 	"database/sql"
 	"errors"
 
+	"github.com/Edigiraldo/car-rent/internal/core/ports"
 	"github.com/Edigiraldo/car-rent/internal/core/services"
 	"github.com/google/uuid"
 )
 
 type CitiesRepo struct {
-	db *sql.DB
+	ports.Database
 }
 
-func NewCitiesRepository(db *sql.DB) *CitiesRepo {
+func NewCitiesRepository(db ports.Database) *CitiesRepo {
 	return &CitiesRepo{
-		db: db,
+		Database: db,
 	}
 }
 
 func (cr *CitiesRepo) GetIdByName(ctx context.Context, name string) (ID uuid.UUID, err error) {
-	if err := cr.db.QueryRowContext(ctx, "SELECT id FROM cities WHERE name = $1", name).
+	if err := cr.GetDBHandle().QueryRowContext(ctx, "SELECT id FROM cities WHERE name = $1", name).
 		Scan(&ID); err != nil {
 		if err == sql.ErrNoRows {
 			return uuid.UUID{}, errors.New(services.ErrInvalidCityName)
@@ -32,7 +33,7 @@ func (cr *CitiesRepo) GetIdByName(ctx context.Context, name string) (ID uuid.UUI
 }
 
 func (cr *CitiesRepo) GetNameByID(ctx context.Context, ID uuid.UUID) (name string, err error) {
-	if err := cr.db.QueryRowContext(ctx, "SELECT name FROM cities WHERE id = $1", ID).
+	if err := cr.GetDBHandle().QueryRowContext(ctx, "SELECT name FROM cities WHERE id = $1", ID).
 		Scan(&name); err != nil {
 		if err == sql.ErrNoRows {
 			return "", errors.New(services.ErrCityNotFound)
@@ -46,7 +47,7 @@ func (cr *CitiesRepo) GetNameByID(ctx context.Context, ID uuid.UUID) (name strin
 func (cr *CitiesRepo) ListNames(ctx context.Context) ([]string, error) {
 	var cityNames []string
 
-	rows, err := cr.db.QueryContext(ctx, "SELECT name FROM cities ORDER BY name LIMIT 100")
+	rows, err := cr.GetDBHandle().QueryContext(ctx, "SELECT name FROM cities ORDER BY name LIMIT 100")
 	if err != nil {
 		return nil, err
 	}

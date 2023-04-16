@@ -2,6 +2,7 @@ package ports
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/Edigiraldo/car-rent/internal/core/domain"
 	"github.com/google/uuid"
@@ -10,7 +11,7 @@ import (
 // mockgen -source=internal/core/ports/repositories.go -destination=internal/pkg/mocks/repositories.go
 
 type Database interface {
-	GetDBHandle()
+	GetDBHandle() *sql.DB
 	Close() error
 }
 

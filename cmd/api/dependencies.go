@@ -1,20 +1,21 @@
 package main
 
 import (
+	"github.com/Edigiraldo/car-rent/internal/core/ports"
 	"github.com/Edigiraldo/car-rent/internal/core/services"
 	postgres "github.com/Edigiraldo/car-rent/internal/infrastructure/driven_adapters/repositories/postgress"
 	"github.com/Edigiraldo/car-rent/internal/infrastructure/driver_adapters/handlers"
 )
 
-func initializeDependencies(config Config) error {
+func initializeDependencies(config Config) (ports.Database, error) {
 	// Initialize repos
-	postgresDB, err := postgres.NewPostgresDB(config.DatabaseURL)
+	carsRentDB, err := postgres.NewPostgresDB(config.DatabaseURL)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	citiesRepository := postgres.NewCitiesRepository(postgresDB.GetDBHandle())
-	carsRepository := postgres.NewCarsRepository(postgresDB.GetDBHandle(), citiesRepository)
-	usersRepository := postgres.NewUsersRepository(postgresDB.GetDBHandle())
+	citiesRepository := postgres.NewCitiesRepository(carsRentDB)
+	carsRepository := postgres.NewCarsRepository(carsRentDB, citiesRepository)
+	usersRepository := postgres.NewUsersRepository(carsRentDB)
 
 	// Initialize services
 	carsService := services.NewCars(carsRepository)
@@ -27,5 +28,5 @@ func initializeDependencies(config Config) error {
 	usersHandler = handlers.NewUsers(usersService)
 	citiesHandler = handlers.NewCities(citiesService)
 
-	return nil
+	return carsRentDB, nil
 }

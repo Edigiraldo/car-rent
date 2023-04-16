@@ -13,13 +13,13 @@ import (
 )
 
 type CarsRepo struct {
-	db               *sql.DB
+	ports.Database
 	citiesRepository ports.CitiesRepo
 }
 
-func NewCarsRepository(db *sql.DB, cr ports.CitiesRepo) *CarsRepo {
+func NewCarsRepository(db ports.Database, cr ports.CitiesRepo) *CarsRepo {
 	return &CarsRepo{
-		db:               db,
+		Database:         db,
 		citiesRepository: cr,
 	}
 }
@@ -32,7 +32,7 @@ func (cr *CarsRepo) Insert(ctx context.Context, dc domain.Car) (err error) {
 		return err
 	}
 
-	_, err = cr.db.ExecContext(ctx, "INSERT INTO cars (id, type, seats, hourly_rent_cost, city_id, status) VALUES ($1, $2, $3, $4, $5, $6)",
+	_, err = cr.GetDBHandle().ExecContext(ctx, "INSERT INTO cars (id, type, seats, hourly_rent_cost, city_id, status) VALUES ($1, $2, $3, $4, $5, $6)",
 		car.ID, car.Type, car.Seats, car.HourlyRentCost, car.CityID, car.Status)
 
 	return err
@@ -40,7 +40,7 @@ func (cr *CarsRepo) Insert(ctx context.Context, dc domain.Car) (err error) {
 
 func (cr *CarsRepo) Get(ctx context.Context, ID uuid.UUID) (dc domain.Car, err error) {
 	var car models.Car
-	if err := cr.db.QueryRowContext(ctx, "SELECT * FROM cars WHERE ID = $1", ID).
+	if err := cr.GetDBHandle().QueryRowContext(ctx, "SELECT * FROM cars WHERE ID = $1", ID).
 		Scan(&car.ID, &car.Type, &car.Seats, &car.HourlyRentCost, &car.CityID, &car.Status); err != nil {
 		if err == sql.ErrNoRows {
 			return domain.Car{}, errors.New(services.ErrCarNotFound)
@@ -64,7 +64,7 @@ func (cr *CarsRepo) FullUpdate(ctx context.Context, dc domain.Car) (err error) {
 		return err
 	}
 
-	result, err := cr.db.ExecContext(ctx, "UPDATE cars SET type=$1, seats=$2, hourly_rent_cost=$3, city_id=$4, status=$5 WHERE id=$6",
+	result, err := cr.GetDBHandle().ExecContext(ctx, "UPDATE cars SET type=$1, seats=$2, hourly_rent_cost=$3, city_id=$4, status=$5 WHERE id=$6",
 		car.Type, car.Seats, car.HourlyRentCost, car.CityID, car.Status, car.ID)
 	if err != nil {
 		return err
@@ -83,7 +83,7 @@ func (cr *CarsRepo) FullUpdate(ctx context.Context, dc domain.Car) (err error) {
 }
 
 func (cr *CarsRepo) Delete(ctx context.Context, id uuid.UUID) error {
-	_, err := cr.db.ExecContext(ctx, "DELETE FROM cars WHERE id=$1", id)
+	_, err := cr.GetDBHandle().ExecContext(ctx, "DELETE FROM cars WHERE id=$1", id)
 
 	return err
 }
@@ -99,7 +99,7 @@ func (cr *CarsRepo) List(ctx context.Context, cityName string, from_car_id strin
 		return nil, err
 	}
 
-	rows, err := cr.db.QueryContext(ctx, "SELECT * FROM cars WHERE city_id=$1 AND id > $2 ORDER BY id ASC LIMIT $3", cityID, from_car_id, limit)
+	rows, err := cr.GetDBHandle().QueryContext(ctx, "SELECT * FROM cars WHERE city_id=$1 AND id > $2 ORDER BY id ASC LIMIT $3", cityID, from_car_id, limit)
 	if err != nil {
 		return nil, err
 	}
