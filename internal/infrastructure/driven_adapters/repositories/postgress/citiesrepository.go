@@ -42,3 +42,27 @@ func (cr *CitiesRepo) GetNameByID(ctx context.Context, ID uuid.UUID) (name strin
 
 	return name, nil
 }
+
+func (cr *CitiesRepo) ListNames(ctx context.Context) ([]string, error) {
+	var cityNames []string
+
+	rows, err := cr.db.QueryContext(ctx, "SELECT name FROM cities ORDER BY name LIMIT 100")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var cityName string
+		if err := rows.Scan(&cityName); err != nil {
+			return nil, err
+		}
+
+		cityNames = append(cityNames, cityName)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return cityNames, nil
+}

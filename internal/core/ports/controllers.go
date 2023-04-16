@@ -22,3 +22,7 @@ type UsersController interface {
 	FullUpdate(w http.ResponseWriter, r *http.Request)
 	Delete(w http.ResponseWriter, r *http.Request)
 }
+
+type CitiesController interface {
+	ListNames(w http.ResponseWriter, r *http.Request)
+}

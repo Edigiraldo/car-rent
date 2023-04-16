@@ -19,11 +19,13 @@ func initializeDependencies(config Config) error {
 	// Initialize services
 	carsService := services.NewCars(carsRepository)
 	usersService := services.NewUsers(usersRepository)
+	citiesService := services.NewCities(citiesRepository)
 
 	//Initialize handlers
 	healthHandler = handlers.NewHealth()
 	carsHandler = handlers.NewCars(carsService)
 	usersHandler = handlers.NewUsers(usersService)
+	citiesHandler = handlers.NewCities(citiesService)
 
 	return nil
 }

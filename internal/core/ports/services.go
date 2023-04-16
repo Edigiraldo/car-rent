@@ -23,3 +23,7 @@ type UsersService interface {
 	FullUpdate(ctx context.Context, du domain.User) error
 	Delete(ctx context.Context, id uuid.UUID) error
 }
+
+type CitiesService interface {
+	ListNames(ctx context.Context) ([]string, error)
+}

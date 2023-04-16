@@ -32,4 +32,5 @@ type UsersRepo interface {
 type CitiesRepo interface {
 	GetIdByName(ctx context.Context, name string) (ID uuid.UUID, err error)
 	GetNameByID(ctx context.Context, ID uuid.UUID) (name string, err error)
+	ListNames(ctx context.Context) ([]string, error)
 }

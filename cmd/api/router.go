@@ -10,6 +10,7 @@ var (
 	healthHandler ports.HeathController
 	carsHandler   ports.CarsController
 	usersHandler  ports.UsersController
+	citiesHandler ports.CitiesController
 )
 
 func BindRoutes(b *Server) {
@@ -28,4 +29,8 @@ func BindRoutes(b *Server) {
 	b.router.HandleFunc("/api/v1/users/{id}", usersHandler.Get).Methods(http.MethodGet)
 	b.router.HandleFunc("/api/v1/users/{id}", usersHandler.FullUpdate).Methods(http.MethodPut)
 	b.router.HandleFunc("/api/v1/users/{id}", usersHandler.Delete).Methods(http.MethodDelete)
+
+	// Cities routes
+	b.router.HandleFunc("/api/v1/cities/names", citiesHandler.ListNames).Methods(http.MethodGet)
+
 }
