@@ -18,12 +18,12 @@ func main() {
 
 	PORT := os.Getenv("PORT")
 	if PORT == "" {
-		log.Fatal("PORT environment variable was nos found")
+		log.Fatal("PORT environment variable was not found")
 	}
 
 	DATABASE_URL := os.Getenv("DATABASE_URL")
 	if DATABASE_URL == "" {
-		log.Fatal("DATABASE_URL environment variable was nos found")
+		log.Fatal("DATABASE_URL environment variable was not found")
 	}
 
 	config := Config{
