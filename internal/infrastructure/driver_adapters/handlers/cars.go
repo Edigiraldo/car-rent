@@ -34,13 +34,13 @@ func (ch *Cars) Register(w http.ResponseWriter, r *http.Request) {
 	car, err := dtos.CarFromBody(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
-
 		return
 	}
 
 	if newCar, err = ch.CarsService.Register(r.Context(), car.ToDomain()); err != nil {
 		if err.Error() == services.ErrInvalidCityName {
 			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
 		}
 
 		log.Println(err)
