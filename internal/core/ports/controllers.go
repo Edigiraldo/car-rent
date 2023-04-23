@@ -26,3 +26,7 @@ type UsersController interface {
 type CitiesController interface {
 	ListNames(w http.ResponseWriter, r *http.Request)
 }
+
+type ReservationsController interface {
+	Book(w http.ResponseWriter, r *http.Request)
+}

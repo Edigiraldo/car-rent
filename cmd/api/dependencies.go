@@ -8,25 +8,30 @@ import (
 )
 
 func initializeDependencies(config Config) (ports.Database, error) {
-	// Initialize repos
+	// Initialize DB client
 	carsRentDB, err := postgres.NewPostgresDB(config.DatabaseURL)
 	if err != nil {
 		return nil, err
 	}
+
+	// Initialize repos
 	citiesRepository := postgres.NewCitiesRepository(carsRentDB)
 	carsRepository := postgres.NewCarsRepository(carsRentDB, citiesRepository)
 	usersRepository := postgres.NewUsersRepository(carsRentDB)
+	reservationsRepository := postgres.NewReservationsRepository(carsRentDB)
 
 	// Initialize services
 	carsService := services.NewCars(carsRepository)
 	usersService := services.NewUsers(usersRepository)
 	citiesService := services.NewCities(citiesRepository)
+	reservationsService := services.NewReservations(reservationsRepository)
 
 	//Initialize handlers
 	healthHandler = handlers.NewHealth()
 	carsHandler = handlers.NewCars(carsService)
 	usersHandler = handlers.NewUsers(usersService)
 	citiesHandler = handlers.NewCities(citiesService)
+	reservationsHandler = handlers.NewReservations(reservationsService)
 
 	return carsRentDB, nil
 }

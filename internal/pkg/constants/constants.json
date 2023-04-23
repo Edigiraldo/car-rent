@@ -18,5 +18,15 @@
     "USER_STATUSES": {
       "ACTIVE": "Active",
       "INACTIVE": "Inactive"
+    },
+    "RESERVATION_STATUSES": {
+      "RESERVED": "Reserved",
+      "CANCELED": "Canceled",
+      "COMPLETED": "Completed"
+    },
+    "PAYMENT_STATUSES": {
+      "PAID": "Paid",
+      "PENDING": "Pending",
+      "CANCELED": "Canceled"
     }
 }

@@ -9,12 +9,14 @@ import (
 var Values ConstantValues
 
 type ConstantValues struct {
-	CARS_PER_PAGE uint16        `mapstructure:"CARS_PER_PAGE"`
-	NULL_UUID     string        `mapstructure:"NULL_UUID"`
-	CAR_TYPES     CAR_TYPES     `mapstructure:"CAR_TYPES"`
-	CAR_STATUSES  CAR_STATUSES  `mapstructure:"CAR_STATUSES"`
-	USER_TYPES    USER_TYPES    `mapstructure:"USER_TYPES"`
-	USER_STATUSES USER_STATUSES `mapstructure:"USER_STATUSES"`
+	CARS_PER_PAGE        uint16               `mapstructure:"CARS_PER_PAGE"`
+	NULL_UUID            string               `mapstructure:"NULL_UUID"`
+	CAR_TYPES            CAR_TYPES            `mapstructure:"CAR_TYPES"`
+	CAR_STATUSES         CAR_STATUSES         `mapstructure:"CAR_STATUSES"`
+	USER_TYPES           USER_TYPES           `mapstructure:"USER_TYPES"`
+	USER_STATUSES        USER_STATUSES        `mapstructure:"USER_STATUSES"`
+	RESERVATION_STATUSES RESERVATION_STATUSES `mapstructure:"RESERVATION_STATUSES"`
+	PAYMENT_STATUSES     PAYMENT_STATUSES     `mapstructure:"PAYMENT_STATUSES"`
 }
 
 func InitValues() error {
@@ -35,6 +37,8 @@ func InitValues() error {
 	initializeCarStatusesValues()
 	initializeUserTypesValues()
 	initializeUserStatusesValues()
+	initializeReservationStatusesValues()
+	initializePaymentStatusesValues()
 
 	return nil
 }

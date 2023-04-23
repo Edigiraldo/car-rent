@@ -35,3 +35,7 @@ type CitiesRepo interface {
 	GetNameByID(ctx context.Context, ID uuid.UUID) (name string, err error)
 	ListNames(ctx context.Context) ([]string, error)
 }
+
+type ReservationsRepo interface {
+	Insert(ctx context.Context, dr domain.Reservation) (err error)
+}

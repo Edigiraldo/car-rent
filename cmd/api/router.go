@@ -7,10 +7,11 @@ import (
 )
 
 var (
-	healthHandler ports.HeathController
-	carsHandler   ports.CarsController
-	usersHandler  ports.UsersController
-	citiesHandler ports.CitiesController
+	healthHandler       ports.HeathController
+	carsHandler         ports.CarsController
+	usersHandler        ports.UsersController
+	citiesHandler       ports.CitiesController
+	reservationsHandler ports.ReservationsController
 )
 
 func BindRoutes(b *Server) {
@@ -33,4 +34,6 @@ func BindRoutes(b *Server) {
 	// Cities routes
 	b.router.HandleFunc("/api/v1/cities/names", citiesHandler.ListNames).Methods(http.MethodGet)
 
+	// Reservations routes
+	b.router.HandleFunc("/api/v1/reservations", reservationsHandler.Book).Methods(http.MethodPost)
 }

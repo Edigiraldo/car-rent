@@ -27,3 +27,7 @@ type UsersService interface {
 type CitiesService interface {
 	ListNames(ctx context.Context) ([]string, error)
 }
+
+type ReservationsService interface {
+	Book(ctx context.Context, reservation domain.Reservation) (domain.Reservation, error)
+}
