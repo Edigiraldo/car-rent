@@ -6,6 +6,7 @@ package mock_ports
 
 import (
 	context "context"
+	sql "database/sql"
 	reflect "reflect"
 
 	domain "github.com/Edigiraldo/car-rent/internal/core/domain"
@@ -51,9 +52,11 @@ func (mr *MockDatabaseMockRecorder) Close() *gomock.Call {
 }
 
 // GetDBHandle mocks base method.
-func (m *MockDatabase) GetDBHandle() {
+func (m *MockDatabase) GetDBHandle() *sql.DB {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "GetDBHandle")
+	ret := m.ctrl.Call(m, "GetDBHandle")
+	ret0, _ := ret[0].(*sql.DB)
+	return ret0
 }
 
 // GetDBHandle indicates an expected call of GetDBHandle.
@@ -303,4 +306,41 @@ func (m *MockCitiesRepo) ListNames(ctx context.Context) ([]string, error) {
 func (mr *MockCitiesRepoMockRecorder) ListNames(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListNames", reflect.TypeOf((*MockCitiesRepo)(nil).ListNames), ctx)
+}
+
+// MockReservationsRepo is a mock of ReservationsRepo interface.
+type MockReservationsRepo struct {
+	ctrl     *gomock.Controller
+	recorder *MockReservationsRepoMockRecorder
+}
+
+// MockReservationsRepoMockRecorder is the mock recorder for MockReservationsRepo.
+type MockReservationsRepoMockRecorder struct {
+	mock *MockReservationsRepo
+}
+
+// NewMockReservationsRepo creates a new mock instance.
+func NewMockReservationsRepo(ctrl *gomock.Controller) *MockReservationsRepo {
+	mock := &MockReservationsRepo{ctrl: ctrl}
+	mock.recorder = &MockReservationsRepoMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockReservationsRepo) EXPECT() *MockReservationsRepoMockRecorder {
+	return m.recorder
+}
+
+// Insert mocks base method.
+func (m *MockReservationsRepo) Insert(ctx context.Context, dr domain.Reservation) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Insert", ctx, dr)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Insert indicates an expected call of Insert.
+func (mr *MockReservationsRepoMockRecorder) Insert(ctx, dr interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockReservationsRepo)(nil).Insert), ctx, dr)
 }

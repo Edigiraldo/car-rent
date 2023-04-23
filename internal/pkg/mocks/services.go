@@ -227,3 +227,41 @@ func (mr *MockCitiesServiceMockRecorder) ListNames(ctx interface{}) *gomock.Call
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListNames", reflect.TypeOf((*MockCitiesService)(nil).ListNames), ctx)
 }
+
+// MockReservationsService is a mock of ReservationsService interface.
+type MockReservationsService struct {
+	ctrl     *gomock.Controller
+	recorder *MockReservationsServiceMockRecorder
+}
+
+// MockReservationsServiceMockRecorder is the mock recorder for MockReservationsService.
+type MockReservationsServiceMockRecorder struct {
+	mock *MockReservationsService
+}
+
+// NewMockReservationsService creates a new mock instance.
+func NewMockReservationsService(ctrl *gomock.Controller) *MockReservationsService {
+	mock := &MockReservationsService{ctrl: ctrl}
+	mock.recorder = &MockReservationsServiceMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockReservationsService) EXPECT() *MockReservationsServiceMockRecorder {
+	return m.recorder
+}
+
+// Book mocks base method.
+func (m *MockReservationsService) Book(ctx context.Context, reservation domain.Reservation) (domain.Reservation, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Book", ctx, reservation)
+	ret0, _ := ret[0].(domain.Reservation)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Book indicates an expected call of Book.
+func (mr *MockReservationsServiceMockRecorder) Book(ctx, reservation interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Book", reflect.TypeOf((*MockReservationsService)(nil).Book), ctx, reservation)
+}
