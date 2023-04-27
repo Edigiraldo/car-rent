@@ -30,4 +30,5 @@ type CitiesController interface {
 type ReservationsController interface {
 	Book(w http.ResponseWriter, r *http.Request)
 	Get(w http.ResponseWriter, r *http.Request)
+	FullUpdate(w http.ResponseWriter, r *http.Request)
 }

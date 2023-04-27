@@ -40,3 +40,7 @@ func (rs Reservations) Get(ctx context.Context, ID uuid.UUID) (domain.Reservatio
 
 	return dc, nil
 }
+
+func (rs Reservations) FullUpdate(ctx context.Context, reservation domain.Reservation) error {
+	return rs.reservationsRepository.FullUpdate(ctx, reservation)
+}

@@ -53,3 +53,32 @@ func (rr *ReservationsRepo) Get(ctx context.Context, ID uuid.UUID) (dc domain.Re
 
 	return reservation.ToDomain(), nil
 }
+
+func (rr *ReservationsRepo) FullUpdate(ctx context.Context, dr domain.Reservation) (err error) {
+	reservation := models.LoadReservationFromDomain(dr)
+
+	result, err := rr.GetDBHandle().ExecContext(ctx, "UPDATE reservations SET user_id=$1, car_id=$2, status=$3, payment_status=$4, start_date=$5, end_date=$6 WHERE id=$7",
+		reservation.UserID, reservation.CarID, reservation.Status, reservation.PaymentStatus, reservation.StartDate, reservation.EndDate, reservation.ID)
+	if err != nil {
+		if pqErr, ok := err.(*pq.Error); ok && pqErr.Code == "23503" {
+			if strings.Contains(pqErr.Message, "user_id") {
+				return errors.New(services.ErrUserNotFound)
+			} else if strings.Contains(pqErr.Message, "car_id") {
+				return errors.New(services.ErrCarNotFound)
+			}
+		}
+
+		return err
+	}
+
+	numUpdatedRows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if numUpdatedRows == 0 {
+		return errors.New(services.ErrReservationNotFound)
+	}
+
+	return nil
+}

@@ -331,6 +331,20 @@ func (m *MockReservationsRepo) EXPECT() *MockReservationsRepoMockRecorder {
 	return m.recorder
 }
 
+// FullUpdate mocks base method.
+func (m *MockReservationsRepo) FullUpdate(ctx context.Context, dr domain.Reservation) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FullUpdate", ctx, dr)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// FullUpdate indicates an expected call of FullUpdate.
+func (mr *MockReservationsRepoMockRecorder) FullUpdate(ctx, dr interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FullUpdate", reflect.TypeOf((*MockReservationsRepo)(nil).FullUpdate), ctx, dr)
+}
+
 // Get mocks base method.
 func (m *MockReservationsRepo) Get(ctx context.Context, ID uuid.UUID) (domain.Reservation, error) {
 	m.ctrl.T.Helper()

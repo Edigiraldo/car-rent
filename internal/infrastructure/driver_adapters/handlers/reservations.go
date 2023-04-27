@@ -82,3 +82,42 @@ func (rh *Reservations) Get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(reservation)
 }
+
+func (rh *Reservations) FullUpdate(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	id := params["id"]
+	ID, err := uuid.Parse(id)
+	if err != nil {
+		http.Error(w, ErrInvalidID, http.StatusBadRequest)
+
+		return
+	}
+
+	reservation, err := dtos.ReservationFromBody(r.Body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+
+		return
+	}
+
+	// Get the ID from path param
+	reservation.ID = ID
+
+	if err = rh.ReservationsService.FullUpdate(r.Context(), reservation.ToDomain()); err != nil {
+		if err.Error() == services.ErrReservationNotFound ||
+			err.Error() == services.ErrUserNotFound ||
+			err.Error() == services.ErrCarNotFound {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+
+		} else {
+			http.Error(w, ErrInternalServerError, http.StatusInternalServerError)
+			log.Println(err)
+		}
+
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(reservation)
+}
