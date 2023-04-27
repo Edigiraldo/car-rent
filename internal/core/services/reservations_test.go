@@ -163,3 +163,69 @@ func TestReservationsGet(t *testing.T) {
 		})
 	}
 }
+
+func TestReservationsFullUpdate(t *testing.T) {
+	reservation := domain.Reservation{
+		UserID:        uuid.New(),
+		CarID:         uuid.New(),
+		Status:        "Reserved",
+		PaymentStatus: "Pending",
+		StartDate:     time.Now(),
+		EndDate:       time.Now().AddDate(0, 0, 7),
+	}
+
+	type args struct {
+		ctx         context.Context
+		reservation domain.Reservation
+	}
+	type wants struct {
+		err error
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wants    wants
+		setMocks func(*reservationsDependencies)
+	}{
+		{
+			name: "returns nil error when reservation update was successfully done",
+			args: args{
+				ctx:         context.TODO(),
+				reservation: reservation,
+			},
+			wants: wants{
+				err: nil,
+			},
+			setMocks: func(d *reservationsDependencies) {
+				d.reservationsRepository.EXPECT().FullUpdate(gomock.Any(), reservation).Return(nil)
+			},
+		},
+		{
+			name: "returns an error when reservation update fails",
+			args: args{
+				ctx:         context.TODO(),
+				reservation: reservation,
+			},
+			wants: wants{
+				err: errors.New("failure while updating reservation"),
+			},
+			setMocks: func(d *reservationsDependencies) {
+				d.reservationsRepository.EXPECT().FullUpdate(gomock.Any(), reservation).Return(errors.New("failure while updating reservation"))
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			mockCtlr := gomock.NewController(t)
+			reservationsRepo := mocks.NewMockReservationsRepo(mockCtlr)
+			d := NewReservationsDependencies(reservationsRepo)
+			test.setMocks(d)
+
+			reservationsService := NewReservations(reservationsRepo)
+			err := reservationsService.FullUpdate(test.args.ctx, test.args.reservation)
+
+			assert.Equal(t, test.wants.err, err)
+		})
+	}
+}
