@@ -38,4 +38,5 @@ func BindRoutes(b *Server) {
 	b.router.HandleFunc("/api/v1/reservations", reservationsHandler.Book).Methods(http.MethodPost)
 	b.router.HandleFunc("/api/v1/reservations/{id}", reservationsHandler.Get).Methods(http.MethodGet)
 	b.router.HandleFunc("/api/v1/reservations/{id}", reservationsHandler.FullUpdate).Methods(http.MethodPut)
+	b.router.HandleFunc("/api/v1/reservations/{id}", reservationsHandler.Delete).Methods(http.MethodDelete)
 }

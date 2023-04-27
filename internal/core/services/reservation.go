@@ -44,3 +44,7 @@ func (rs Reservations) Get(ctx context.Context, ID uuid.UUID) (domain.Reservatio
 func (rs Reservations) FullUpdate(ctx context.Context, reservation domain.Reservation) error {
 	return rs.reservationsRepository.FullUpdate(ctx, reservation)
 }
+
+func (rs Reservations) Delete(ctx context.Context, id uuid.UUID) error {
+	return rs.reservationsRepository.Delete(ctx, id)
+}

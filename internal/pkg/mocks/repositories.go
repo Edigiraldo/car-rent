@@ -331,6 +331,20 @@ func (m *MockReservationsRepo) EXPECT() *MockReservationsRepoMockRecorder {
 	return m.recorder
 }
 
+// Delete mocks base method.
+func (m *MockReservationsRepo) Delete(ctx context.Context, id uuid.UUID) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Delete", ctx, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Delete indicates an expected call of Delete.
+func (mr *MockReservationsRepoMockRecorder) Delete(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockReservationsRepo)(nil).Delete), ctx, id)
+}
+
 // FullUpdate mocks base method.
 func (m *MockReservationsRepo) FullUpdate(ctx context.Context, dr domain.Reservation) error {
 	m.ctrl.T.Helper()

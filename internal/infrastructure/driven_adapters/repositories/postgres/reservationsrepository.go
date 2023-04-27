@@ -82,3 +82,9 @@ func (rr *ReservationsRepo) FullUpdate(ctx context.Context, dr domain.Reservatio
 
 	return nil
 }
+
+func (rr *ReservationsRepo) Delete(ctx context.Context, id uuid.UUID) error {
+	_, err := rr.GetDBHandle().ExecContext(ctx, "DELETE FROM reservations WHERE id=$1", id)
+
+	return err
+}

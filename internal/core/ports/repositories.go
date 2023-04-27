@@ -40,4 +40,5 @@ type ReservationsRepo interface {
 	Insert(ctx context.Context, dr domain.Reservation) (err error)
 	Get(ctx context.Context, ID uuid.UUID) (dc domain.Reservation, err error)
 	FullUpdate(ctx context.Context, dr domain.Reservation) error
+	Delete(ctx context.Context, id uuid.UUID) error
 }

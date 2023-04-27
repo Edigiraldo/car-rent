@@ -270,6 +270,18 @@ func (mr *MockReservationsControllerMockRecorder) Book(w, r interface{}) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Book", reflect.TypeOf((*MockReservationsController)(nil).Book), w, r)
 }
 
+// Delete mocks base method.
+func (m *MockReservationsController) Delete(w http.ResponseWriter, r *http.Request) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "Delete", w, r)
+}
+
+// Delete indicates an expected call of Delete.
+func (mr *MockReservationsControllerMockRecorder) Delete(w, r interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockReservationsController)(nil).Delete), w, r)
+}
+
 // FullUpdate mocks base method.
 func (m *MockReservationsController) FullUpdate(w http.ResponseWriter, r *http.Request) {
 	m.ctrl.T.Helper()
