@@ -229,3 +229,60 @@ func TestReservationsFullUpdate(t *testing.T) {
 		})
 	}
 }
+
+func TestReservationsDelete(t *testing.T) {
+	type args struct {
+		ctx context.Context
+		ID  uuid.UUID
+	}
+	type wants struct {
+		err error
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wants    wants
+		setMocks func(*reservationsDependencies)
+	}{
+		{
+			name: "returns nil error when reservation deletion was successful",
+			args: args{
+				ctx: context.TODO(),
+				ID:  uuid.New(),
+			},
+			wants: wants{
+				err: nil,
+			},
+			setMocks: func(d *reservationsDependencies) {
+				d.reservationsRepository.EXPECT().Delete(gomock.Any(), gomock.Any()).Return(nil)
+			},
+		},
+		{
+			name: "returns an error when reservation deletion fails",
+			args: args{
+				ctx: context.TODO(),
+				ID:  uuid.New(),
+			},
+			wants: wants{
+				err: errors.New("failure while deleting reservation"),
+			},
+			setMocks: func(d *reservationsDependencies) {
+				d.reservationsRepository.EXPECT().Delete(gomock.Any(), gomock.Any()).Return(errors.New("failure while deleting reservation"))
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			mockCtlr := gomock.NewController(t)
+			reservationsRepo := mocks.NewMockReservationsRepo(mockCtlr)
+			d := NewReservationsDependencies(reservationsRepo)
+			test.setMocks(d)
+
+			reservationsService := NewReservations(reservationsRepo)
+			err := reservationsService.Delete(test.args.ctx, test.args.ID)
+
+			assert.Equal(t, test.wants.err, err)
+		})
+	}
+}
