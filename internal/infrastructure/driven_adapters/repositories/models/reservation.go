@@ -17,7 +17,7 @@ type Reservation struct {
 	EndDate       time.Time `json:"end_date"`
 }
 
-func (r Reservation) ToDomain(cityName string) domain.Reservation {
+func (r Reservation) ToDomain() domain.Reservation {
 	return domain.Reservation{
 		ID:            r.ID,
 		UserID:        r.UserID,

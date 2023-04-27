@@ -30,4 +30,5 @@ type CitiesService interface {
 
 type ReservationsService interface {
 	Book(ctx context.Context, reservation domain.Reservation) (domain.Reservation, error)
+	Get(ctx context.Context, id uuid.UUID) (domain.Reservation, error)
 }

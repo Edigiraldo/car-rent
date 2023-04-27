@@ -331,6 +331,21 @@ func (m *MockReservationsRepo) EXPECT() *MockReservationsRepoMockRecorder {
 	return m.recorder
 }
 
+// Get mocks base method.
+func (m *MockReservationsRepo) Get(ctx context.Context, ID uuid.UUID) (domain.Reservation, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Get", ctx, ID)
+	ret0, _ := ret[0].(domain.Reservation)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Get indicates an expected call of Get.
+func (mr *MockReservationsRepoMockRecorder) Get(ctx, ID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockReservationsRepo)(nil).Get), ctx, ID)
+}
+
 // Insert mocks base method.
 func (m *MockReservationsRepo) Insert(ctx context.Context, dr domain.Reservation) error {
 	m.ctrl.T.Helper()

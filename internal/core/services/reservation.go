@@ -8,6 +8,10 @@ import (
 	"github.com/google/uuid"
 )
 
+var (
+	ErrReservationNotFound = "reservation was not found"
+)
+
 type Reservations struct {
 	reservationsRepository ports.ReservationsRepo
 }
@@ -26,4 +30,13 @@ func (rs Reservations) Book(ctx context.Context, reservation domain.Reservation)
 	}
 
 	return reservation, nil
+}
+
+func (rs Reservations) Get(ctx context.Context, ID uuid.UUID) (domain.Reservation, error) {
+	dc, err := rs.reservationsRepository.Get(ctx, ID)
+	if err != nil {
+		return domain.Reservation{}, err
+	}
+
+	return dc, nil
 }

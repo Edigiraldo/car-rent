@@ -9,6 +9,8 @@ import (
 	"github.com/Edigiraldo/car-rent/internal/core/ports"
 	"github.com/Edigiraldo/car-rent/internal/core/services"
 	"github.com/Edigiraldo/car-rent/internal/infrastructure/driver_adapters/dtos"
+	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 )
 
 type Reservations struct {
@@ -48,5 +50,35 @@ func (rh *Reservations) Book(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(reservation)
+}
+
+func (rh *Reservations) Get(w http.ResponseWriter, r *http.Request) {
+	var reservation dtos.Reservation
+
+	params := mux.Vars(r)
+	id := params["id"]
+	ID, err := uuid.Parse(id)
+	if err != nil {
+		http.Error(w, ErrInvalidID, http.StatusBadRequest)
+
+		return
+	}
+
+	dc, err := rh.ReservationsService.Get(r.Context(), ID)
+	if err != nil {
+		if err.Error() == services.ErrReservationNotFound {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else {
+			http.Error(w, ErrInternalServerError, http.StatusInternalServerError)
+			log.Println(err)
+		}
+
+		return
+	}
+
+	reservation.FromDomain(dc)
+
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(reservation)
 }

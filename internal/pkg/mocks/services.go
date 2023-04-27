@@ -265,3 +265,18 @@ func (mr *MockReservationsServiceMockRecorder) Book(ctx, reservation interface{}
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Book", reflect.TypeOf((*MockReservationsService)(nil).Book), ctx, reservation)
 }
+
+// Get mocks base method.
+func (m *MockReservationsService) Get(ctx context.Context, id uuid.UUID) (domain.Reservation, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Get", ctx, id)
+	ret0, _ := ret[0].(domain.Reservation)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Get indicates an expected call of Get.
+func (mr *MockReservationsServiceMockRecorder) Get(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockReservationsService)(nil).Get), ctx, id)
+}

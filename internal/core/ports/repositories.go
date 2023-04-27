@@ -38,4 +38,5 @@ type CitiesRepo interface {
 
 type ReservationsRepo interface {
 	Insert(ctx context.Context, dr domain.Reservation) (err error)
+	Get(ctx context.Context, ID uuid.UUID) (dc domain.Reservation, err error)
 }
