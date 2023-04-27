@@ -6,6 +6,7 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
 	"time"
 
@@ -15,6 +16,7 @@ import (
 	mocks "github.com/Edigiraldo/car-rent/internal/pkg/mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -132,6 +134,109 @@ func TestReservationsBook(t *testing.T) {
 
 			reservationsHandler := NewReservations(reservationsSrv)
 			reservationsHandler.Book(rr, req)
+
+			assert.Equal(t, test.wants.statusCode, rr.Code)
+		})
+	}
+}
+
+func TestReservationsGet(t *testing.T) {
+	reservation := dtos.Reservation{
+		UserID:        uuid.New(),
+		CarID:         uuid.New(),
+		Status:        "Reserved",
+		PaymentStatus: "Pending",
+		StartDate:     time.Now(),
+		EndDate:       time.Now().AddDate(0, 0, 7),
+	}
+
+	type args struct {
+		requestID string
+	}
+	type wants struct {
+		statusCode int
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wants    wants
+		setMocks func(*reservationsDependencies)
+	}{
+		{
+			name: "returns status code 200 when id is properly set and reservation was found",
+			args: args{
+				requestID: reservation.ID.String(),
+			},
+			wants: wants{
+				statusCode: http.StatusOK,
+			},
+			setMocks: func(d *reservationsDependencies) {
+				d.reservationsService.EXPECT().Get(gomock.Any(), reservation.ID).Return(reservation.ToDomain(), nil)
+			},
+		},
+		{
+			name: "returns 400 status code when path param id is not an uuid",
+			args: args{
+				requestID: "this-is-an-not-uuid",
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			setMocks: func(d *reservationsDependencies) {
+			},
+		},
+		{
+			name: "returns 404 status code when the reservation was not found",
+			args: args{
+				requestID: reservation.ID.String(),
+			},
+			wants: wants{
+				statusCode: http.StatusNotFound,
+			},
+			setMocks: func(d *reservationsDependencies) {
+				d.reservationsService.EXPECT().Get(gomock.Any(), reservation.ID).Return(domain.Reservation{}, errors.New(services.ErrReservationNotFound))
+			},
+		},
+		{
+			name: "returns 500 status code when there is a server error",
+			args: args{
+				requestID: reservation.ID.String(),
+			},
+			wants: wants{
+				statusCode: http.StatusInternalServerError,
+			},
+			setMocks: func(d *reservationsDependencies) {
+				d.reservationsService.EXPECT().Get(gomock.Any(), reservation.ID).Return(domain.Reservation{}, errors.New("error getting reservation"))
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			mockCtlr := gomock.NewController(t)
+			reservationsSrv := mocks.NewMockReservationsService(mockCtlr)
+			d := NewReservationsDependencies(reservationsSrv)
+			test.setMocks(d)
+
+			baseURL := "/api/v1/"
+			urlObj, _ := url.Parse(baseURL + "reservations/" + test.args.requestID)
+			URL := urlObj.String()
+
+			req, err := http.NewRequest(http.MethodGet, URL, nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// Include request vars for gorilla mux to interpret path params
+			vars := map[string]string{
+				"id": test.args.requestID,
+			}
+			req = mux.SetURLVars(req, vars)
+
+			rr := httptest.NewRecorder()
+
+			reservationsHandler := NewReservations(reservationsSrv)
+			reservationsHandler.Get(rr, req)
 
 			assert.Equal(t, test.wants.statusCode, rr.Code)
 		})
