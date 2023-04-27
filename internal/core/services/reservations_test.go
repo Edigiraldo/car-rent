@@ -93,3 +93,73 @@ func TestReservationsRegister(t *testing.T) {
 		})
 	}
 }
+
+func TestReservationsGet(t *testing.T) {
+	reservation := domain.Reservation{
+		UserID:        uuid.New(),
+		CarID:         uuid.New(),
+		Status:        "Reserved",
+		PaymentStatus: "Pending",
+		StartDate:     time.Now(),
+		EndDate:       time.Now().AddDate(0, 0, 7),
+	}
+
+	type args struct {
+		ctx context.Context
+		ID  uuid.UUID
+	}
+	type wants struct {
+		reservation domain.Reservation
+		withError   bool
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wants    wants
+		setMocks func(*reservationsDependencies)
+	}{
+		{
+			name: "returns nil error when reservation was found by the given id",
+			args: args{
+				ctx: context.TODO(),
+				ID:  reservation.ID,
+			},
+			wants: wants{
+				reservation: reservation,
+				withError:   false,
+			},
+			setMocks: func(d *reservationsDependencies) {
+				d.reservationsRepository.EXPECT().Get(gomock.Any(), reservation.ID).Return(reservation, nil)
+			},
+		},
+		{
+			name: "returns an error when reservation was not found by the given id",
+			args: args{
+				ctx: context.TODO(),
+				ID:  reservation.ID,
+			},
+			wants: wants{
+				reservation: domain.Reservation{},
+				withError:   true,
+			},
+			setMocks: func(d *reservationsDependencies) {
+				d.reservationsRepository.EXPECT().Get(gomock.Any(), reservation.ID).Return(domain.Reservation{}, errors.New(ErrReservationNotFound))
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			mockCtlr := gomock.NewController(t)
+			reservationsRepo := mocks.NewMockReservationsRepo(mockCtlr)
+			d := NewReservationsDependencies(reservationsRepo)
+			test.setMocks(d)
+
+			reservationsService := NewReservations(reservationsRepo)
+			reservation, err := reservationsService.Get(test.args.ctx, test.args.ID)
+
+			assert.Equal(t, test.wants.reservation, reservation)
+			assert.Equal(t, test.wants.withError, err != nil)
+		})
+	}
+}
