@@ -17,13 +17,13 @@ type Users struct {
 	UsersService ports.UsersService
 }
 
-func NewUsers(us ports.UsersService) *Users {
-	return &Users{
+func NewUsers(us ports.UsersService) Users {
+	return Users{
 		UsersService: us,
 	}
 }
 
-func (uh *Users) SignUp(w http.ResponseWriter, r *http.Request) {
+func (uh Users) SignUp(w http.ResponseWriter, r *http.Request) {
 	var newUser domain.User
 	user, err := dtos.UserFromBody(r.Body)
 	if err != nil {
@@ -46,7 +46,7 @@ func (uh *Users) SignUp(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user)
 }
 
-func (uh *Users) Get(w http.ResponseWriter, r *http.Request) {
+func (uh Users) Get(w http.ResponseWriter, r *http.Request) {
 	var user dtos.User
 
 	params := mux.Vars(r)
@@ -76,7 +76,7 @@ func (uh *Users) Get(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user)
 }
 
-func (uh *Users) FullUpdate(w http.ResponseWriter, r *http.Request) {
+func (uh Users) FullUpdate(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
 	ID, err := uuid.Parse(id)
@@ -111,7 +111,7 @@ func (uh *Users) FullUpdate(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user)
 }
 
-func (uh *Users) Delete(w http.ResponseWriter, r *http.Request) {
+func (uh Users) Delete(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
 	ID, err := uuid.Parse(id)
@@ -129,4 +129,40 @@ func (uh *Users) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func (uh Users) GetReservations(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	uID := params["id"]
+	userID, err := uuid.Parse(uID)
+	if err != nil {
+		http.Error(w, ErrInvalidID, http.StatusBadRequest)
+
+		return
+	}
+
+	drs, err := uh.UsersService.GetReservations(r.Context(), userID)
+	if err != nil {
+		http.Error(w, ErrInternalServerError, http.StatusInternalServerError)
+		log.Println(err)
+
+		return
+	}
+
+	reservations := getUserReservationsResponse(drs)
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(reservations)
+}
+
+func getUserReservationsResponse(domainReservations []domain.Reservation) (reservations dtos.Reservations) {
+	reservations.Reservations = make([]dtos.Reservation, 0)
+	for _, domainReservation := range domainReservations {
+		car := dtos.Reservation{}
+		car.FromDomain(domainReservation)
+
+		reservations.Reservations = append(reservations.Reservations, car)
+	}
+
+	return reservations
 }

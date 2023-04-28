@@ -24,7 +24,7 @@ func NewReservationsRepository(db ports.Database) *ReservationsRepo {
 	}
 }
 
-func (rr *ReservationsRepo) Insert(ctx context.Context, dc domain.Reservation) (err error) {
+func (rr ReservationsRepo) Insert(ctx context.Context, dc domain.Reservation) (err error) {
 	reservation := models.LoadReservationFromDomain(dc)
 
 	_, err = rr.GetDBHandle().ExecContext(ctx, "INSERT INTO reservations (id, user_id, car_id, status, payment_status, start_date, end_date) VALUES ($1, $2, $3, $4, $5, $6, $7)",
@@ -41,7 +41,7 @@ func (rr *ReservationsRepo) Insert(ctx context.Context, dc domain.Reservation) (
 	return err
 }
 
-func (rr *ReservationsRepo) Get(ctx context.Context, ID uuid.UUID) (dc domain.Reservation, err error) {
+func (rr ReservationsRepo) Get(ctx context.Context, ID uuid.UUID) (dc domain.Reservation, err error) {
 	var reservation models.Reservation
 	if err := rr.GetDBHandle().QueryRowContext(ctx, "SELECT * FROM reservations WHERE ID = $1", ID).
 		Scan(&reservation.ID, &reservation.UserID, &reservation.CarID, &reservation.Status, &reservation.PaymentStatus, &reservation.StartDate, &reservation.EndDate); err != nil {
@@ -54,7 +54,7 @@ func (rr *ReservationsRepo) Get(ctx context.Context, ID uuid.UUID) (dc domain.Re
 	return reservation.ToDomain(), nil
 }
 
-func (rr *ReservationsRepo) FullUpdate(ctx context.Context, dr domain.Reservation) (err error) {
+func (rr ReservationsRepo) FullUpdate(ctx context.Context, dr domain.Reservation) (err error) {
 	reservation := models.LoadReservationFromDomain(dr)
 
 	result, err := rr.GetDBHandle().ExecContext(ctx, "UPDATE reservations SET user_id=$1, car_id=$2, status=$3, payment_status=$4, start_date=$5, end_date=$6 WHERE id=$7",
@@ -83,8 +83,32 @@ func (rr *ReservationsRepo) FullUpdate(ctx context.Context, dr domain.Reservatio
 	return nil
 }
 
-func (rr *ReservationsRepo) Delete(ctx context.Context, id uuid.UUID) error {
+func (rr ReservationsRepo) Delete(ctx context.Context, id uuid.UUID) error {
 	_, err := rr.GetDBHandle().ExecContext(ctx, "DELETE FROM reservations WHERE id=$1", id)
 
 	return err
+}
+
+func (rr ReservationsRepo) GetByUserID(ctx context.Context, userID uuid.UUID) (dr []domain.Reservation, err error) {
+	var reservations []domain.Reservation
+
+	rows, err := rr.GetDBHandle().QueryContext(ctx, "SELECT * FROM reservations WHERE user_id=$1", userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		reservation := models.Reservation{}
+		if err := rows.Scan(&reservation.ID, &reservation.UserID, &reservation.CarID, &reservation.Status, &reservation.PaymentStatus, &reservation.StartDate, &reservation.EndDate); err != nil {
+			return nil, err
+		}
+
+		reservations = append(reservations, reservation.ToDomain())
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return reservations, nil
 }

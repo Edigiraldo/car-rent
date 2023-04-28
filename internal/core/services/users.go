@@ -13,16 +13,18 @@ var (
 )
 
 type Users struct {
-	usersRepository ports.UsersRepo
+	usersRepository        ports.UsersRepo
+	reservationsRepository ports.ReservationsRepo
 }
 
-func NewUsers(ur ports.UsersRepo) *Users {
+func NewUsers(ur ports.UsersRepo, rr ports.ReservationsRepo) *Users {
 	return &Users{
-		usersRepository: ur,
+		usersRepository:        ur,
+		reservationsRepository: rr,
 	}
 }
 
-func (us *Users) Register(ctx context.Context, user domain.User) (domain.User, error) {
+func (us Users) Register(ctx context.Context, user domain.User) (domain.User, error) {
 	user.ID = uuid.New()
 
 	if err := us.usersRepository.Insert(ctx, user); err != nil {
@@ -32,7 +34,7 @@ func (us *Users) Register(ctx context.Context, user domain.User) (domain.User, e
 	return user, nil
 }
 
-func (us *Users) Get(ctx context.Context, ID uuid.UUID) (domain.User, error) {
+func (us Users) Get(ctx context.Context, ID uuid.UUID) (domain.User, error) {
 	du, err := us.usersRepository.Get(ctx, ID)
 	if err != nil {
 		return domain.User{}, err
@@ -41,10 +43,19 @@ func (us *Users) Get(ctx context.Context, ID uuid.UUID) (domain.User, error) {
 	return du, nil
 }
 
-func (us *Users) FullUpdate(ctx context.Context, user domain.User) error {
+func (us Users) FullUpdate(ctx context.Context, user domain.User) error {
 	return us.usersRepository.FullUpdate(ctx, user)
 }
 
-func (us *Users) Delete(ctx context.Context, id uuid.UUID) error {
+func (us Users) Delete(ctx context.Context, id uuid.UUID) error {
 	return us.usersRepository.Delete(ctx, id)
+}
+
+func (us Users) GetReservations(ctx context.Context, userID uuid.UUID) ([]domain.Reservation, error) {
+	drs, err := us.reservationsRepository.GetByUserID(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return drs, nil
 }

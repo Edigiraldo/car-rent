@@ -22,6 +22,7 @@ type UsersService interface {
 	Get(ctx context.Context, id uuid.UUID) (domain.User, error)
 	FullUpdate(ctx context.Context, du domain.User) error
 	Delete(ctx context.Context, id uuid.UUID) error
+	GetReservations(ctx context.Context, userID uuid.UUID) ([]domain.Reservation, error)
 }
 
 type CitiesService interface {

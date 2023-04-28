@@ -374,6 +374,21 @@ func (mr *MockReservationsRepoMockRecorder) Get(ctx, ID interface{}) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockReservationsRepo)(nil).Get), ctx, ID)
 }
 
+// GetByUserID mocks base method.
+func (m *MockReservationsRepo) GetByUserID(ctx context.Context, userID uuid.UUID) ([]domain.Reservation, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByUserID", ctx, userID)
+	ret0, _ := ret[0].([]domain.Reservation)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByUserID indicates an expected call of GetByUserID.
+func (mr *MockReservationsRepoMockRecorder) GetByUserID(ctx, userID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByUserID", reflect.TypeOf((*MockReservationsRepo)(nil).GetByUserID), ctx, userID)
+}
+
 // Insert mocks base method.
 func (m *MockReservationsRepo) Insert(ctx context.Context, dr domain.Reservation) error {
 	m.ctrl.T.Helper()

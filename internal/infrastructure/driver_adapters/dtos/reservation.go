@@ -17,6 +17,10 @@ var (
 	ErrInvalidPaymentStatus     = "invalid payment status"
 )
 
+type Reservations struct {
+	Reservations []Reservation `json:"reservations"`
+}
+
 type Reservation struct {
 	ID            uuid.UUID `json:"id,omitempty"`
 	UserID        uuid.UUID `json:"user_id"`

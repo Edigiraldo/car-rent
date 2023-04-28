@@ -82,10 +82,11 @@ func TestUsersRegister(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			mockCtlr := gomock.NewController(t)
 			usersRepo := mocks.NewMockUsersRepo(mockCtlr)
+			reservationsRepo := mocks.NewMockReservationsRepo(mockCtlr)
 			d := NewUsersDependencies(usersRepo)
 			test.setMocks(d)
 
-			usersService := NewUsers(usersRepo)
+			usersService := NewUsers(usersRepo, reservationsRepo)
 			_, err := usersService.Register(test.args.ctx, test.args.user)
 
 			assert.Equal(t, test.wants.withError, err != nil)
@@ -150,10 +151,11 @@ func TestUsersGet(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			mockCtlr := gomock.NewController(t)
 			usersRepo := mocks.NewMockUsersRepo(mockCtlr)
+			reservationsRepo := mocks.NewMockReservationsRepo(mockCtlr)
 			d := NewUsersDependencies(usersRepo)
 			test.setMocks(d)
 
-			usersService := NewUsers(usersRepo)
+			usersService := NewUsers(usersRepo, reservationsRepo)
 			user, err := usersService.Get(test.args.ctx, test.args.ID)
 
 			assert.Equal(t, test.wants.user, user)
@@ -217,10 +219,11 @@ func TestUsersFullUpdate(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			mockCtlr := gomock.NewController(t)
 			usersRepo := mocks.NewMockUsersRepo(mockCtlr)
+			reservationsRepo := mocks.NewMockReservationsRepo(mockCtlr)
 			d := NewUsersDependencies(usersRepo)
 			test.setMocks(d)
 
-			usersService := NewUsers(usersRepo)
+			usersService := NewUsers(usersRepo, reservationsRepo)
 			err := usersService.FullUpdate(test.args.ctx, test.args.user)
 
 			assert.Equal(t, test.wants.err, err)
@@ -274,10 +277,11 @@ func TestUsersDelete(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			mockCtlr := gomock.NewController(t)
 			usersRepo := mocks.NewMockUsersRepo(mockCtlr)
+			reservationsRepo := mocks.NewMockReservationsRepo(mockCtlr)
 			d := NewUsersDependencies(usersRepo)
 			test.setMocks(d)
 
-			usersService := NewUsers(usersRepo)
+			usersService := NewUsers(usersRepo, reservationsRepo)
 			err := usersService.Delete(test.args.ctx, test.args.ID)
 
 			assert.Equal(t, test.wants.err, err)
