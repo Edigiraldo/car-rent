@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"testing"
+	"time"
 
 	"github.com/Edigiraldo/car-rent/internal/core/domain"
 	"github.com/Edigiraldo/car-rent/internal/core/services"
@@ -425,6 +426,124 @@ func TestUsersDelete(t *testing.T) {
 			usersHandler := NewUsers(usersSrv)
 			usersHandler.Delete(rr, req)
 
+			assert.Equal(t, test.wants.statusCode, rr.Code)
+		})
+	}
+}
+
+func TestReservationsList(t *testing.T) {
+	user_id := "6ef5d956-8a8d-22dd-0aef-5340fda236e8"
+	u_id, _ := uuid.Parse(user_id)
+	foundReservations := []domain.Reservation{
+		{
+			ID:            uuid.New(),
+			UserID:        u_id,
+			CarID:         uuid.New(),
+			Status:        "Reserved",
+			PaymentStatus: "Pending",
+			StartDate:     time.Now(),
+			EndDate:       time.Now().AddDate(0, 0, 7),
+		},
+		{
+			ID:            uuid.New(),
+			UserID:        u_id,
+			CarID:         uuid.New(),
+			Status:        "Reserved",
+			PaymentStatus: "Pending",
+			StartDate:     time.Now(),
+			EndDate:       time.Now().AddDate(0, 0, 7),
+		},
+	}
+
+	type args struct {
+		user_id string
+	}
+	type wants struct {
+		statusCode int
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wants    wants
+		setMocks func(*usersDependencies)
+	}{
+		{
+			name: "returns status code 200 when user reservaations where found",
+			args: args{
+				user_id: user_id,
+			},
+			wants: wants{
+				statusCode: http.StatusOK,
+			},
+			setMocks: func(d *usersDependencies) {
+				d.usersService.EXPECT().GetReservations(gomock.Any(), u_id).Return(foundReservations, nil)
+			},
+		},
+		{
+			name: "returns status code 400 when user id param is empty",
+			args: args{
+				user_id: "",
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			setMocks: func(d *usersDependencies) {
+			},
+		},
+		{
+			name: "returns 500 status code when there is a server error",
+			args: args{
+				user_id: user_id,
+			},
+			wants: wants{
+				statusCode: http.StatusInternalServerError,
+			},
+			setMocks: func(d *usersDependencies) {
+				d.usersService.EXPECT().GetReservations(gomock.Any(), u_id).Return([]domain.Reservation{}, errors.New("error getting reservations list"))
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			mockCtlr := gomock.NewController(t)
+			usersSrv := mocks.NewMockUsersService(mockCtlr)
+			d := NewUsersDependencies(usersSrv)
+			test.setMocks(d)
+
+			baseURL := "/api/v1/"
+			values := url.Values{}
+			values.Set("id", test.args.user_id)
+			urlObj, _ := url.Parse(baseURL + "reservations/?" + values.Encode())
+			URL := urlObj.String()
+
+			req, err := http.NewRequest(http.MethodGet, URL, nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// Include request vars for gorilla mux to interpret path params
+			vars := map[string]string{
+				"id": test.args.user_id,
+			}
+			req = mux.SetURLVars(req, vars)
+
+			rr := httptest.NewRecorder()
+
+			usersHandler := NewUsers(usersSrv)
+			usersHandler.GetReservations(rr, req)
+
+			if rr.Result().StatusCode == http.StatusOK {
+				body := dtos.Reservations{}
+				err = json.Unmarshal(rr.Body.Bytes(), &body)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if len(body.Reservations) != 0 {
+					assert.Equal(t, foundReservations[0].ID, body.Reservations[0].ID)
+					assert.Equal(t, len(foundReservations), len(body.Reservations))
+				}
+			}
 			assert.Equal(t, test.wants.statusCode, rr.Code)
 		})
 	}
