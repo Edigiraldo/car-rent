@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/Edigiraldo/car-rent/internal/core/domain"
 	mocks "github.com/Edigiraldo/car-rent/internal/pkg/mocks"
@@ -13,12 +14,14 @@ import (
 )
 
 type usersDependencies struct {
-	usersRepository *mocks.MockUsersRepo
+	usersRepository        *mocks.MockUsersRepo
+	reservationsRepository *mocks.MockReservationsRepo
 }
 
-func NewUsersDependencies(usersRepo *mocks.MockUsersRepo) *usersDependencies {
+func NewUsersDependencies(usersRepo *mocks.MockUsersRepo, reservationsRepo *mocks.MockReservationsRepo) *usersDependencies {
 	return &usersDependencies{
-		usersRepository: usersRepo,
+		usersRepository:        usersRepo,
+		reservationsRepository: reservationsRepo,
 	}
 }
 
@@ -83,7 +86,7 @@ func TestUsersRegister(t *testing.T) {
 			mockCtlr := gomock.NewController(t)
 			usersRepo := mocks.NewMockUsersRepo(mockCtlr)
 			reservationsRepo := mocks.NewMockReservationsRepo(mockCtlr)
-			d := NewUsersDependencies(usersRepo)
+			d := NewUsersDependencies(usersRepo, reservationsRepo)
 			test.setMocks(d)
 
 			usersService := NewUsers(usersRepo, reservationsRepo)
@@ -152,7 +155,7 @@ func TestUsersGet(t *testing.T) {
 			mockCtlr := gomock.NewController(t)
 			usersRepo := mocks.NewMockUsersRepo(mockCtlr)
 			reservationsRepo := mocks.NewMockReservationsRepo(mockCtlr)
-			d := NewUsersDependencies(usersRepo)
+			d := NewUsersDependencies(usersRepo, reservationsRepo)
 			test.setMocks(d)
 
 			usersService := NewUsers(usersRepo, reservationsRepo)
@@ -220,7 +223,7 @@ func TestUsersFullUpdate(t *testing.T) {
 			mockCtlr := gomock.NewController(t)
 			usersRepo := mocks.NewMockUsersRepo(mockCtlr)
 			reservationsRepo := mocks.NewMockReservationsRepo(mockCtlr)
-			d := NewUsersDependencies(usersRepo)
+			d := NewUsersDependencies(usersRepo, reservationsRepo)
 			test.setMocks(d)
 
 			usersService := NewUsers(usersRepo, reservationsRepo)
@@ -278,12 +281,99 @@ func TestUsersDelete(t *testing.T) {
 			mockCtlr := gomock.NewController(t)
 			usersRepo := mocks.NewMockUsersRepo(mockCtlr)
 			reservationsRepo := mocks.NewMockReservationsRepo(mockCtlr)
-			d := NewUsersDependencies(usersRepo)
+			d := NewUsersDependencies(usersRepo, reservationsRepo)
 			test.setMocks(d)
 
 			usersService := NewUsers(usersRepo, reservationsRepo)
 			err := usersService.Delete(test.args.ctx, test.args.ID)
 
+			assert.Equal(t, test.wants.err, err)
+		})
+	}
+}
+
+func TestGetReservations(t *testing.T) {
+	initConstantsFromServices(t)
+
+	user_id := "7d4bd954-8a8d-55dd-0aef-6440fda236e8"
+	u_id, _ := uuid.Parse(user_id)
+	foundReservations := []domain.Reservation{
+		{
+			ID:            uuid.New(),
+			UserID:        u_id,
+			CarID:         uuid.New(),
+			Status:        "Reserved",
+			PaymentStatus: "Pending",
+			StartDate:     time.Now(),
+			EndDate:       time.Now().AddDate(0, 0, 7),
+		},
+		{
+			ID:            uuid.New(),
+			UserID:        u_id,
+			CarID:         uuid.New(),
+			Status:        "Reserved",
+			PaymentStatus: "Pending",
+			StartDate:     time.Now(),
+			EndDate:       time.Now().AddDate(0, 0, 7),
+		},
+	}
+
+	type args struct {
+		ctx    context.Context
+		userID uuid.UUID
+	}
+	type wants struct {
+		reservations []domain.Reservation
+		err          error
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wants    wants
+		setMocks func(*usersDependencies)
+	}{
+		{
+			name: "returns nil error when reservations were found",
+			args: args{
+				ctx:    context.TODO(),
+				userID: u_id,
+			},
+			wants: wants{
+				reservations: foundReservations,
+				err:          nil,
+			},
+			setMocks: func(d *usersDependencies) {
+				d.reservationsRepository.EXPECT().GetByUserID(gomock.Any(), u_id).Return(foundReservations, nil)
+			},
+		},
+		{
+			name: "returns an error when repository fails retrieving reservations",
+			args: args{
+				ctx:    context.TODO(),
+				userID: u_id,
+			},
+			wants: wants{
+				reservations: nil,
+				err:          errors.New("there was some internal error"),
+			},
+			setMocks: func(d *usersDependencies) {
+				d.reservationsRepository.EXPECT().GetByUserID(gomock.Any(), u_id).Return([]domain.Reservation{}, errors.New("there was some internal error"))
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			mockCtlr := gomock.NewController(t)
+			usersRepo := mocks.NewMockUsersRepo(mockCtlr)
+			reservationsRepo := mocks.NewMockReservationsRepo(mockCtlr)
+			d := NewUsersDependencies(usersRepo, reservationsRepo)
+			test.setMocks(d)
+
+			usersService := NewUsers(usersRepo, reservationsRepo)
+			reservations, err := usersService.GetReservations(test.args.ctx, test.args.userID)
+
+			assert.Equal(t, test.wants.reservations, reservations)
 			assert.Equal(t, test.wants.err, err)
 		})
 	}
