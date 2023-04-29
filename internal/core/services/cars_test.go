@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/Edigiraldo/car-rent/internal/core/domain"
 	"github.com/Edigiraldo/car-rent/internal/pkg/constants"
@@ -397,6 +398,93 @@ func TestCarsList(t *testing.T) {
 			cars, err := carsService.List(test.args.ctx, test.args.city, test.args.from_car_id)
 
 			assert.Equal(t, test.wants.cars, cars)
+			assert.Equal(t, test.wants.err, err)
+		})
+	}
+}
+
+func TestGetReservationsByCarId(t *testing.T) {
+	initConstantsFromServices(t)
+
+	car_id := "1c6bd954-7e8d-73df-8ae9-6905fda236e8"
+	c_id, _ := uuid.Parse(car_id)
+	foundReservations := []domain.Reservation{
+		{
+			ID:            uuid.New(),
+			UserID:        uuid.New(),
+			CarID:         c_id,
+			Status:        "Reserved",
+			PaymentStatus: "Pending",
+			StartDate:     time.Now(),
+			EndDate:       time.Now().AddDate(0, 0, 7),
+		},
+		{
+			ID:            uuid.New(),
+			UserID:        uuid.New(),
+			CarID:         c_id,
+			Status:        "Reserved",
+			PaymentStatus: "Pending",
+			StartDate:     time.Now(),
+			EndDate:       time.Now().AddDate(0, 0, 7),
+		},
+	}
+
+	type args struct {
+		ctx   context.Context
+		CarID uuid.UUID
+	}
+	type wants struct {
+		reservations []domain.Reservation
+		err          error
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wants    wants
+		setMocks func(*carsDependencies)
+	}{
+		{
+			name: "returns nil error when reservations were found",
+			args: args{
+				ctx:   context.TODO(),
+				CarID: c_id,
+			},
+			wants: wants{
+				reservations: foundReservations,
+				err:          nil,
+			},
+			setMocks: func(d *carsDependencies) {
+				d.reservationsRepository.EXPECT().GetByCarID(gomock.Any(), c_id).Return(foundReservations, nil)
+			},
+		},
+		{
+			name: "returns an error when repository fails retrieving reservations",
+			args: args{
+				ctx:   context.TODO(),
+				CarID: c_id,
+			},
+			wants: wants{
+				reservations: nil,
+				err:          errors.New("there was some internal error"),
+			},
+			setMocks: func(d *carsDependencies) {
+				d.reservationsRepository.EXPECT().GetByCarID(gomock.Any(), c_id).Return([]domain.Reservation{}, errors.New("there was some internal error"))
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			mockCtlr := gomock.NewController(t)
+			carsRepo := mocks.NewMockCarsRepo(mockCtlr)
+			reservationsRepo := mocks.NewMockReservationsRepo(mockCtlr)
+			d := NewCarsDependencies(carsRepo, reservationsRepo)
+			test.setMocks(d)
+
+			carsService := NewCars(carsRepo, reservationsRepo)
+			reservations, err := carsService.GetReservations(test.args.ctx, test.args.CarID)
+
+			assert.Equal(t, test.wants.reservations, reservations)
 			assert.Equal(t, test.wants.err, err)
 		})
 	}
