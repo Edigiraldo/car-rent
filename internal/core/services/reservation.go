@@ -29,7 +29,7 @@ func NewReservations(rr ports.ReservationsRepo) Reservations {
 }
 
 func (rs Reservations) Book(ctx context.Context, reservation domain.Reservation) (domain.Reservation, error) {
-	if err := rs.CheckReservation(reservation); err != nil {
+	if err := rs.CheckReservation(ctx, reservation); err != nil {
 		return domain.Reservation{}, err
 	}
 
@@ -51,7 +51,7 @@ func (rs Reservations) Get(ctx context.Context, ID uuid.UUID) (domain.Reservatio
 }
 
 func (rs Reservations) FullUpdate(ctx context.Context, reservation domain.Reservation) error {
-	if err := rs.CheckReservation(reservation); err != nil {
+	if err := rs.CheckReservation(ctx, reservation); err != nil {
 		return err
 	}
 
@@ -62,13 +62,22 @@ func (rs Reservations) Delete(ctx context.Context, id uuid.UUID) error {
 	return rs.reservationsRepository.Delete(ctx, id)
 }
 
-func (rs Reservations) CheckReservation(reservation domain.Reservation) error {
+func (rs Reservations) CheckReservation(ctx context.Context, reservation domain.Reservation) error {
 	if isValid := utils.IsValidTimeFrame(reservation.StartDate, reservation.EndDate); !isValid {
 		return errors.New(ErrInvalidReservationTimeFrame)
 	}
 
 	if reservation.EndDate.Sub(reservation.StartDate).Hours() < float64(constants.Values.MINIMUM_RESERVATION_HOURS) {
 		return fmt.Errorf("%s (%d hours)", ErrMinimumReservationHours, constants.Values.MINIMUM_RESERVATION_HOURS)
+	}
+
+	reservations, err := rs.reservationsRepository.GetByCarIDAndTimeFrame(ctx, reservation.CarID, reservation.StartDate, reservation.EndDate)
+	if err != nil {
+		return err
+	}
+
+	if len(reservations) > 0 {
+		return errors.New(ErrCarNotAvailable)
 	}
 
 	return nil

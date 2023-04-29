@@ -3,6 +3,7 @@ package ports
 import (
 	"context"
 	"database/sql"
+	"time"
 
 	"github.com/Edigiraldo/car-rent/internal/core/domain"
 	"github.com/google/uuid"
@@ -43,4 +44,5 @@ type ReservationsRepo interface {
 	Delete(ctx context.Context, id uuid.UUID) error
 	GetByUserID(ctx context.Context, userID uuid.UUID) (dr []domain.Reservation, err error)
 	GetByCarID(ctx context.Context, CarID uuid.UUID) (dr []domain.Reservation, err error)
+	GetByCarIDAndTimeFrame(ctx context.Context, carID uuid.UUID, startDate time.Time, endDate time.Time) (dr []domain.Reservation, err error)
 }

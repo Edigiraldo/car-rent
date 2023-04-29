@@ -55,10 +55,11 @@ func TestReservationsRegister(t *testing.T) {
 			},
 			setMocks: func(d *reservationsDependencies) {
 				d.reservationsRepository.EXPECT().Insert(gomock.Any(), gomock.Any()).Return(nil)
+				d.reservationsRepository.EXPECT().GetByCarIDAndTimeFrame(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, nil)
 			},
 		},
 		{
-			name: "returns an error when reservation repository fails to booke the reservation",
+			name: "returns an error when reservation repository fails to book the reservation",
 			args: args{
 				ctx: context.TODO(),
 				reservation: domain.Reservation{
@@ -75,6 +76,27 @@ func TestReservationsRegister(t *testing.T) {
 			},
 			setMocks: func(d *reservationsDependencies) {
 				d.reservationsRepository.EXPECT().Insert(gomock.Any(), gomock.Any()).Return(errors.New("error booking reservation"))
+				d.reservationsRepository.EXPECT().GetByCarIDAndTimeFrame(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, nil)
+			},
+		},
+		{
+			name: "returns an error when validations fail",
+			args: args{
+				ctx: context.TODO(),
+				reservation: domain.Reservation{
+					UserID:        uuid.New(),
+					CarID:         uuid.New(),
+					Status:        "Reserved",
+					PaymentStatus: "Pending",
+					StartDate:     time.Now(),
+					EndDate:       time.Now().AddDate(0, 0, 7),
+				},
+			},
+			wants: wants{
+				withError: true,
+			},
+			setMocks: func(d *reservationsDependencies) {
+				d.reservationsRepository.EXPECT().GetByCarIDAndTimeFrame(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, errors.New("some validation failed"))
 			},
 		},
 	}
@@ -198,6 +220,7 @@ func TestReservationsFullUpdate(t *testing.T) {
 			},
 			setMocks: func(d *reservationsDependencies) {
 				d.reservationsRepository.EXPECT().FullUpdate(gomock.Any(), reservation).Return(nil)
+				d.reservationsRepository.EXPECT().GetByCarIDAndTimeFrame(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, nil)
 			},
 		},
 		{
@@ -211,10 +234,23 @@ func TestReservationsFullUpdate(t *testing.T) {
 			},
 			setMocks: func(d *reservationsDependencies) {
 				d.reservationsRepository.EXPECT().FullUpdate(gomock.Any(), reservation).Return(errors.New("failure while updating reservation"))
+				d.reservationsRepository.EXPECT().GetByCarIDAndTimeFrame(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, nil)
+			},
+		},
+		{
+			name: "returns an error when validations fail",
+			args: args{
+				ctx:         context.TODO(),
+				reservation: reservation,
+			},
+			wants: wants{
+				err: errors.New("some validation failed"),
+			},
+			setMocks: func(d *reservationsDependencies) {
+				d.reservationsRepository.EXPECT().GetByCarIDAndTimeFrame(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, errors.New("some validation failed"))
 			},
 		},
 	}
-
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			mockCtlr := gomock.NewController(t)

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"strings"
+	"time"
 
 	"github.com/Edigiraldo/car-rent/internal/core/domain"
 	"github.com/Edigiraldo/car-rent/internal/core/ports"
@@ -117,6 +118,31 @@ func (rr ReservationsRepo) GetByCarID(ctx context.Context, carID uuid.UUID) (dr 
 	var reservations []domain.Reservation
 
 	rows, err := rr.GetDBHandle().QueryContext(ctx, "SELECT * FROM reservations WHERE car_id=$1", carID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		reservation := models.Reservation{}
+		if err := rows.Scan(&reservation.ID, &reservation.CarID, &reservation.CarID, &reservation.Status, &reservation.PaymentStatus, &reservation.StartDate, &reservation.EndDate); err != nil {
+			return nil, err
+		}
+
+		reservations = append(reservations, reservation.ToDomain())
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return reservations, nil
+}
+
+func (rr ReservationsRepo) GetByCarIDAndTimeFrame(ctx context.Context, carID uuid.UUID, startDate time.Time, endDate time.Time) (dr []domain.Reservation, err error) {
+	var reservations []domain.Reservation
+
+	query := "SELECT * FROM reservations WHERE car_id=$1 AND start_date BETWEEN $2 AND $3 AND end_date BETWEEN $2 AND $3"
+	rows, err := rr.GetDBHandle().QueryContext(ctx, query, carID, startDate, endDate)
 	if err != nil {
 		return nil, err
 	}

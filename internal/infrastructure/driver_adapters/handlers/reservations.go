@@ -105,13 +105,16 @@ func (rh Reservations) FullUpdate(w http.ResponseWriter, r *http.Request) {
 	reservation.ID = ID
 
 	if err = rh.ReservationsService.FullUpdate(r.Context(), reservation.ToDomain()); err != nil {
-		if err.Error() == services.ErrReservationNotFound ||
-			err.Error() == services.ErrUserNotFound ||
+		if err.Error() == services.ErrReservationNotFound {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		} else if err.Error() == services.ErrUserNotFound ||
 			err.Error() == services.ErrCarNotFound ||
 			err.Error() == services.ErrInvalidReservationTimeFrame ||
-			strings.HasPrefix(err.Error(), services.ErrMinimumReservationHours) {
+			strings.HasPrefix(err.Error(), services.ErrMinimumReservationHours) ||
+			err.Error() == services.ErrCarNotAvailable {
 
-			http.Error(w, err.Error(), http.StatusNotFound)
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		} else {
 			http.Error(w, ErrInternalServerError, http.StatusInternalServerError)

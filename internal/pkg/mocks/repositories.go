@@ -8,6 +8,7 @@ import (
 	context "context"
 	sql "database/sql"
 	reflect "reflect"
+	time "time"
 
 	domain "github.com/Edigiraldo/car-rent/internal/core/domain"
 	gomock "github.com/golang/mock/gomock"
@@ -387,6 +388,21 @@ func (m *MockReservationsRepo) GetByCarID(ctx context.Context, CarID uuid.UUID) 
 func (mr *MockReservationsRepoMockRecorder) GetByCarID(ctx, CarID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByCarID", reflect.TypeOf((*MockReservationsRepo)(nil).GetByCarID), ctx, CarID)
+}
+
+// GetByCarIDAndTimeFrame mocks base method.
+func (m *MockReservationsRepo) GetByCarIDAndTimeFrame(ctx context.Context, carID uuid.UUID, startDate, endDate time.Time) ([]domain.Reservation, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByCarIDAndTimeFrame", ctx, carID, startDate, endDate)
+	ret0, _ := ret[0].([]domain.Reservation)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByCarIDAndTimeFrame indicates an expected call of GetByCarIDAndTimeFrame.
+func (mr *MockReservationsRepoMockRecorder) GetByCarIDAndTimeFrame(ctx, carID, startDate, endDate interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByCarIDAndTimeFrame", reflect.TypeOf((*MockReservationsRepo)(nil).GetByCarIDAndTimeFrame), ctx, carID, startDate, endDate)
 }
 
 // GetByUserID mocks base method.

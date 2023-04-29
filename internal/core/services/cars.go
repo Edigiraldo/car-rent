@@ -10,7 +10,8 @@ import (
 )
 
 var (
-	ErrCarNotFound = "car not found"
+	ErrCarNotFound     = "car not found"
+	ErrCarNotAvailable = "car not available"
 )
 
 type Cars struct {
