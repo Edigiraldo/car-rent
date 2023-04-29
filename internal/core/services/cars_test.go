@@ -16,12 +16,14 @@ import (
 var pathToRoot = "./../../.."
 
 type carsDependencies struct {
-	carsRepository *mocks.MockCarsRepo
+	carsRepository         *mocks.MockCarsRepo
+	reservationsRepository *mocks.MockReservationsRepo
 }
 
-func NewCarsDependencies(carsRepo *mocks.MockCarsRepo) *carsDependencies {
+func NewCarsDependencies(carsRepo *mocks.MockCarsRepo, reservationsRepo *mocks.MockReservationsRepo) *carsDependencies {
 	return &carsDependencies{
-		carsRepository: carsRepo,
+		carsRepository:         carsRepo,
+		reservationsRepository: reservationsRepo,
 	}
 }
 
@@ -91,10 +93,11 @@ func TestCarsRegister(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			mockCtlr := gomock.NewController(t)
 			carsRepo := mocks.NewMockCarsRepo(mockCtlr)
-			d := NewCarsDependencies(carsRepo)
+			reservationsRepo := mocks.NewMockReservationsRepo(mockCtlr)
+			d := NewCarsDependencies(carsRepo, reservationsRepo)
 			test.setMocks(d)
 
-			carsService := NewCars(carsRepo)
+			carsService := NewCars(carsRepo, reservationsRepo)
 			_, err := carsService.Register(test.args.ctx, test.args.car)
 
 			assert.Equal(t, test.wants.withError, err != nil)
@@ -160,10 +163,11 @@ func TestCarsGet(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			mockCtlr := gomock.NewController(t)
 			carsRepo := mocks.NewMockCarsRepo(mockCtlr)
-			d := NewCarsDependencies(carsRepo)
+			reservationsRepo := mocks.NewMockReservationsRepo(mockCtlr)
+			d := NewCarsDependencies(carsRepo, reservationsRepo)
 			test.setMocks(d)
 
-			carsService := NewCars(carsRepo)
+			carsService := NewCars(carsRepo, reservationsRepo)
 			car, err := carsService.Get(test.args.ctx, test.args.ID)
 
 			assert.Equal(t, test.wants.car, car)
@@ -227,10 +231,11 @@ func TestCarsFullUpdate(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			mockCtlr := gomock.NewController(t)
 			carsRepo := mocks.NewMockCarsRepo(mockCtlr)
-			d := NewCarsDependencies(carsRepo)
+			reservationsRepo := mocks.NewMockReservationsRepo(mockCtlr)
+			d := NewCarsDependencies(carsRepo, reservationsRepo)
 			test.setMocks(d)
 
-			carsService := NewCars(carsRepo)
+			carsService := NewCars(carsRepo, reservationsRepo)
 			err := carsService.FullUpdate(test.args.ctx, test.args.car)
 
 			assert.Equal(t, test.wants.err, err)
@@ -284,10 +289,11 @@ func TestCarsDelete(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			mockCtlr := gomock.NewController(t)
 			carsRepo := mocks.NewMockCarsRepo(mockCtlr)
-			d := NewCarsDependencies(carsRepo)
+			reservationsRepo := mocks.NewMockReservationsRepo(mockCtlr)
+			d := NewCarsDependencies(carsRepo, reservationsRepo)
 			test.setMocks(d)
 
-			carsService := NewCars(carsRepo)
+			carsService := NewCars(carsRepo, reservationsRepo)
 			err := carsService.Delete(test.args.ctx, test.args.ID)
 
 			assert.Equal(t, test.wants.err, err)
@@ -383,10 +389,11 @@ func TestCarsList(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			mockCtlr := gomock.NewController(t)
 			carsRepo := mocks.NewMockCarsRepo(mockCtlr)
-			d := NewCarsDependencies(carsRepo)
+			reservationsRepo := mocks.NewMockReservationsRepo(mockCtlr)
+			d := NewCarsDependencies(carsRepo, reservationsRepo)
 			test.setMocks(d)
 
-			carsService := NewCars(carsRepo)
+			carsService := NewCars(carsRepo, reservationsRepo)
 			cars, err := carsService.List(test.args.ctx, test.args.city, test.args.from_car_id)
 
 			assert.Equal(t, test.wants.cars, cars)

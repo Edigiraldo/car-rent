@@ -42,4 +42,5 @@ type ReservationsRepo interface {
 	FullUpdate(ctx context.Context, dr domain.Reservation) error
 	Delete(ctx context.Context, id uuid.UUID) error
 	GetByUserID(ctx context.Context, userID uuid.UUID) (dr []domain.Reservation, err error)
+	GetByCarID(ctx context.Context, CarID uuid.UUID) (dr []domain.Reservation, err error)
 }

@@ -112,3 +112,27 @@ func (rr ReservationsRepo) GetByUserID(ctx context.Context, userID uuid.UUID) (d
 
 	return reservations, nil
 }
+
+func (rr ReservationsRepo) GetByCarID(ctx context.Context, carID uuid.UUID) (dr []domain.Reservation, err error) {
+	var reservations []domain.Reservation
+
+	rows, err := rr.GetDBHandle().QueryContext(ctx, "SELECT * FROM reservations WHERE car_id=$1", carID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		reservation := models.Reservation{}
+		if err := rows.Scan(&reservation.ID, &reservation.CarID, &reservation.CarID, &reservation.Status, &reservation.PaymentStatus, &reservation.StartDate, &reservation.EndDate); err != nil {
+			return nil, err
+		}
+
+		reservations = append(reservations, reservation.ToDomain())
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return reservations, nil
+}

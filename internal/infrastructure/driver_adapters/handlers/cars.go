@@ -23,13 +23,13 @@ type Cars struct {
 	CarsService ports.CarsService
 }
 
-func NewCars(cs ports.CarsService) *Cars {
-	return &Cars{
+func NewCars(cs ports.CarsService) Cars {
+	return Cars{
 		CarsService: cs,
 	}
 }
 
-func (ch *Cars) Register(w http.ResponseWriter, r *http.Request) {
+func (ch Cars) Register(w http.ResponseWriter, r *http.Request) {
 	var newCar domain.Car
 	car, err := dtos.CarFromBody(r.Body)
 	if err != nil {
@@ -56,7 +56,7 @@ func (ch *Cars) Register(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(car)
 }
 
-func (ch *Cars) Get(w http.ResponseWriter, r *http.Request) {
+func (ch Cars) Get(w http.ResponseWriter, r *http.Request) {
 	var car dtos.Car
 
 	params := mux.Vars(r)
@@ -86,7 +86,7 @@ func (ch *Cars) Get(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(car)
 }
 
-func (ch *Cars) FullUpdate(w http.ResponseWriter, r *http.Request) {
+func (ch Cars) FullUpdate(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
 	ID, err := uuid.Parse(id)
@@ -123,7 +123,7 @@ func (ch *Cars) FullUpdate(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(car)
 }
 
-func (ch *Cars) Delete(w http.ResponseWriter, r *http.Request) {
+func (ch Cars) Delete(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
 	ID, err := uuid.Parse(id)
@@ -145,7 +145,7 @@ func (ch *Cars) Delete(w http.ResponseWriter, r *http.Request) {
 
 // Lists cars from a city in pages of 20 elements. from_car_id parameter
 // is taken as the last seen car in a previous page.
-func (ch *Cars) List(w http.ResponseWriter, r *http.Request) {
+func (ch Cars) List(w http.ResponseWriter, r *http.Request) {
 	city := r.URL.Query().Get("city")
 	if city == "" {
 		http.Error(w, ErrCityQueryParamEmpty, http.StatusBadRequest)
@@ -179,4 +179,40 @@ func getListCarsResponse(cars []domain.Car) (listCarsResponse dtos.ListCarsRespo
 	}
 
 	return listCarsResponse
+}
+
+func (uh Cars) GetReservations(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	cID := params["id"]
+	carID, err := uuid.Parse(cID)
+	if err != nil {
+		http.Error(w, ErrInvalidID, http.StatusBadRequest)
+
+		return
+	}
+
+	drs, err := uh.CarsService.GetReservations(r.Context(), carID)
+	if err != nil {
+		http.Error(w, ErrInternalServerError, http.StatusInternalServerError)
+		log.Println(err)
+
+		return
+	}
+
+	reservations := getCarReservationsResponse(drs)
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(reservations)
+}
+
+func getCarReservationsResponse(domainReservations []domain.Reservation) (reservations dtos.Reservations) {
+	reservations.Reservations = make([]dtos.Reservation, 0)
+	for _, domainReservation := range domainReservations {
+		car := dtos.Reservation{}
+		car.FromDomain(domainReservation)
+
+		reservations.Reservations = append(reservations.Reservations, car)
+	}
+
+	return reservations
 }

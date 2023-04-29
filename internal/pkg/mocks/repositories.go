@@ -374,6 +374,21 @@ func (mr *MockReservationsRepoMockRecorder) Get(ctx, ID interface{}) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockReservationsRepo)(nil).Get), ctx, ID)
 }
 
+// GetByCarID mocks base method.
+func (m *MockReservationsRepo) GetByCarID(ctx context.Context, CarID uuid.UUID) ([]domain.Reservation, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByCarID", ctx, CarID)
+	ret0, _ := ret[0].([]domain.Reservation)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByCarID indicates an expected call of GetByCarID.
+func (mr *MockReservationsRepoMockRecorder) GetByCarID(ctx, CarID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByCarID", reflect.TypeOf((*MockReservationsRepo)(nil).GetByCarID), ctx, CarID)
+}
+
 // GetByUserID mocks base method.
 func (m *MockReservationsRepo) GetByUserID(ctx context.Context, userID uuid.UUID) ([]domain.Reservation, error) {
 	m.ctrl.T.Helper()

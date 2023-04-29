@@ -105,6 +105,18 @@ func (mr *MockCarsControllerMockRecorder) Get(w, r interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockCarsController)(nil).Get), w, r)
 }
 
+// GetReservations mocks base method.
+func (m *MockCarsController) GetReservations(w http.ResponseWriter, r *http.Request) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "GetReservations", w, r)
+}
+
+// GetReservations indicates an expected call of GetReservations.
+func (mr *MockCarsControllerMockRecorder) GetReservations(w, r interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetReservations", reflect.TypeOf((*MockCarsController)(nil).GetReservations), w, r)
+}
+
 // List mocks base method.
 func (m *MockCarsController) List(w http.ResponseWriter, r *http.Request) {
 	m.ctrl.T.Helper()

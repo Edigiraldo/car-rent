@@ -14,27 +14,29 @@ var (
 )
 
 type Cars struct {
-	carsRepository ports.CarsRepo
+	carsRepository         ports.CarsRepo
+	reservationsRepository ports.ReservationsRepo
 }
 
-func NewCars(cr ports.CarsRepo) *Cars {
-	return &Cars{
-		carsRepository: cr,
+func NewCars(cr ports.CarsRepo, rr ports.ReservationsRepo) Cars {
+	return Cars{
+		carsRepository:         cr,
+		reservationsRepository: rr,
 	}
 }
 
-func (c *Cars) Register(ctx context.Context, car domain.Car) (domain.Car, error) {
+func (cs Cars) Register(ctx context.Context, car domain.Car) (domain.Car, error) {
 	car.ID = uuid.New()
 
-	if err := c.carsRepository.Insert(ctx, car); err != nil {
+	if err := cs.carsRepository.Insert(ctx, car); err != nil {
 		return domain.Car{}, err
 	}
 
 	return car, nil
 }
 
-func (c *Cars) Get(ctx context.Context, ID uuid.UUID) (domain.Car, error) {
-	dc, err := c.carsRepository.Get(ctx, ID)
+func (cs Cars) Get(ctx context.Context, ID uuid.UUID) (domain.Car, error) {
+	dc, err := cs.carsRepository.Get(ctx, ID)
 	if err != nil {
 		return domain.Car{}, err
 	}
@@ -42,24 +44,33 @@ func (c *Cars) Get(ctx context.Context, ID uuid.UUID) (domain.Car, error) {
 	return dc, nil
 }
 
-func (c *Cars) FullUpdate(ctx context.Context, car domain.Car) error {
-	return c.carsRepository.FullUpdate(ctx, car)
+func (cs Cars) FullUpdate(ctx context.Context, car domain.Car) error {
+	return cs.carsRepository.FullUpdate(ctx, car)
 }
 
-func (c *Cars) Delete(ctx context.Context, id uuid.UUID) error {
-	return c.carsRepository.Delete(ctx, id)
+func (cs Cars) Delete(ctx context.Context, id uuid.UUID) error {
+	return cs.carsRepository.Delete(ctx, id)
 }
 
 // List cars by city name.
 // from_car_id is the last document retrieved in the last page
-func (c *Cars) List(ctx context.Context, city string, from_car_id string) ([]domain.Car, error) {
+func (cs Cars) List(ctx context.Context, city string, from_car_id string) ([]domain.Car, error) {
 	if from_car_id == "" {
 		from_car_id = constants.Values.NULL_UUID
 	}
-	cars, err := c.carsRepository.List(ctx, city, from_car_id, constants.Values.CARS_PER_PAGE)
+	cars, err := cs.carsRepository.List(ctx, city, from_car_id, constants.Values.CARS_PER_PAGE)
 	if err != nil {
 		return []domain.Car{}, err
 	}
 
 	return cars, nil
+}
+
+func (cs Cars) GetReservations(ctx context.Context, carID uuid.UUID) ([]domain.Reservation, error) {
+	drs, err := cs.reservationsRepository.GetByCarID(ctx, carID)
+	if err != nil {
+		return nil, err
+	}
+
+	return drs, nil
 }
