@@ -13,13 +13,13 @@ type Cities struct {
 	CitiesService ports.CitiesService
 }
 
-func NewCities(cs ports.CitiesService) *Cities {
-	return &Cities{
+func NewCities(cs ports.CitiesService) Cities {
+	return Cities{
 		CitiesService: cs,
 	}
 }
 
-func (ch *Cities) ListNames(w http.ResponseWriter, r *http.Request) {
+func (ch Cities) ListNames(w http.ResponseWriter, r *http.Request) {
 	citiesName, err := ch.CitiesService.ListNames(r.Context())
 	if err != nil {
 		http.Error(w, ErrInternalServerError, http.StatusInternalServerError)

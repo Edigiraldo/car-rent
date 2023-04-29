@@ -17,8 +17,8 @@ type Users struct {
 	reservationsRepository ports.ReservationsRepo
 }
 
-func NewUsers(ur ports.UsersRepo, rr ports.ReservationsRepo) *Users {
-	return &Users{
+func NewUsers(ur ports.UsersRepo, rr ports.ReservationsRepo) Users {
+	return Users{
 		usersRepository:        ur,
 		reservationsRepository: rr,
 	}

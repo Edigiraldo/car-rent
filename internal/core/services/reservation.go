@@ -16,8 +16,8 @@ type Reservations struct {
 	reservationsRepository ports.ReservationsRepo
 }
 
-func NewReservations(rr ports.ReservationsRepo) *Reservations {
-	return &Reservations{
+func NewReservations(rr ports.ReservationsRepo) Reservations {
+	return Reservations{
 		reservationsRepository: rr,
 	}
 }

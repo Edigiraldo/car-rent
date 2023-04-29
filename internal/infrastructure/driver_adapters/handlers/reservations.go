@@ -17,13 +17,13 @@ type Reservations struct {
 	ReservationsService ports.ReservationsService
 }
 
-func NewReservations(rs ports.ReservationsService) *Reservations {
-	return &Reservations{
+func NewReservations(rs ports.ReservationsService) Reservations {
+	return Reservations{
 		ReservationsService: rs,
 	}
 }
 
-func (rh *Reservations) Book(w http.ResponseWriter, r *http.Request) {
+func (rh Reservations) Book(w http.ResponseWriter, r *http.Request) {
 	var newReservation domain.Reservation
 	reservation, err := dtos.ReservationFromBody(r.Body)
 	if err != nil {
@@ -53,7 +53,7 @@ func (rh *Reservations) Book(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(reservation)
 }
 
-func (rh *Reservations) Get(w http.ResponseWriter, r *http.Request) {
+func (rh Reservations) Get(w http.ResponseWriter, r *http.Request) {
 	var reservation dtos.Reservation
 
 	params := mux.Vars(r)
@@ -83,7 +83,7 @@ func (rh *Reservations) Get(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(reservation)
 }
 
-func (rh *Reservations) FullUpdate(w http.ResponseWriter, r *http.Request) {
+func (rh Reservations) FullUpdate(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
 	ID, err := uuid.Parse(id)
@@ -122,7 +122,7 @@ func (rh *Reservations) FullUpdate(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(reservation)
 }
 
-func (rh *Reservations) Delete(w http.ResponseWriter, r *http.Request) {
+func (rh Reservations) Delete(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
 	ID, err := uuid.Parse(id)

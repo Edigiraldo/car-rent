@@ -15,12 +15,12 @@ type Cities struct {
 	carsRepository ports.CitiesRepo
 }
 
-func NewCities(cr ports.CitiesRepo) *Cities {
-	return &Cities{
+func NewCities(cr ports.CitiesRepo) Cities {
+	return Cities{
 		carsRepository: cr,
 	}
 }
 
-func (cs *Cities) ListNames(ctx context.Context) ([]string, error) {
+func (cs Cities) ListNames(ctx context.Context) ([]string, error) {
 	return cs.carsRepository.ListNames(ctx)
 }
