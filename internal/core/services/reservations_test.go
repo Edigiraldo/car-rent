@@ -322,3 +322,124 @@ func TestReservationsDelete(t *testing.T) {
 		})
 	}
 }
+
+func TestCheckReservation(t *testing.T) {
+	now := time.Now()
+	initConstantsFromServices(t)
+
+	type args struct {
+		ctx         context.Context
+		reservation domain.Reservation
+	}
+	type wants struct {
+		withError bool
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wants    wants
+		setMocks func(*reservationsDependencies)
+	}{
+		{
+			name: "returns an error when time frame is invalid",
+			args: args{
+				ctx: context.TODO(),
+				reservation: domain.Reservation{
+					UserID:        uuid.New(),
+					CarID:         uuid.New(),
+					Status:        "Reserved",
+					PaymentStatus: "Pending",
+					StartDate:     now,
+					EndDate:       now,
+				},
+			},
+			wants: wants{
+				withError: true,
+			},
+			setMocks: func(d *reservationsDependencies) {
+			},
+		},
+		{
+			name: "returns an error when period is shorter than allowed",
+			args: args{
+				ctx: context.TODO(),
+				reservation: domain.Reservation{
+					UserID:        uuid.New(),
+					CarID:         uuid.New(),
+					Status:        "Reserved",
+					PaymentStatus: "Pending",
+					StartDate:     now,
+					EndDate:       now.Add(1 * time.Second),
+				},
+			},
+			wants: wants{
+				withError: true,
+			},
+			setMocks: func(d *reservationsDependencies) {
+			},
+		},
+		{
+			name: "returns an error when car is unavailable",
+			args: args{
+				ctx: context.TODO(),
+				reservation: domain.Reservation{
+					UserID:        uuid.New(),
+					CarID:         uuid.New(),
+					Status:        "Reserved",
+					PaymentStatus: "Pending",
+					StartDate:     now,
+					EndDate:       now.Add(30 * 24 * time.Hour),
+				},
+			},
+			wants: wants{
+				withError: true,
+			},
+			setMocks: func(d *reservationsDependencies) {
+				d.reservationsRepository.EXPECT().GetByCarIDAndTimeFrame(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return([]domain.Reservation{
+					{
+						UserID:        uuid.New(),
+						CarID:         uuid.New(),
+						Status:        "Reserved",
+						PaymentStatus: "Pending",
+						StartDate:     now,
+						EndDate:       now.Add(30 * 24 * time.Hour),
+					},
+				}, nil)
+			},
+		},
+		{
+			name: "returns nil error when all validations pass",
+			args: args{
+				ctx: context.TODO(),
+				reservation: domain.Reservation{
+					UserID:        uuid.New(),
+					CarID:         uuid.New(),
+					Status:        "Reserved",
+					PaymentStatus: "Pending",
+					StartDate:     now,
+					EndDate:       now.Add(30 * 24 * time.Hour),
+				},
+			},
+			wants: wants{
+				withError: false,
+			},
+			setMocks: func(d *reservationsDependencies) {
+				d.reservationsRepository.EXPECT().GetByCarIDAndTimeFrame(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, nil)
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			mockCtlr := gomock.NewController(t)
+			reservationsRepo := mocks.NewMockReservationsRepo(mockCtlr)
+			d := NewReservationsDependencies(reservationsRepo)
+			test.setMocks(d)
+
+			reservationsService := NewReservations(reservationsRepo)
+			err := reservationsService.CheckReservation(test.args.ctx, test.args.reservation)
+
+			assert.Equal(t, test.wants.withError, err != nil)
+		})
+	}
+}
