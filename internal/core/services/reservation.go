@@ -99,6 +99,14 @@ func (rs Reservations) CheckReservation(ctx context.Context, reservation domain.
 		return err
 	}
 
+	// do not take into account the reservation when is being updated
+	for i, r := range reservations {
+		if r.ID == reservation.ID {
+			reservations = append(reservations[:i], reservations[i+1:]...)
+			break
+		}
+	}
+
 	if len(reservations) > 0 {
 		return errors.New(ErrCarNotAvailable)
 	}

@@ -557,6 +557,7 @@ func TestCheckReservation(t *testing.T) {
 			args: args{
 				ctx: context.TODO(),
 				reservation: domain.Reservation{
+					ID:            uuid.New(),
 					UserID:        uuid.New(),
 					CarID:         uuid.New(),
 					Status:        "Reserved",
@@ -567,6 +568,36 @@ func TestCheckReservation(t *testing.T) {
 			},
 			wants: wants{
 				err: errors.New(ErrCarNotAvailable),
+			},
+			setMocks: func(d *reservationsDependencies) {
+				d.reservationsRepository.EXPECT().GetByCarIDAndTimeFrame(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return([]domain.Reservation{
+					{
+						ID:            uuid.New(),
+						UserID:        uuid.New(),
+						CarID:         uuid.New(),
+						Status:        "Reserved",
+						PaymentStatus: "Pending",
+						StartDate:     now,
+						EndDate:       now.Add(30 * 24 * time.Hour),
+					},
+				}, nil)
+			},
+		},
+		{
+			name: "returns nil error when new reservation time frame intersects the past one",
+			args: args{
+				ctx: context.TODO(),
+				reservation: domain.Reservation{
+					UserID:        uuid.New(),
+					CarID:         uuid.New(),
+					Status:        "Reserved",
+					PaymentStatus: "Pending",
+					StartDate:     now.Add(1 * time.Hour),
+					EndDate:       now.Add(30 * 24 * time.Hour),
+				},
+			},
+			wants: wants{
+				err: nil,
 			},
 			setMocks: func(d *reservationsDependencies) {
 				d.reservationsRepository.EXPECT().GetByCarIDAndTimeFrame(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return([]domain.Reservation{
