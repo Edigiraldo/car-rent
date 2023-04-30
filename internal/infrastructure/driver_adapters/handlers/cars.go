@@ -145,6 +145,10 @@ func (ch Cars) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	from_car_id := r.URL.Query().Get("from_car_id")
+	if _, err := uuid.Parse(from_car_id); err != nil && from_car_id != "" {
+		httphandler.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		return
+	}
 
 	cars, err := ch.CarsService.List(r.Context(), city, from_car_id)
 	if err != nil && err.Error() != services.ErrInvalidCityName {
