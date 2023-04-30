@@ -3,10 +3,12 @@ package services
 import (
 	"context"
 	"errors"
+	"fmt"
 	"testing"
 	"time"
 
 	"github.com/Edigiraldo/car-rent/internal/core/domain"
+	"github.com/Edigiraldo/car-rent/internal/pkg/constants"
 	mocks "github.com/Edigiraldo/car-rent/internal/pkg/mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
@@ -332,7 +334,7 @@ func TestCheckReservation(t *testing.T) {
 		reservation domain.Reservation
 	}
 	type wants struct {
-		withError bool
+		err error
 	}
 	tests := []struct {
 		name     string
@@ -354,7 +356,7 @@ func TestCheckReservation(t *testing.T) {
 				},
 			},
 			wants: wants{
-				withError: true,
+				err: errors.New(ErrInvalidReservationTimeFrame),
 			},
 			setMocks: func(d *reservationsDependencies) {
 			},
@@ -373,7 +375,7 @@ func TestCheckReservation(t *testing.T) {
 				},
 			},
 			wants: wants{
-				withError: true,
+				err: fmt.Errorf("%s (%d hours)", ErrMinimumReservationHours, constants.Values.MINIMUM_RESERVATION_HOURS),
 			},
 			setMocks: func(d *reservationsDependencies) {
 			},
@@ -392,7 +394,7 @@ func TestCheckReservation(t *testing.T) {
 				},
 			},
 			wants: wants{
-				withError: true,
+				err: errors.New(ErrCarNotAvailable),
 			},
 			setMocks: func(d *reservationsDependencies) {
 				d.reservationsRepository.EXPECT().GetByCarIDAndTimeFrame(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return([]domain.Reservation{
@@ -421,7 +423,7 @@ func TestCheckReservation(t *testing.T) {
 				},
 			},
 			wants: wants{
-				withError: true,
+				err: errors.New(ErrInvalidReservationTimeFrame),
 			},
 			setMocks: func(d *reservationsDependencies) {
 			},
@@ -440,7 +442,7 @@ func TestCheckReservation(t *testing.T) {
 				},
 			},
 			wants: wants{
-				withError: false,
+				err: nil,
 			},
 			setMocks: func(d *reservationsDependencies) {
 				d.reservationsRepository.EXPECT().GetByCarIDAndTimeFrame(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, nil)
@@ -458,7 +460,7 @@ func TestCheckReservation(t *testing.T) {
 			reservationsService := NewReservations(reservationsRepo)
 			err := reservationsService.CheckReservation(test.args.ctx, test.args.reservation)
 
-			assert.Equal(t, test.wants.withError, err != nil)
+			assert.Equal(t, test.wants.err, err)
 		})
 	}
 }
