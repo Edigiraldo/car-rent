@@ -14,7 +14,6 @@ type CarsController interface {
 	FullUpdate(w http.ResponseWriter, r *http.Request)
 	Delete(w http.ResponseWriter, r *http.Request)
 	List(w http.ResponseWriter, r *http.Request)
-	GetReservations(w http.ResponseWriter, r *http.Request)
 }
 
 type UsersController interface {
@@ -34,4 +33,5 @@ type ReservationsController interface {
 	Get(w http.ResponseWriter, r *http.Request)
 	FullUpdate(w http.ResponseWriter, r *http.Request)
 	Delete(w http.ResponseWriter, r *http.Request)
+	GetByCarID(w http.ResponseWriter, r *http.Request)
 }

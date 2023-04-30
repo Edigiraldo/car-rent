@@ -21,7 +21,7 @@ func initializeDependencies(config Config) (ports.Database, error) {
 	reservationsRepository := postgres.NewReservationsRepository(carsRentDB)
 
 	// Initialize services
-	carsService := services.NewCars(carsRepository, reservationsRepository)
+	carsService := services.NewCars(carsRepository)
 	usersService := services.NewUsers(usersRepository, reservationsRepository)
 	citiesService := services.NewCities(citiesRepository)
 	reservationsService := services.NewReservations(reservationsRepository)

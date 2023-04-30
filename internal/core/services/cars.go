@@ -15,14 +15,12 @@ var (
 )
 
 type Cars struct {
-	carsRepository         ports.CarsRepo
-	reservationsRepository ports.ReservationsRepo
+	carsRepository ports.CarsRepo
 }
 
-func NewCars(cr ports.CarsRepo, rr ports.ReservationsRepo) Cars {
+func NewCars(cr ports.CarsRepo) Cars {
 	return Cars{
-		carsRepository:         cr,
-		reservationsRepository: rr,
+		carsRepository: cr,
 	}
 }
 
@@ -65,13 +63,4 @@ func (cs Cars) List(ctx context.Context, city string, from_car_id string) ([]dom
 	}
 
 	return cars, nil
-}
-
-func (cs Cars) GetReservations(ctx context.Context, carID uuid.UUID) ([]domain.Reservation, error) {
-	drs, err := cs.reservationsRepository.GetByCarID(ctx, carID)
-	if err != nil {
-		return nil, err
-	}
-
-	return drs, nil
 }

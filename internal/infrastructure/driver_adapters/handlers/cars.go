@@ -180,39 +180,3 @@ func getListCarsResponse(cars []domain.Car) (listCarsResponse dtos.ListCarsRespo
 
 	return listCarsResponse
 }
-
-func (uh Cars) GetReservations(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	cID := params["id"]
-	carID, err := uuid.Parse(cID)
-	if err != nil {
-		http.Error(w, ErrInvalidID, http.StatusBadRequest)
-
-		return
-	}
-
-	drs, err := uh.CarsService.GetReservations(r.Context(), carID)
-	if err != nil {
-		http.Error(w, ErrInternalServerError, http.StatusInternalServerError)
-		log.Println(err)
-
-		return
-	}
-
-	reservations := getCarReservationsResponse(drs)
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(reservations)
-}
-
-func getCarReservationsResponse(domainReservations []domain.Reservation) (reservations dtos.Reservations) {
-	reservations.Reservations = make([]dtos.Reservation, 0)
-	for _, domainReservation := range domainReservations {
-		car := dtos.Reservation{}
-		car.FromDomain(domainReservation)
-
-		reservations.Reservations = append(reservations.Reservations, car)
-	}
-
-	return reservations
-}

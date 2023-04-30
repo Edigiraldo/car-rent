@@ -15,7 +15,6 @@ type CarsService interface {
 	FullUpdate(ctx context.Context, dc domain.Car) error
 	Delete(ctx context.Context, id uuid.UUID) error
 	List(ctx context.Context, city string, from_car_id string) ([]domain.Car, error)
-	GetReservations(ctx context.Context, userID uuid.UUID) ([]domain.Reservation, error)
 }
 
 type UsersService interface {
@@ -35,4 +34,5 @@ type ReservationsService interface {
 	Get(ctx context.Context, id uuid.UUID) (domain.Reservation, error)
 	FullUpdate(ctx context.Context, dr domain.Reservation) error
 	Delete(ctx context.Context, id uuid.UUID) error
+	GetByCarID(ctx context.Context, userID uuid.UUID) ([]domain.Reservation, error)
 }

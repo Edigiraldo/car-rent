@@ -63,6 +63,15 @@ func (rs Reservations) Delete(ctx context.Context, id uuid.UUID) error {
 	return rs.reservationsRepository.Delete(ctx, id)
 }
 
+func (rs Reservations) GetByCarID(ctx context.Context, carID uuid.UUID) ([]domain.Reservation, error) {
+	drs, err := rs.reservationsRepository.GetByCarID(ctx, carID)
+	if err != nil {
+		return nil, err
+	}
+
+	return drs, nil
+}
+
 func (rs Reservations) CheckReservation(ctx context.Context, reservation domain.Reservation) error {
 	if isValid := utils.IsValidTimeFrame(reservation.StartDate, reservation.EndDate); !isValid {
 		return errors.New(ErrInvalidReservationTimeFrame)

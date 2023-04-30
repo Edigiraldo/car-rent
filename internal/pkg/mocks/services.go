@@ -79,21 +79,6 @@ func (mr *MockCarsServiceMockRecorder) Get(ctx, id interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockCarsService)(nil).Get), ctx, id)
 }
 
-// GetReservations mocks base method.
-func (m *MockCarsService) GetReservations(ctx context.Context, userID uuid.UUID) ([]domain.Reservation, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetReservations", ctx, userID)
-	ret0, _ := ret[0].([]domain.Reservation)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetReservations indicates an expected call of GetReservations.
-func (mr *MockCarsServiceMockRecorder) GetReservations(ctx, userID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetReservations", reflect.TypeOf((*MockCarsService)(nil).GetReservations), ctx, userID)
-}
-
 // List mocks base method.
 func (m *MockCarsService) List(ctx context.Context, city, from_car_id string) ([]domain.Car, error) {
 	m.ctrl.T.Helper()
@@ -337,4 +322,19 @@ func (m *MockReservationsService) Get(ctx context.Context, id uuid.UUID) (domain
 func (mr *MockReservationsServiceMockRecorder) Get(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockReservationsService)(nil).Get), ctx, id)
+}
+
+// GetByCarID mocks base method.
+func (m *MockReservationsService) GetByCarID(ctx context.Context, userID uuid.UUID) ([]domain.Reservation, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByCarID", ctx, userID)
+	ret0, _ := ret[0].([]domain.Reservation)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByCarID indicates an expected call of GetByCarID.
+func (mr *MockReservationsServiceMockRecorder) GetByCarID(ctx, userID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByCarID", reflect.TypeOf((*MockReservationsService)(nil).GetByCarID), ctx, userID)
 }

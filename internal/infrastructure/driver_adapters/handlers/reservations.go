@@ -147,3 +147,39 @@ func (rh Reservations) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusNoContent)
 }
+
+func (rh Reservations) GetByCarID(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	cID := params["id"]
+	carID, err := uuid.Parse(cID)
+	if err != nil {
+		http.Error(w, ErrInvalidID, http.StatusBadRequest)
+
+		return
+	}
+
+	drs, err := rh.ReservationsService.GetByCarID(r.Context(), carID)
+	if err != nil {
+		http.Error(w, ErrInternalServerError, http.StatusInternalServerError)
+		log.Println(err)
+
+		return
+	}
+
+	reservations := getReservationsResponse(drs)
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(reservations)
+}
+
+func getReservationsResponse(domainReservations []domain.Reservation) (reservations dtos.Reservations) {
+	reservations.Reservations = make([]dtos.Reservation, 0)
+	for _, domainReservation := range domainReservations {
+		car := dtos.Reservation{}
+		car.FromDomain(domainReservation)
+
+		reservations.Reservations = append(reservations.Reservations, car)
+	}
+
+	return reservations
+}
