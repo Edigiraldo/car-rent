@@ -175,21 +175,6 @@ func (mr *MockUsersServiceMockRecorder) Get(ctx, id interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockUsersService)(nil).Get), ctx, id)
 }
 
-// GetReservations mocks base method.
-func (m *MockUsersService) GetReservations(ctx context.Context, userID uuid.UUID) ([]domain.Reservation, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetReservations", ctx, userID)
-	ret0, _ := ret[0].([]domain.Reservation)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetReservations indicates an expected call of GetReservations.
-func (mr *MockUsersServiceMockRecorder) GetReservations(ctx, userID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetReservations", reflect.TypeOf((*MockUsersService)(nil).GetReservations), ctx, userID)
-}
-
 // Register mocks base method.
 func (m *MockUsersService) Register(ctx context.Context, car domain.User) (domain.User, error) {
 	m.ctrl.T.Helper()
@@ -337,4 +322,19 @@ func (m *MockReservationsService) GetByCarID(ctx context.Context, userID uuid.UU
 func (mr *MockReservationsServiceMockRecorder) GetByCarID(ctx, userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByCarID", reflect.TypeOf((*MockReservationsService)(nil).GetByCarID), ctx, userID)
+}
+
+// GetByUserID mocks base method.
+func (m *MockReservationsService) GetByUserID(ctx context.Context, userID uuid.UUID) ([]domain.Reservation, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByUserID", ctx, userID)
+	ret0, _ := ret[0].([]domain.Reservation)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByUserID indicates an expected call of GetByUserID.
+func (mr *MockReservationsServiceMockRecorder) GetByUserID(ctx, userID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByUserID", reflect.TypeOf((*MockReservationsService)(nil).GetByUserID), ctx, userID)
 }

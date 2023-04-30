@@ -31,7 +31,7 @@ func BindRoutes(b *Server) {
 	b.router.HandleFunc("/api/v1/users/{id}", usersHandler.Get).Methods(http.MethodGet)
 	b.router.HandleFunc("/api/v1/users/{id}", usersHandler.FullUpdate).Methods(http.MethodPut)
 	b.router.HandleFunc("/api/v1/users/{id}", usersHandler.Delete).Methods(http.MethodDelete)
-	b.router.HandleFunc("/api/v1/users/{id}/reservations", usersHandler.GetReservations).Methods(http.MethodGet)
+	b.router.HandleFunc("/api/v1/users/{id}/reservations", reservationsHandler.GetByUserID).Methods(http.MethodGet)
 
 	// Cities routes
 	b.router.HandleFunc("/api/v1/cities/names", citiesHandler.ListNames).Methods(http.MethodGet)

@@ -130,39 +130,3 @@ func (uh Users) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusNoContent)
 }
-
-func (uh Users) GetReservations(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	uID := params["id"]
-	userID, err := uuid.Parse(uID)
-	if err != nil {
-		http.Error(w, ErrInvalidID, http.StatusBadRequest)
-
-		return
-	}
-
-	drs, err := uh.UsersService.GetReservations(r.Context(), userID)
-	if err != nil {
-		http.Error(w, ErrInternalServerError, http.StatusInternalServerError)
-		log.Println(err)
-
-		return
-	}
-
-	reservations := getUserReservationsResponse(drs)
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(reservations)
-}
-
-func getUserReservationsResponse(domainReservations []domain.Reservation) (reservations dtos.Reservations) {
-	reservations.Reservations = make([]dtos.Reservation, 0)
-	for _, domainReservation := range domainReservations {
-		car := dtos.Reservation{}
-		car.FromDomain(domainReservation)
-
-		reservations.Reservations = append(reservations.Reservations, car)
-	}
-
-	return reservations
-}

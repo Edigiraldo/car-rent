@@ -367,6 +367,97 @@ func TestReservationsFullUpdate(t *testing.T) {
 	}
 }
 
+func TestReservationsDelete(t *testing.T) {
+	reservation := dtos.Reservation{
+		UserID:        uuid.New(),
+		CarID:         uuid.New(),
+		Status:        "Reserved",
+		PaymentStatus: "Pending",
+		StartDate:     time.Now(),
+		EndDate:       time.Now().AddDate(0, 0, 7),
+	}
+
+	type args struct {
+		requestID string
+	}
+	type wants struct {
+		statusCode int
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wants    wants
+		setMocks func(*reservationsDependencies)
+	}{
+		{
+			name: "returns status code 204 when reservation register was deleted successfully",
+			args: args{
+				requestID: reservation.ID.String(),
+			},
+			wants: wants{
+				statusCode: http.StatusNoContent,
+			},
+			setMocks: func(d *reservationsDependencies) {
+				d.reservationsService.EXPECT().Delete(gomock.Any(), reservation.ID).Return(nil)
+			},
+		},
+		{
+			name: "returns 400 status code when path param id is not an uuid",
+			args: args{
+				requestID: "this-is-not-a-uuid",
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			setMocks: func(d *reservationsDependencies) {
+			},
+		},
+		{
+			name: "returns 500 status code when there is a server error",
+			args: args{
+				requestID: reservation.ID.String(),
+			},
+			wants: wants{
+				statusCode: http.StatusInternalServerError,
+			},
+			setMocks: func(d *reservationsDependencies) {
+				d.reservationsService.EXPECT().Delete(gomock.Any(), reservation.ID).Return(errors.New("error deleting reservation"))
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			mockCtlr := gomock.NewController(t)
+			reservationsSrv := mocks.NewMockReservationsService(mockCtlr)
+			d := NewReservationsDependencies(reservationsSrv)
+			test.setMocks(d)
+
+			baseURL := "/api/v1/"
+			urlObj, _ := url.Parse(baseURL + "reservations/" + test.args.requestID)
+			URL := urlObj.String()
+
+			req, err := http.NewRequest(http.MethodDelete, URL, nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// Include request vars for gorilla mux to interpret path params
+			vars := map[string]string{
+				"id": test.args.requestID,
+			}
+			req = mux.SetURLVars(req, vars)
+
+			rr := httptest.NewRecorder()
+
+			reservationsHandler := NewReservations(reservationsSrv)
+			reservationsHandler.Delete(rr, req)
+
+			assert.Equal(t, test.wants.statusCode, rr.Code)
+		})
+	}
+}
+
 func TestReservationsListByCarID(t *testing.T) {
 	car_id := "1c6bd954-7e8d-73df-8ae9-6905fda236e8"
 	c_id, _ := uuid.Parse(car_id)
@@ -485,18 +576,32 @@ func TestReservationsListByCarID(t *testing.T) {
 	}
 }
 
-func TestReservationsDelete(t *testing.T) {
-	reservation := dtos.Reservation{
-		UserID:        uuid.New(),
-		CarID:         uuid.New(),
-		Status:        "Reserved",
-		PaymentStatus: "Pending",
-		StartDate:     time.Now(),
-		EndDate:       time.Now().AddDate(0, 0, 7),
+func TestReservationsListByUserID(t *testing.T) {
+	user_id := "6ef5d956-8a8d-22dd-0aef-5340fda236e8"
+	u_id, _ := uuid.Parse(user_id)
+	foundReservations := []domain.Reservation{
+		{
+			ID:            uuid.New(),
+			UserID:        u_id,
+			CarID:         uuid.New(),
+			Status:        "Reserved",
+			PaymentStatus: "Pending",
+			StartDate:     time.Now(),
+			EndDate:       time.Now().AddDate(0, 0, 7),
+		},
+		{
+			ID:            uuid.New(),
+			UserID:        u_id,
+			CarID:         uuid.New(),
+			Status:        "Reserved",
+			PaymentStatus: "Pending",
+			StartDate:     time.Now(),
+			EndDate:       time.Now().AddDate(0, 0, 7),
+		},
 	}
 
 	type args struct {
-		requestID string
+		user_id string
 	}
 	type wants struct {
 		statusCode int
@@ -508,21 +613,21 @@ func TestReservationsDelete(t *testing.T) {
 		setMocks func(*reservationsDependencies)
 	}{
 		{
-			name: "returns status code 204 when reservation register was deleted successfully",
+			name: "returns status code 200 when user reservaations where found",
 			args: args{
-				requestID: reservation.ID.String(),
+				user_id: user_id,
 			},
 			wants: wants{
-				statusCode: http.StatusNoContent,
+				statusCode: http.StatusOK,
 			},
 			setMocks: func(d *reservationsDependencies) {
-				d.reservationsService.EXPECT().Delete(gomock.Any(), reservation.ID).Return(nil)
+				d.reservationsService.EXPECT().GetByUserID(gomock.Any(), u_id).Return(foundReservations, nil)
 			},
 		},
 		{
-			name: "returns 400 status code when path param id is not an uuid",
+			name: "returns status code 400 when user id param is empty",
 			args: args{
-				requestID: "this-is-not-a-uuid",
+				user_id: "",
 			},
 			wants: wants{
 				statusCode: http.StatusBadRequest,
@@ -533,13 +638,13 @@ func TestReservationsDelete(t *testing.T) {
 		{
 			name: "returns 500 status code when there is a server error",
 			args: args{
-				requestID: reservation.ID.String(),
+				user_id: user_id,
 			},
 			wants: wants{
 				statusCode: http.StatusInternalServerError,
 			},
 			setMocks: func(d *reservationsDependencies) {
-				d.reservationsService.EXPECT().Delete(gomock.Any(), reservation.ID).Return(errors.New("error deleting reservation"))
+				d.reservationsService.EXPECT().GetByUserID(gomock.Any(), u_id).Return([]domain.Reservation{}, errors.New("error getting reservations list"))
 			},
 		},
 	}
@@ -552,25 +657,38 @@ func TestReservationsDelete(t *testing.T) {
 			test.setMocks(d)
 
 			baseURL := "/api/v1/"
-			urlObj, _ := url.Parse(baseURL + "reservations/" + test.args.requestID)
+			values := url.Values{}
+			values.Set("id", test.args.user_id)
+			urlObj, _ := url.Parse(baseURL + "reservations/?" + values.Encode())
 			URL := urlObj.String()
 
-			req, err := http.NewRequest(http.MethodDelete, URL, nil)
+			req, err := http.NewRequest(http.MethodGet, URL, nil)
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			// Include request vars for gorilla mux to interpret path params
 			vars := map[string]string{
-				"id": test.args.requestID,
+				"id": test.args.user_id,
 			}
 			req = mux.SetURLVars(req, vars)
 
 			rr := httptest.NewRecorder()
 
-			reservationsHandler := NewReservations(reservationsSrv)
-			reservationsHandler.Delete(rr, req)
+			reservationHandler := NewReservations(reservationsSrv)
+			reservationHandler.GetByUserID(rr, req)
 
+			if rr.Result().StatusCode == http.StatusOK {
+				body := dtos.Reservations{}
+				err = json.Unmarshal(rr.Body.Bytes(), &body)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if len(body.Reservations) != 0 {
+					assert.Equal(t, foundReservations[0].ID, body.Reservations[0].ID)
+					assert.Equal(t, len(foundReservations), len(body.Reservations))
+				}
+			}
 			assert.Equal(t, test.wants.statusCode, rr.Code)
 		})
 	}

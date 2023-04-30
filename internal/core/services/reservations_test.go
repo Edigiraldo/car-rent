@@ -411,6 +411,92 @@ func TestGetByCarID(t *testing.T) {
 	}
 }
 
+func TestGetByUserID(t *testing.T) {
+	initConstantsFromServices(t)
+
+	user_id := "7d4bd954-8a8d-55dd-0aef-6440fda236e8"
+	u_id, _ := uuid.Parse(user_id)
+	foundReservations := []domain.Reservation{
+		{
+			ID:            uuid.New(),
+			UserID:        u_id,
+			CarID:         uuid.New(),
+			Status:        "Reserved",
+			PaymentStatus: "Pending",
+			StartDate:     time.Now(),
+			EndDate:       time.Now().AddDate(0, 0, 7),
+		},
+		{
+			ID:            uuid.New(),
+			UserID:        u_id,
+			CarID:         uuid.New(),
+			Status:        "Reserved",
+			PaymentStatus: "Pending",
+			StartDate:     time.Now(),
+			EndDate:       time.Now().AddDate(0, 0, 7),
+		},
+	}
+
+	type args struct {
+		ctx    context.Context
+		userID uuid.UUID
+	}
+	type wants struct {
+		reservations []domain.Reservation
+		err          error
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wants    wants
+		setMocks func(*reservationsDependencies)
+	}{
+		{
+			name: "returns nil error when reservations were found",
+			args: args{
+				ctx:    context.TODO(),
+				userID: u_id,
+			},
+			wants: wants{
+				reservations: foundReservations,
+				err:          nil,
+			},
+			setMocks: func(d *reservationsDependencies) {
+				d.reservationsRepository.EXPECT().GetByUserID(gomock.Any(), u_id).Return(foundReservations, nil)
+			},
+		},
+		{
+			name: "returns an error when repository fails retrieving reservations",
+			args: args{
+				ctx:    context.TODO(),
+				userID: u_id,
+			},
+			wants: wants{
+				reservations: nil,
+				err:          errors.New("there was some internal error"),
+			},
+			setMocks: func(d *reservationsDependencies) {
+				d.reservationsRepository.EXPECT().GetByUserID(gomock.Any(), u_id).Return([]domain.Reservation{}, errors.New("there was some internal error"))
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			mockCtlr := gomock.NewController(t)
+			reservationsRepo := mocks.NewMockReservationsRepo(mockCtlr)
+			d := NewReservationsDependencies(reservationsRepo)
+			test.setMocks(d)
+
+			reservationsService := NewReservations(reservationsRepo)
+			reservations, err := reservationsService.GetByUserID(test.args.ctx, test.args.userID)
+
+			assert.Equal(t, test.wants.reservations, reservations)
+			assert.Equal(t, test.wants.err, err)
+		})
+	}
+}
+
 func TestCheckReservation(t *testing.T) {
 	now := time.Now()
 	initConstantsFromServices(t)

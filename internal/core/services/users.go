@@ -13,14 +13,12 @@ var (
 )
 
 type Users struct {
-	usersRepository        ports.UsersRepo
-	reservationsRepository ports.ReservationsRepo
+	usersRepository ports.UsersRepo
 }
 
-func NewUsers(ur ports.UsersRepo, rr ports.ReservationsRepo) Users {
+func NewUsers(ur ports.UsersRepo) Users {
 	return Users{
-		usersRepository:        ur,
-		reservationsRepository: rr,
+		usersRepository: ur,
 	}
 }
 
@@ -49,13 +47,4 @@ func (us Users) FullUpdate(ctx context.Context, user domain.User) error {
 
 func (us Users) Delete(ctx context.Context, id uuid.UUID) error {
 	return us.usersRepository.Delete(ctx, id)
-}
-
-func (us Users) GetReservations(ctx context.Context, userID uuid.UUID) ([]domain.Reservation, error) {
-	drs, err := us.reservationsRepository.GetByUserID(ctx, userID)
-	if err != nil {
-		return nil, err
-	}
-
-	return drs, nil
 }

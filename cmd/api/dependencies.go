@@ -22,7 +22,7 @@ func initializeDependencies(config Config) (ports.Database, error) {
 
 	// Initialize services
 	carsService := services.NewCars(carsRepository)
-	usersService := services.NewUsers(usersRepository, reservationsRepository)
+	usersService := services.NewUsers(usersRepository)
 	citiesService := services.NewCities(citiesRepository)
 	reservationsService := services.NewReservations(reservationsRepository)
 
