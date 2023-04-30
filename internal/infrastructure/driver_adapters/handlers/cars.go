@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 
@@ -9,6 +8,7 @@ import (
 	"github.com/Edigiraldo/car-rent/internal/core/ports"
 	"github.com/Edigiraldo/car-rent/internal/core/services"
 	"github.com/Edigiraldo/car-rent/internal/infrastructure/driver_adapters/dtos"
+	"github.com/Edigiraldo/car-rent/pkg/httphandler"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
@@ -33,27 +33,25 @@ func (ch Cars) Register(w http.ResponseWriter, r *http.Request) {
 	var newCar domain.Car
 	car, err := dtos.CarFromBody(r.Body)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		httphandler.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	if newCar, err = ch.CarsService.Register(r.Context(), car.ToDomain()); err != nil {
 		if err.Error() == services.ErrInvalidCityName {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			httphandler.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
 		log.Println(err)
-		http.Error(w, ErrInternalServerError, http.StatusInternalServerError)
+		httphandler.WriteErrorResponse(w, http.StatusInternalServerError, ErrInternalServerError)
 
 		return
 	}
 
 	car.FromDomain(newCar)
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(car)
+	httphandler.WriteSuccessResponse(w, http.StatusCreated, car)
 }
 
 func (ch Cars) Get(w http.ResponseWriter, r *http.Request) {
@@ -63,17 +61,16 @@ func (ch Cars) Get(w http.ResponseWriter, r *http.Request) {
 	id := params["id"]
 	ID, err := uuid.Parse(id)
 	if err != nil {
-		http.Error(w, ErrInvalidID, http.StatusBadRequest)
-
+		httphandler.WriteErrorResponse(w, http.StatusBadRequest, ErrInvalidID)
 		return
 	}
 
 	dc, err := ch.CarsService.Get(r.Context(), ID)
 	if err != nil {
 		if err.Error() == services.ErrCarNotFound {
-			http.Error(w, err.Error(), http.StatusNotFound)
+			httphandler.WriteErrorResponse(w, http.StatusNotFound, err.Error())
 		} else {
-			http.Error(w, ErrInternalServerError, http.StatusInternalServerError)
+			httphandler.WriteErrorResponse(w, http.StatusInternalServerError, ErrInternalServerError)
 			log.Println(err)
 		}
 
@@ -82,8 +79,7 @@ func (ch Cars) Get(w http.ResponseWriter, r *http.Request) {
 
 	car.FromDomain(dc)
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(car)
+	httphandler.WriteSuccessResponse(w, http.StatusOK, car)
 }
 
 func (ch Cars) FullUpdate(w http.ResponseWriter, r *http.Request) {
@@ -91,15 +87,13 @@ func (ch Cars) FullUpdate(w http.ResponseWriter, r *http.Request) {
 	id := params["id"]
 	ID, err := uuid.Parse(id)
 	if err != nil {
-		http.Error(w, ErrInvalidID, http.StatusBadRequest)
-
+		httphandler.WriteErrorResponse(w, http.StatusBadRequest, ErrInvalidID)
 		return
 	}
 
 	car, err := dtos.CarFromBody(r.Body)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-
+		httphandler.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -108,19 +102,18 @@ func (ch Cars) FullUpdate(w http.ResponseWriter, r *http.Request) {
 
 	if err = ch.CarsService.FullUpdate(r.Context(), car.ToDomain()); err != nil {
 		if err.Error() == services.ErrCarNotFound {
-			http.Error(w, err.Error(), http.StatusNotFound)
+			httphandler.WriteErrorResponse(w, http.StatusNotFound, err.Error())
 		} else if err.Error() == services.ErrInvalidCityName {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			httphandler.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		} else {
-			http.Error(w, ErrInternalServerError, http.StatusInternalServerError)
+			httphandler.WriteErrorResponse(w, http.StatusInternalServerError, ErrInternalServerError)
 			log.Println(err)
 		}
 
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(car)
+	httphandler.WriteSuccessResponse(w, http.StatusOK, car)
 }
 
 func (ch Cars) Delete(w http.ResponseWriter, r *http.Request) {
@@ -128,19 +121,19 @@ func (ch Cars) Delete(w http.ResponseWriter, r *http.Request) {
 	id := params["id"]
 	ID, err := uuid.Parse(id)
 	if err != nil {
-		http.Error(w, ErrInvalidID, http.StatusBadRequest)
-
+		httphandler.WriteErrorResponse(w, http.StatusBadRequest, ErrInvalidID)
 		return
 	}
 
 	err = ch.CarsService.Delete(r.Context(), ID)
 	if err != nil {
-		http.Error(w, ErrInternalServerError, http.StatusInternalServerError)
+		httphandler.WriteErrorResponse(w, http.StatusInternalServerError, ErrInternalServerError)
 		log.Println(err)
 
 		return
 	}
-	w.WriteHeader(http.StatusNoContent)
+
+	httphandler.WriteSuccessResponse(w, http.StatusNoContent, nil)
 }
 
 // Lists cars from a city in pages of 20 elements. from_car_id parameter
@@ -148,15 +141,14 @@ func (ch Cars) Delete(w http.ResponseWriter, r *http.Request) {
 func (ch Cars) List(w http.ResponseWriter, r *http.Request) {
 	city := r.URL.Query().Get("city")
 	if city == "" {
-		http.Error(w, ErrCityQueryParamEmpty, http.StatusBadRequest)
-
+		httphandler.WriteErrorResponse(w, http.StatusBadRequest, ErrCityQueryParamEmpty)
 		return
 	}
 	from_car_id := r.URL.Query().Get("from_car_id")
 
 	cars, err := ch.CarsService.List(r.Context(), city, from_car_id)
 	if err != nil && err.Error() != services.ErrInvalidCityName {
-		http.Error(w, ErrInternalServerError, http.StatusInternalServerError)
+		httphandler.WriteErrorResponse(w, http.StatusInternalServerError, ErrInternalServerError)
 		log.Println(err)
 
 		return
@@ -164,8 +156,7 @@ func (ch Cars) List(w http.ResponseWriter, r *http.Request) {
 
 	listCarsResponse := getListCarsResponse(cars)
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(listCarsResponse)
+	httphandler.WriteSuccessResponse(w, http.StatusOK, listCarsResponse)
 }
 
 // Gets a list of cars and builds the user response

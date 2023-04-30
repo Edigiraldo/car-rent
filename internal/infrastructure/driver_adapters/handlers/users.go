@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 
@@ -9,6 +8,7 @@ import (
 	"github.com/Edigiraldo/car-rent/internal/core/ports"
 	"github.com/Edigiraldo/car-rent/internal/core/services"
 	"github.com/Edigiraldo/car-rent/internal/infrastructure/driver_adapters/dtos"
+	"github.com/Edigiraldo/car-rent/pkg/httphandler"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
@@ -27,23 +27,19 @@ func (uh Users) SignUp(w http.ResponseWriter, r *http.Request) {
 	var newUser domain.User
 	user, err := dtos.UserFromBody(r.Body)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-
+		httphandler.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	if newUser, err = uh.UsersService.Register(r.Context(), user.ToDomain()); err != nil {
+		httphandler.WriteErrorResponse(w, http.StatusInternalServerError, ErrInternalServerError)
 		log.Println(err)
-		http.Error(w, ErrInternalServerError, http.StatusInternalServerError)
 
 		return
 	}
 
 	user.FromDomain(newUser)
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(user)
+	httphandler.WriteSuccessResponse(w, http.StatusCreated, user)
 }
 
 func (uh Users) Get(w http.ResponseWriter, r *http.Request) {
@@ -53,17 +49,16 @@ func (uh Users) Get(w http.ResponseWriter, r *http.Request) {
 	id := params["id"]
 	ID, err := uuid.Parse(id)
 	if err != nil {
-		http.Error(w, ErrInvalidID, http.StatusBadRequest)
-
+		httphandler.WriteErrorResponse(w, http.StatusBadRequest, ErrInvalidID)
 		return
 	}
 
 	du, err := uh.UsersService.Get(r.Context(), ID)
 	if err != nil {
 		if err.Error() == services.ErrUserNotFound {
-			http.Error(w, err.Error(), http.StatusNotFound)
+			httphandler.WriteErrorResponse(w, http.StatusNotFound, err.Error())
 		} else {
-			http.Error(w, ErrInternalServerError, http.StatusInternalServerError)
+			httphandler.WriteErrorResponse(w, http.StatusInternalServerError, ErrInternalServerError)
 			log.Println(err)
 		}
 
@@ -71,9 +66,7 @@ func (uh Users) Get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user.FromDomain(du)
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(user)
+	httphandler.WriteSuccessResponse(w, http.StatusOK, user)
 }
 
 func (uh Users) FullUpdate(w http.ResponseWriter, r *http.Request) {
@@ -81,15 +74,13 @@ func (uh Users) FullUpdate(w http.ResponseWriter, r *http.Request) {
 	id := params["id"]
 	ID, err := uuid.Parse(id)
 	if err != nil {
-		http.Error(w, ErrInvalidID, http.StatusBadRequest)
-
+		httphandler.WriteErrorResponse(w, http.StatusBadRequest, ErrInvalidID)
 		return
 	}
 
 	user, err := dtos.UserFromBody(r.Body)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-
+		httphandler.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -98,17 +89,16 @@ func (uh Users) FullUpdate(w http.ResponseWriter, r *http.Request) {
 
 	if err = uh.UsersService.FullUpdate(r.Context(), user.ToDomain()); err != nil {
 		if err.Error() == services.ErrUserNotFound {
-			http.Error(w, err.Error(), http.StatusNotFound)
+			httphandler.WriteErrorResponse(w, http.StatusNotFound, err.Error())
 		} else {
-			http.Error(w, ErrInternalServerError, http.StatusInternalServerError)
+			httphandler.WriteErrorResponse(w, http.StatusInternalServerError, ErrInternalServerError)
 			log.Println(err)
 		}
 
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(user)
+	httphandler.WriteSuccessResponse(w, http.StatusOK, user)
 }
 
 func (uh Users) Delete(w http.ResponseWriter, r *http.Request) {
@@ -116,17 +106,17 @@ func (uh Users) Delete(w http.ResponseWriter, r *http.Request) {
 	id := params["id"]
 	ID, err := uuid.Parse(id)
 	if err != nil {
-		http.Error(w, ErrInvalidID, http.StatusBadRequest)
-
+		httphandler.WriteErrorResponse(w, http.StatusBadRequest, ErrInvalidID)
 		return
 	}
 
 	err = uh.UsersService.Delete(r.Context(), ID)
 	if err != nil {
-		http.Error(w, ErrInternalServerError, http.StatusInternalServerError)
+		httphandler.WriteErrorResponse(w, http.StatusInternalServerError, ErrInternalServerError)
 		log.Println(err)
 
 		return
 	}
-	w.WriteHeader(http.StatusNoContent)
+
+	httphandler.WriteSuccessResponse(w, http.StatusNoContent, nil)
 }

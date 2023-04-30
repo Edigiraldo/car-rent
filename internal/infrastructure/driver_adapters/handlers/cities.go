@@ -1,12 +1,12 @@
 package handlers
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 
 	"github.com/Edigiraldo/car-rent/internal/core/ports"
 	"github.com/Edigiraldo/car-rent/internal/infrastructure/driver_adapters/dtos"
+	"github.com/Edigiraldo/car-rent/pkg/httphandler"
 )
 
 type Cities struct {
@@ -22,7 +22,7 @@ func NewCities(cs ports.CitiesService) Cities {
 func (ch Cities) ListNames(w http.ResponseWriter, r *http.Request) {
 	citiesName, err := ch.CitiesService.ListNames(r.Context())
 	if err != nil {
-		http.Error(w, ErrInternalServerError, http.StatusInternalServerError)
+		httphandler.WriteErrorResponse(w, http.StatusInternalServerError, ErrInternalServerError)
 		log.Println(err)
 
 		return
@@ -32,6 +32,5 @@ func (ch Cities) ListNames(w http.ResponseWriter, r *http.Request) {
 		CitiesName: citiesName,
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	httphandler.WriteSuccessResponse(w, http.StatusOK, response)
 }

@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 	"strings"
@@ -10,6 +9,7 @@ import (
 	"github.com/Edigiraldo/car-rent/internal/core/ports"
 	"github.com/Edigiraldo/car-rent/internal/core/services"
 	"github.com/Edigiraldo/car-rent/internal/infrastructure/driver_adapters/dtos"
+	"github.com/Edigiraldo/car-rent/pkg/httphandler"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
@@ -28,8 +28,7 @@ func (rh Reservations) Book(w http.ResponseWriter, r *http.Request) {
 	var newReservation domain.Reservation
 	reservation, err := dtos.ReservationFromBody(r.Body)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-
+		httphandler.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -38,20 +37,17 @@ func (rh Reservations) Book(w http.ResponseWriter, r *http.Request) {
 			err.Error() == services.ErrCarNotFound ||
 			err.Error() == services.ErrInvalidReservationTimeFrame ||
 			strings.HasPrefix(err.Error(), services.ErrMinimumReservationHours) {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			httphandler.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
+		httphandler.WriteErrorResponse(w, http.StatusInternalServerError, ErrInternalServerError)
 		log.Println(err)
-		http.Error(w, ErrInternalServerError, http.StatusInternalServerError)
 
 		return
 	}
 
 	reservation.FromDomain(newReservation)
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(reservation)
+	httphandler.WriteSuccessResponse(w, http.StatusCreated, reservation)
 }
 
 func (rh Reservations) Get(w http.ResponseWriter, r *http.Request) {
@@ -61,17 +57,16 @@ func (rh Reservations) Get(w http.ResponseWriter, r *http.Request) {
 	id := params["id"]
 	ID, err := uuid.Parse(id)
 	if err != nil {
-		http.Error(w, ErrInvalidID, http.StatusBadRequest)
-
+		httphandler.WriteErrorResponse(w, http.StatusBadRequest, ErrInvalidID)
 		return
 	}
 
 	dc, err := rh.ReservationsService.Get(r.Context(), ID)
 	if err != nil {
 		if err.Error() == services.ErrReservationNotFound {
-			http.Error(w, err.Error(), http.StatusNotFound)
+			httphandler.WriteErrorResponse(w, http.StatusNotFound, err.Error())
 		} else {
-			http.Error(w, ErrInternalServerError, http.StatusInternalServerError)
+			httphandler.WriteErrorResponse(w, http.StatusInternalServerError, ErrInternalServerError)
 			log.Println(err)
 		}
 
@@ -79,9 +74,8 @@ func (rh Reservations) Get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	reservation.FromDomain(dc)
+	httphandler.WriteSuccessResponse(w, http.StatusOK, reservation)
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(reservation)
 }
 
 func (rh Reservations) FullUpdate(w http.ResponseWriter, r *http.Request) {
@@ -89,15 +83,13 @@ func (rh Reservations) FullUpdate(w http.ResponseWriter, r *http.Request) {
 	id := params["id"]
 	ID, err := uuid.Parse(id)
 	if err != nil {
-		http.Error(w, ErrInvalidID, http.StatusBadRequest)
-
+		httphandler.WriteErrorResponse(w, http.StatusBadRequest, ErrInvalidID)
 		return
 	}
 
 	reservation, err := dtos.ReservationFromBody(r.Body)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-
+		httphandler.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -106,26 +98,24 @@ func (rh Reservations) FullUpdate(w http.ResponseWriter, r *http.Request) {
 
 	if err = rh.ReservationsService.FullUpdate(r.Context(), reservation.ToDomain()); err != nil {
 		if err.Error() == services.ErrReservationNotFound {
-			http.Error(w, err.Error(), http.StatusNotFound)
+			httphandler.WriteErrorResponse(w, http.StatusNotFound, err.Error())
 			return
 		} else if err.Error() == services.ErrUserNotFound ||
 			err.Error() == services.ErrCarNotFound ||
 			err.Error() == services.ErrInvalidReservationTimeFrame ||
 			strings.HasPrefix(err.Error(), services.ErrMinimumReservationHours) ||
 			err.Error() == services.ErrCarNotAvailable {
-
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			httphandler.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		} else {
-			http.Error(w, ErrInternalServerError, http.StatusInternalServerError)
+			httphandler.WriteErrorResponse(w, http.StatusInternalServerError, ErrInternalServerError)
 			log.Println(err)
 		}
 
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(reservation)
+	httphandler.WriteSuccessResponse(w, http.StatusOK, reservation)
 }
 
 func (rh Reservations) Delete(w http.ResponseWriter, r *http.Request) {
@@ -133,19 +123,19 @@ func (rh Reservations) Delete(w http.ResponseWriter, r *http.Request) {
 	id := params["id"]
 	ID, err := uuid.Parse(id)
 	if err != nil {
-		http.Error(w, ErrInvalidID, http.StatusBadRequest)
-
+		httphandler.WriteErrorResponse(w, http.StatusBadRequest, ErrInvalidID)
 		return
 	}
 
 	err = rh.ReservationsService.Delete(r.Context(), ID)
 	if err != nil {
-		http.Error(w, ErrInternalServerError, http.StatusInternalServerError)
+		httphandler.WriteErrorResponse(w, http.StatusInternalServerError, ErrInternalServerError)
 		log.Println(err)
 
 		return
 	}
-	w.WriteHeader(http.StatusNoContent)
+
+	httphandler.WriteSuccessResponse(w, http.StatusNoContent, nil)
 }
 
 func (rh Reservations) GetByCarID(w http.ResponseWriter, r *http.Request) {
@@ -153,23 +143,20 @@ func (rh Reservations) GetByCarID(w http.ResponseWriter, r *http.Request) {
 	cID := params["id"]
 	carID, err := uuid.Parse(cID)
 	if err != nil {
-		http.Error(w, ErrInvalidID, http.StatusBadRequest)
-
+		httphandler.WriteErrorResponse(w, http.StatusBadRequest, ErrInvalidID)
 		return
 	}
 
 	drs, err := rh.ReservationsService.GetByCarID(r.Context(), carID)
 	if err != nil {
-		http.Error(w, ErrInternalServerError, http.StatusInternalServerError)
+		httphandler.WriteErrorResponse(w, http.StatusInternalServerError, ErrInternalServerError)
 		log.Println(err)
 
 		return
 	}
 
 	reservations := getReservationsResponse(drs)
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(reservations)
+	httphandler.WriteSuccessResponse(w, http.StatusOK, reservations)
 }
 
 func (rh Reservations) GetByUserID(w http.ResponseWriter, r *http.Request) {
@@ -177,23 +164,20 @@ func (rh Reservations) GetByUserID(w http.ResponseWriter, r *http.Request) {
 	uID := params["id"]
 	userID, err := uuid.Parse(uID)
 	if err != nil {
-		http.Error(w, ErrInvalidID, http.StatusBadRequest)
-
+		httphandler.WriteErrorResponse(w, http.StatusBadRequest, ErrInvalidID)
 		return
 	}
 
 	drs, err := rh.ReservationsService.GetByUserID(r.Context(), userID)
 	if err != nil {
-		http.Error(w, ErrInternalServerError, http.StatusInternalServerError)
+		httphandler.WriteErrorResponse(w, http.StatusInternalServerError, ErrInternalServerError)
 		log.Println(err)
 
 		return
 	}
 
 	reservations := getReservationsResponse(drs)
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(reservations)
+	httphandler.WriteSuccessResponse(w, http.StatusOK, reservations)
 }
 
 func getReservationsResponse(domainReservations []domain.Reservation) (reservations dtos.Reservations) {
