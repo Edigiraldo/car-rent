@@ -36,6 +36,7 @@ func (rh Reservations) Book(w http.ResponseWriter, r *http.Request) {
 		if err.Error() == services.ErrUserNotFound ||
 			err.Error() == services.ErrCarNotFound ||
 			err.Error() == services.ErrInvalidReservationTimeFrame ||
+			err.Error() == services.ErrCarNotAvailable ||
 			strings.HasPrefix(err.Error(), services.ErrMinimumReservationHours) {
 			httphandler.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
