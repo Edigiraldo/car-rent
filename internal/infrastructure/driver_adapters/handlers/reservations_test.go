@@ -538,10 +538,10 @@ func TestReservationsListByCarID(t *testing.T) {
 			d := NewReservationsDependencies(carsSrv)
 			test.setMocks(d)
 
-			baseURL := "/api/v1/"
+			baseURL := "/api/v1/cars/"
 			values := url.Values{}
 			values.Set("id", test.args.car_id)
-			urlObj, _ := url.Parse(baseURL + "reservations/?" + values.Encode())
+			urlObj, _ := url.Parse(baseURL + values.Encode() + "/reservations")
 			URL := urlObj.String()
 
 			req, err := http.NewRequest(http.MethodGet, URL, nil)
@@ -656,10 +656,10 @@ func TestReservationsListByUserID(t *testing.T) {
 			d := NewReservationsDependencies(reservationsSrv)
 			test.setMocks(d)
 
-			baseURL := "/api/v1/"
+			baseURL := "/api/v1/users/"
 			values := url.Values{}
 			values.Set("id", test.args.user_id)
-			urlObj, _ := url.Parse(baseURL + "reservations/?" + values.Encode())
+			urlObj, _ := url.Parse(baseURL + values.Encode() + "/reservations")
 			URL := urlObj.String()
 
 			req, err := http.NewRequest(http.MethodGet, URL, nil)
