@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/Edigiraldo/car-rent/internal/core/domain"
 	"github.com/Edigiraldo/car-rent/internal/core/ports"
@@ -64,6 +65,10 @@ func (rs Reservations) Delete(ctx context.Context, id uuid.UUID) error {
 
 func (rs Reservations) CheckReservation(ctx context.Context, reservation domain.Reservation) error {
 	if isValid := utils.IsValidTimeFrame(reservation.StartDate, reservation.EndDate); !isValid {
+		return errors.New(ErrInvalidReservationTimeFrame)
+	}
+
+	if reservation.StartDate.Before(time.Now()) {
 		return errors.New(ErrInvalidReservationTimeFrame)
 	}
 
