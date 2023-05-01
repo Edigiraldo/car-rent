@@ -715,7 +715,7 @@ func TestCarsList(t *testing.T) {
 			},
 		},
 		{
-			name: "returns ",
+			name: "returns cars when were successfully found",
 			args: args{
 				ctx:         context.TODO(),
 				cityName:    "Los Angeles",
