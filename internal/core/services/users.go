@@ -9,7 +9,8 @@ import (
 )
 
 var (
-	ErrUserNotFound = "user not found"
+	ErrUserNotFound           = "user not found"
+	ErrEmailAlreadyRegistered = "email already registered"
 )
 
 type Users struct {

@@ -7,5 +7,6 @@ CREATE TABLE users (
     last_name VARCHAR(50) NOT NULL,
     email VARCHAR(235) NOT NULL,
     type USER_TYPES NOT NULL,
-    status USER_STATUSES NOT NULL
+    status USER_STATUSES NOT NULL,
+    CONSTRAINT unique_email UNIQUE (email)
 );

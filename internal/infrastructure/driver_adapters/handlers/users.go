@@ -32,6 +32,10 @@ func (uh Users) SignUp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if newUser, err = uh.UsersService.Register(r.Context(), user.ToDomain()); err != nil {
+		if err.Error() == services.ErrEmailAlreadyRegistered {
+			httphandler.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
 		httphandler.WriteErrorResponse(w, http.StatusInternalServerError, ErrInternalServerError)
 		log.Println(err)
 
@@ -88,7 +92,8 @@ func (uh Users) FullUpdate(w http.ResponseWriter, r *http.Request) {
 	user.ID = ID
 
 	if err = uh.UsersService.FullUpdate(r.Context(), user.ToDomain()); err != nil {
-		if err.Error() == services.ErrUserNotFound {
+		if err.Error() == services.ErrUserNotFound ||
+			err.Error() == services.ErrEmailAlreadyRegistered {
 			httphandler.WriteErrorResponse(w, http.StatusNotFound, err.Error())
 		} else {
 			httphandler.WriteErrorResponse(w, http.StatusInternalServerError, ErrInternalServerError)
