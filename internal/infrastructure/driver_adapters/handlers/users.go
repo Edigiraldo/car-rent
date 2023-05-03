@@ -92,9 +92,10 @@ func (uh Users) FullUpdate(w http.ResponseWriter, r *http.Request) {
 	user.ID = ID
 
 	if err = uh.UsersService.FullUpdate(r.Context(), user.ToDomain()); err != nil {
-		if err.Error() == services.ErrUserNotFound ||
-			err.Error() == services.ErrEmailAlreadyRegistered {
+		if err.Error() == services.ErrUserNotFound {
 			httphandler.WriteErrorResponse(w, http.StatusNotFound, err.Error())
+		} else if err.Error() == services.ErrEmailAlreadyRegistered {
+			httphandler.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		} else {
 			httphandler.WriteErrorResponse(w, http.StatusInternalServerError, ErrInternalServerError)
 			log.Println(err)

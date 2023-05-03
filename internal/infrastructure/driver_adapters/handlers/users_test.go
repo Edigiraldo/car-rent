@@ -82,6 +82,18 @@ func TestUsersSingUp(t *testing.T) {
 			},
 		},
 		{
+			name: "returns 400 status code when user email is already in use",
+			args: args{
+				user: user,
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			setMocks: func(d *usersDependencies) {
+				d.usersService.EXPECT().Register(gomock.Any(), user.ToDomain()).Return(domain.User{}, errors.New(services.ErrEmailAlreadyRegistered))
+			},
+		},
+		{
 			name: "returns 500 status code when user service fails to register user",
 			args: args{
 				user: user,
@@ -296,6 +308,19 @@ func TestUsersFullUpdate(t *testing.T) {
 			},
 			setMocks: func(d *usersDependencies) {
 				d.usersService.EXPECT().FullUpdate(gomock.Any(), user.ToDomain()).Return(errors.New(services.ErrUserNotFound))
+			},
+		},
+		{
+			name: "returns 400 status code when user email is already in use",
+			args: args{
+				requestID: user.ID.String(),
+				user:      user,
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			setMocks: func(d *usersDependencies) {
+				d.usersService.EXPECT().FullUpdate(gomock.Any(), user.ToDomain()).Return(errors.New(services.ErrEmailAlreadyRegistered))
 			},
 		},
 		{

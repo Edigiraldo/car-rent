@@ -11,6 +11,7 @@ import (
 	mocks "github.com/Edigiraldo/car-rent/internal/pkg/mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/DATA-DOG/go-sqlmock.v1"
 )
@@ -50,6 +51,29 @@ func TestUsersInsert(t *testing.T) {
 		wants    wants
 		setMocks func(*usersDependencies) *sql.DB
 	}{
+		{
+			name: "returns error when user email is already registered",
+			args: args{
+				ctx:  context.TODO(),
+				user: du,
+			},
+			wants: wants{
+				err: errors.New(services.ErrEmailAlreadyRegistered),
+			},
+			setMocks: func(d *usersDependencies) *sql.DB {
+				dbHandle, mock, err := sqlmock.New()
+				if err != nil {
+					t.Fatal(err)
+				}
+				mock.ExpectExec("INSERT INTO users").
+					WithArgs(du.ID, du.FirstName, du.LastName, du.Email, du.Type, du.Status).
+					WillReturnError(&pq.Error{Code: "23505", Message: ".* unique_email .*"})
+
+				d.db.EXPECT().GetDBHandle().Return(dbHandle)
+
+				return dbHandle
+			},
+		},
 		{
 			name: "returns error when exec context fails",
 			args: args{
@@ -267,6 +291,29 @@ func TestUsersFullUpdate(t *testing.T) {
 		wants    wants
 		setMocks func(*usersDependencies) *sql.DB
 	}{
+		{
+			name: "returns error when user email is already registered",
+			args: args{
+				ctx:  context.TODO(),
+				user: du,
+			},
+			wants: wants{
+				err: errors.New(services.ErrEmailAlreadyRegistered),
+			},
+			setMocks: func(d *usersDependencies) *sql.DB {
+				dbHandle, mock, err := sqlmock.New()
+				if err != nil {
+					t.Fatal(err)
+				}
+				mock.ExpectExec("UPDATE users SET").
+					WithArgs(du.FirstName, du.LastName, du.Email, du.Type, du.Status, du.ID).
+					WillReturnError(&pq.Error{Code: "23505", Message: ".* unique_email .*"})
+
+				d.db.EXPECT().GetDBHandle().Return(dbHandle)
+
+				return dbHandle
+			},
+		},
 		{
 			name: "returns error when exec context fails",
 			args: args{
