@@ -124,7 +124,7 @@ func (rr ReservationsRepo) GetByCarID(ctx context.Context, carID uuid.UUID) (dr 
 	defer rows.Close()
 	for rows.Next() {
 		reservation := models.Reservation{}
-		if err := rows.Scan(&reservation.ID, &reservation.CarID, &reservation.CarID, &reservation.Status, &reservation.PaymentStatus, &reservation.StartDate, &reservation.EndDate); err != nil {
+		if err := rows.Scan(&reservation.ID, &reservation.UserID, &reservation.CarID, &reservation.Status, &reservation.PaymentStatus, &reservation.StartDate, &reservation.EndDate); err != nil {
 			return nil, err
 		}
 
@@ -149,7 +149,7 @@ func (rr ReservationsRepo) GetByCarIDAndTimeFrame(ctx context.Context, carID uui
 	defer rows.Close()
 	for rows.Next() {
 		reservation := models.Reservation{}
-		if err := rows.Scan(&reservation.ID, &reservation.CarID, &reservation.CarID, &reservation.Status, &reservation.PaymentStatus, &reservation.StartDate, &reservation.EndDate); err != nil {
+		if err := rows.Scan(&reservation.ID, &reservation.UserID, &reservation.CarID, &reservation.Status, &reservation.PaymentStatus, &reservation.StartDate, &reservation.EndDate); err != nil {
 			return nil, err
 		}
 
