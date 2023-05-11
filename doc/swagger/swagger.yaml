@@ -39,6 +39,18 @@ definitions:
         example: Luxury
         type: string
     type: object
+  docs.ErrorResponseBadRequest:
+    properties:
+      detail:
+        example: Bad equest
+        type: string
+      status:
+        example: 400
+        type: integer
+      title:
+        example: Bad Request
+        type: string
+    type: object
   docs.ErrorResponseInternalServer:
     properties:
       detail:
@@ -63,6 +75,18 @@ definitions:
         example: Bad request
         type: string
     type: object
+  docs.ErrorResponseNotFound:
+    properties:
+      detail:
+        example: Not Found
+        type: string
+      status:
+        example: 404
+        type: integer
+      title:
+        example: Not Found
+        type: string
+    type: object
 host: localhost:5050
 info:
   contact: {}
@@ -70,7 +94,7 @@ info:
   title: Car Rent API
   version: "1.0"
 paths:
-  /cars/register:
+  /cars:
     post:
       consumes:
       - application/json
@@ -100,4 +124,99 @@ paths:
           schema:
             $ref: '#/definitions/docs.ErrorResponseInternalServer'
       summary: Register a new car
+  /cars/{uuid}:
+    delete:
+      description: Delete a car by UUID
+      operationId: delete-car
+      parameters:
+      - description: Car UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseBadRequest'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseNotFound'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+      summary: Delete a car
+    get:
+      description: Get a car by UUID
+      operationId: get-car
+      parameters:
+      - description: Car UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Obtained car
+          schema:
+            $ref: '#/definitions/docs.CarResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseBadRequest'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseNotFound'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+      summary: Get a car
+    put:
+      consumes:
+      - application/json
+      description: Update a car by UUID
+      operationId: update-car
+      parameters:
+      - description: Car UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: 'Car information (allowed types: Sedan, Luxury, Sports Car, Limousine;
+          allowed statuses: Available, Unavailable)'
+        in: body
+        name: car
+        required: true
+        schema:
+          $ref: '#/definitions/docs.CarRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Updated car
+          schema:
+            $ref: '#/definitions/docs.CarResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseBadRequest'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseNotFound'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+      summary: Update a car
 swagger: "2.0"

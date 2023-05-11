@@ -2,18 +2,6 @@ package docs
 
 import "github.com/google/uuid"
 
-type ErrorResponseInvCityName struct {
-	Title  string `json:"title" example:"Bad request"`
-	Status int    `json:"status" example:"400"`
-	Detail string `json:"detail" example:"city name is not valid"`
-}
-
-type ErrorResponseInternalServer struct {
-	Title  string `json:"title" example:"Internal server error"`
-	Status int    `json:"status" example:"500"`
-	Detail string `json:"detail" example:"Internal server error"`
-}
-
 type CarRequest struct {
 	Type           string  `json:"type" example:"Luxury"`
 	Seats          int16   `json:"seats" example:"4"`

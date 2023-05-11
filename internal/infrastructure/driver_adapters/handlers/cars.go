@@ -38,7 +38,7 @@ func NewCars(cs ports.CarsService) Cars {
 // @Success 201 {object} docs.CarResponse "Created car"
 // @Failure 400 {object} docs.ErrorResponseInvCityName "Bad Request"
 // @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
-// @Router /cars/register [post]
+// @Router /cars [post]
 func (ch Cars) Register(w http.ResponseWriter, r *http.Request) {
 	var newCar domain.Car
 	car, err := dtos.CarFromBody(r.Body)
@@ -64,6 +64,16 @@ func (ch Cars) Register(w http.ResponseWriter, r *http.Request) {
 	httphandler.WriteSuccessResponse(w, http.StatusCreated, car)
 }
 
+// @Summary Get a car
+// @Description Get a car by UUID
+// @ID get-car
+// @Produce json
+// @Param uuid path string true "Car UUID"
+// @Success 201 {object} docs.CarResponse "Obtained car"
+// @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
+// @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
+// @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Router /cars/{uuid} [get]
 func (ch Cars) Get(w http.ResponseWriter, r *http.Request) {
 	var car dtos.Car
 
@@ -92,6 +102,18 @@ func (ch Cars) Get(w http.ResponseWriter, r *http.Request) {
 	httphandler.WriteSuccessResponse(w, http.StatusOK, car)
 }
 
+// @Summary Update a car
+// @Description Update a car by UUID
+// @ID update-car
+// @Accept json
+// @Produce json
+// @Param uuid path string true "Car UUID"
+// @Param car body docs.CarRequest true "Car information (allowed types: Sedan, Luxury, Sports Car, Limousine; allowed statuses: Available, Unavailable)"
+// @Success 201 {object} docs.CarResponse "Updated car"
+// @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
+// @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
+// @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Router /cars/{uuid} [put]
 func (ch Cars) FullUpdate(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
@@ -126,6 +148,16 @@ func (ch Cars) FullUpdate(w http.ResponseWriter, r *http.Request) {
 	httphandler.WriteSuccessResponse(w, http.StatusOK, car)
 }
 
+// @Summary Delete a car
+// @Description Delete a car by UUID
+// @ID delete-car
+// @Produce json
+// @Param uuid path string true "Car UUID"
+// @Success 204 "No Content"
+// @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
+// @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
+// @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Router /cars/{uuid} [delete]
 func (ch Cars) Delete(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
@@ -135,14 +167,16 @@ func (ch Cars) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = ch.CarsService.Delete(r.Context(), ID)
-	if err != nil {
-		httphandler.WriteErrorResponse(w, http.StatusInternalServerError, ErrInternalServerError)
-		log.Println(err)
+	if err = ch.CarsService.Delete(r.Context(), ID); err != nil {
+		if err.Error() == services.ErrCarNotFound {
+			httphandler.WriteErrorResponse(w, http.StatusNotFound, err.Error())
+		} else {
+			httphandler.WriteErrorResponse(w, http.StatusInternalServerError, ErrInternalServerError)
+			log.Println(err)
+		}
 
 		return
 	}
-
 	httphandler.WriteSuccessResponse(w, http.StatusNoContent, nil)
 }
 

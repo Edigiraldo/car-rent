@@ -9,7 +9,7 @@
     "host": "localhost:5050",
     "basePath": "/api/v1/",
     "paths": {
-        "/cars/register": {
+        "/cars": {
             "post": {
                 "description": "Register a new car with the provided information",
                 "consumes": [
@@ -42,6 +42,146 @@
                         "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/docs.ErrorResponseInvCityName"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                        }
+                    }
+                }
+            }
+        },
+        "/cars/{uuid}": {
+            "get": {
+                "description": "Get a car by UUID",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get a car",
+                "operationId": "get-car",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Car UUID",
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Obtained car",
+                        "schema": {
+                            "$ref": "#/definitions/docs.CarResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseBadRequest"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseNotFound"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update a car by UUID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Update a car",
+                "operationId": "update-car",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Car UUID",
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Car information (allowed types: Sedan, Luxury, Sports Car, Limousine; allowed statuses: Available, Unavailable)",
+                        "name": "car",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/docs.CarRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Updated car",
+                        "schema": {
+                            "$ref": "#/definitions/docs.CarResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseBadRequest"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseNotFound"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a car by UUID",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Delete a car",
+                "operationId": "delete-car",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Car UUID",
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseBadRequest"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseNotFound"
                         }
                     },
                     "500": {
@@ -109,6 +249,23 @@
                 }
             }
         },
+        "docs.ErrorResponseBadRequest": {
+            "type": "object",
+            "properties": {
+                "detail": {
+                    "type": "string",
+                    "example": "Bad equest"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 400
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Bad Request"
+                }
+            }
+        },
         "docs.ErrorResponseInternalServer": {
             "type": "object",
             "properties": {
@@ -140,6 +297,23 @@
                 "title": {
                     "type": "string",
                     "example": "Bad request"
+                }
+            }
+        },
+        "docs.ErrorResponseNotFound": {
+            "type": "object",
+            "properties": {
+                "detail": {
+                    "type": "string",
+                    "example": "Not Found"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 404
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Not Found"
                 }
             }
         }
