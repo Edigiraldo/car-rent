@@ -5,10 +5,18 @@ import (
 	"log"
 	"os"
 
+	_ "github.com/Edigiraldo/car-rent/doc/swagger"
 	"github.com/joho/godotenv"
+	"github.com/swaggo/swag"
 )
 
+// @title Car Rent API
+// @description This is an API to manage a car rent service
+// @version 1.0
+// @host localhost:5050
+// @BasePath /api/v1/
 func main() {
+
 	envPath := getEnvPath()
 
 	err := godotenv.Load(envPath)
@@ -25,6 +33,8 @@ func main() {
 	if DATABASE_URL == "" {
 		log.Fatal("DATABASE_URL environment variable was not found")
 	}
+
+	swag.SetCodeExampleFilesDirectory("../../doc")
 
 	config := Config{
 		Port:        PORT,

@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/Edigiraldo/car-rent/internal/core/ports"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 var (
@@ -15,6 +16,9 @@ var (
 )
 
 func BindRoutes(b *Server) {
+	// Swagger
+	b.router.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
+
 	// Health routes
 	b.router.HandleFunc("/api/v1/ping", healthHandler.Pong).Methods(http.MethodGet)
 

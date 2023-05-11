@@ -1,0 +1,103 @@
+basePath: /api/v1/
+definitions:
+  docs.CarRequest:
+    properties:
+      city_name:
+        example: New York
+        type: string
+      hourly_rent_cost:
+        example: 99.99
+        type: number
+      seats:
+        example: 4
+        type: integer
+      status:
+        example: Available
+        type: string
+      type:
+        example: Luxury
+        type: string
+    type: object
+  docs.CarResponse:
+    properties:
+      city_name:
+        example: New York
+        type: string
+      hourly_rent_cost:
+        example: 99.99
+        type: number
+      id:
+        example: bdaf243e-b4d3-49d7-8be4-5ed1fb4dba0e
+        type: string
+      seats:
+        example: 4
+        type: integer
+      status:
+        example: Available
+        type: string
+      type:
+        example: Luxury
+        type: string
+    type: object
+  docs.ErrorResponseInternalServer:
+    properties:
+      detail:
+        example: Internal server error
+        type: string
+      status:
+        example: 500
+        type: integer
+      title:
+        example: Internal server error
+        type: string
+    type: object
+  docs.ErrorResponseInvCityName:
+    properties:
+      detail:
+        example: city name is not valid
+        type: string
+      status:
+        example: 400
+        type: integer
+      title:
+        example: Bad request
+        type: string
+    type: object
+host: localhost:5050
+info:
+  contact: {}
+  description: This is an API to manage a car rent service
+  title: Car Rent API
+  version: "1.0"
+paths:
+  /cars/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new car with the provided information
+      operationId: register-car
+      parameters:
+      - description: 'Car information (allowed types: Sedan, Luxury, Sports Car, Limousine;
+          allowed statuses: Available, Unavailable)'
+        in: body
+        name: car
+        required: true
+        schema:
+          $ref: '#/definitions/docs.CarRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created car
+          schema:
+            $ref: '#/definitions/docs.CarResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseInvCityName'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+      summary: Register a new car
+swagger: "2.0"

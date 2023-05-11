@@ -1,0 +1,147 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is an API to manage a car rent service",
+        "title": "Car Rent API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:5050",
+    "basePath": "/api/v1/",
+    "paths": {
+        "/cars/register": {
+            "post": {
+                "description": "Register a new car with the provided information",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Register a new car",
+                "operationId": "register-car",
+                "parameters": [
+                    {
+                        "description": "Car information (allowed types: Sedan, Luxury, Sports Car, Limousine; allowed statuses: Available, Unavailable)",
+                        "name": "car",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/docs.CarRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created car",
+                        "schema": {
+                            "$ref": "#/definitions/docs.CarResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseInvCityName"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "docs.CarRequest": {
+            "type": "object",
+            "properties": {
+                "city_name": {
+                    "type": "string",
+                    "example": "New York"
+                },
+                "hourly_rent_cost": {
+                    "type": "number",
+                    "example": 99.99
+                },
+                "seats": {
+                    "type": "integer",
+                    "example": 4
+                },
+                "status": {
+                    "type": "string",
+                    "example": "Available"
+                },
+                "type": {
+                    "type": "string",
+                    "example": "Luxury"
+                }
+            }
+        },
+        "docs.CarResponse": {
+            "type": "object",
+            "properties": {
+                "city_name": {
+                    "type": "string",
+                    "example": "New York"
+                },
+                "hourly_rent_cost": {
+                    "type": "number",
+                    "example": 99.99
+                },
+                "id": {
+                    "type": "string",
+                    "example": "bdaf243e-b4d3-49d7-8be4-5ed1fb4dba0e"
+                },
+                "seats": {
+                    "type": "integer",
+                    "example": 4
+                },
+                "status": {
+                    "type": "string",
+                    "example": "Available"
+                },
+                "type": {
+                    "type": "string",
+                    "example": "Luxury"
+                }
+            }
+        },
+        "docs.ErrorResponseInternalServer": {
+            "type": "object",
+            "properties": {
+                "detail": {
+                    "type": "string",
+                    "example": "Internal server error"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 500
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Internal server error"
+                }
+            }
+        },
+        "docs.ErrorResponseInvCityName": {
+            "type": "object",
+            "properties": {
+                "detail": {
+                    "type": "string",
+                    "example": "city name is not valid"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 400
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Bad request"
+                }
+            }
+        }
+    }
+}

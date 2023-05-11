@@ -30,4 +30,7 @@ compose-down:
 compose-logs:
 	docker compose -f docker-compose.local.yml logs -f
 
+swagger-init:
+	swag init --output doc/swagger -g cmd/api/main.go
+
 all: create-network build-db run-db build-server run-server

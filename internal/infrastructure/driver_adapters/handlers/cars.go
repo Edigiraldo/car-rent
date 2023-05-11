@@ -29,6 +29,16 @@ func NewCars(cs ports.CarsService) Cars {
 	}
 }
 
+// @Summary Register a new car
+// @Description Register a new car with the provided information
+// @ID register-car
+// @Accept json
+// @Produce json
+// @Param car body docs.CarRequest true "Car information (allowed types: Sedan, Luxury, Sports Car, Limousine; allowed statuses: Available, Unavailable)"
+// @Success 201 {object} docs.CarResponse "Created car"
+// @Failure 400 {object} docs.ErrorResponseInvCityName "Bad Request"
+// @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Router /cars/register [post]
 func (ch Cars) Register(w http.ResponseWriter, r *http.Request) {
 	var newCar domain.Car
 	car, err := dtos.CarFromBody(r.Body)
