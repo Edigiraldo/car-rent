@@ -68,7 +68,7 @@ func (ch Cars) Register(w http.ResponseWriter, r *http.Request) {
 // @Description Get a car by UUID
 // @ID get-car
 // @Produce json
-// @Param uuid path string true "Car UUID"
+// @Param uuid path string true "Car UUID" format(uuid)
 // @Success 201 {object} docs.CarResponse "Obtained car"
 // @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
 // @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
@@ -107,7 +107,7 @@ func (ch Cars) Get(w http.ResponseWriter, r *http.Request) {
 // @ID update-car
 // @Accept json
 // @Produce json
-// @Param uuid path string true "Car UUID"
+// @Param uuid path string true "Car UUID" format(uuid)
 // @Param car body docs.CarRequest true "Car information (allowed types: Sedan, Luxury, Sports Car, Limousine; allowed statuses: Available, Unavailable)"
 // @Success 201 {object} docs.CarResponse "Updated car"
 // @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
@@ -152,7 +152,7 @@ func (ch Cars) FullUpdate(w http.ResponseWriter, r *http.Request) {
 // @Description Delete a car by UUID
 // @ID delete-car
 // @Produce json
-// @Param uuid path string true "Car UUID"
+// @Param uuid path string true "Car UUID" format(uuid)
 // @Success 204 "No Content"
 // @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
 // @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
@@ -180,8 +180,18 @@ func (ch Cars) Delete(w http.ResponseWriter, r *http.Request) {
 	httphandler.WriteSuccessResponse(w, http.StatusNoContent, nil)
 }
 
-// Lists cars from a city in pages of 20 elements. from_car_id parameter
-// is taken as the last seen car in a previous page.
+// @Summary List cars
+// @Description Lists cars from a city in pages of 20 elements. from_car_id parameter
+// @Description is taken as the last seen car in a previous page.
+// @ID list-cars
+// @Produce json
+// @Param city query string true "City name"
+// @Param from_car_id query string false "Last seen car ID" format(uuid)
+// @Success 200 {object} docs.ListCarsResponse "Obtained car"
+// @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
+// @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
+// @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Router /cars/ [get]
 func (ch Cars) List(w http.ResponseWriter, r *http.Request) {
 	city := r.URL.Query().Get("city")
 	if city == "" {

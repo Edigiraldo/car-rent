@@ -42,7 +42,7 @@ definitions:
   docs.ErrorResponseBadRequest:
     properties:
       detail:
-        example: Bad equest
+        example: bad request
         type: string
       status:
         example: 400
@@ -54,7 +54,7 @@ definitions:
   docs.ErrorResponseInternalServer:
     properties:
       detail:
-        example: Internal server error
+        example: internal server error
         type: string
       status:
         example: 500
@@ -78,7 +78,7 @@ definitions:
   docs.ErrorResponseNotFound:
     properties:
       detail:
-        example: Not Found
+        example: not Found
         type: string
       status:
         example: 404
@@ -86,6 +86,13 @@ definitions:
       title:
         example: Not Found
         type: string
+    type: object
+  docs.ListCarsResponse:
+    properties:
+      cars:
+        items:
+          $ref: '#/definitions/docs.CarResponse'
+        type: array
     type: object
 host: localhost:5050
 info:
@@ -124,12 +131,50 @@ paths:
           schema:
             $ref: '#/definitions/docs.ErrorResponseInternalServer'
       summary: Register a new car
+  /cars/:
+    get:
+      description: |-
+        Lists cars from a city in pages of 20 elements. from_car_id parameter
+        is taken as the last seen car in a previous page.
+      operationId: list-cars
+      parameters:
+      - description: City name
+        in: query
+        name: city
+        required: true
+        type: string
+      - description: Last seen car ID
+        format: uuid
+        in: query
+        name: from_car_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Obtained car
+          schema:
+            $ref: '#/definitions/docs.ListCarsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseBadRequest'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseNotFound'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+      summary: List cars
   /cars/{uuid}:
     delete:
       description: Delete a car by UUID
       operationId: delete-car
       parameters:
       - description: Car UUID
+        format: uuid
         in: path
         name: uuid
         required: true
@@ -157,6 +202,7 @@ paths:
       operationId: get-car
       parameters:
       - description: Car UUID
+        format: uuid
         in: path
         name: uuid
         required: true
@@ -188,6 +234,7 @@ paths:
       operationId: update-car
       parameters:
       - description: Car UUID
+        format: uuid
         in: path
         name: uuid
         required: true

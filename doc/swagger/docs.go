@@ -60,6 +60,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/cars/": {
+            "get": {
+                "description": "Lists cars from a city in pages of 20 elements. from_car_id parameter\nis taken as the last seen car in a previous page.",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "List cars",
+                "operationId": "list-cars",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "City name",
+                        "name": "city",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Last seen car ID",
+                        "name": "from_car_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Obtained car",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ListCarsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseBadRequest"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseNotFound"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                        }
+                    }
+                }
+            }
+        },
         "/cars/{uuid}": {
             "get": {
                 "description": "Get a car by UUID",
@@ -71,6 +123,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "format": "uuid",
                         "description": "Car UUID",
                         "name": "uuid",
                         "in": "path",
@@ -117,6 +170,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "format": "uuid",
                         "description": "Car UUID",
                         "name": "uuid",
                         "in": "path",
@@ -169,6 +223,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "format": "uuid",
                         "description": "Car UUID",
                         "name": "uuid",
                         "in": "path",
@@ -261,7 +316,7 @@ const docTemplate = `{
             "properties": {
                 "detail": {
                     "type": "string",
-                    "example": "Bad equest"
+                    "example": "bad request"
                 },
                 "status": {
                     "type": "integer",
@@ -278,7 +333,7 @@ const docTemplate = `{
             "properties": {
                 "detail": {
                     "type": "string",
-                    "example": "Internal server error"
+                    "example": "internal server error"
                 },
                 "status": {
                     "type": "integer",
@@ -312,7 +367,7 @@ const docTemplate = `{
             "properties": {
                 "detail": {
                     "type": "string",
-                    "example": "Not Found"
+                    "example": "not Found"
                 },
                 "status": {
                     "type": "integer",
@@ -321,6 +376,17 @@ const docTemplate = `{
                 "title": {
                     "type": "string",
                     "example": "Not Found"
+                }
+            }
+        },
+        "docs.ListCarsResponse": {
+            "type": "object",
+            "properties": {
+                "cars": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/docs.CarResponse"
+                    }
                 }
             }
         }
