@@ -94,6 +94,17 @@ definitions:
           $ref: '#/definitions/docs.CarResponse'
         type: array
     type: object
+  docs.ListCitiesNameResponse:
+    properties:
+      cities_name:
+        example:
+        - Chicago
+        - Los Angeles
+        - New York
+        items:
+          type: string
+        type: array
+    type: object
 host: localhost:5050
 info:
   contact: {}
@@ -131,6 +142,8 @@ paths:
           schema:
             $ref: '#/definitions/docs.ErrorResponseInternalServer'
       summary: Register a new car
+      tags:
+      - Cars
   /cars/:
     get:
       description: |-
@@ -168,6 +181,8 @@ paths:
           schema:
             $ref: '#/definitions/docs.ErrorResponseInternalServer'
       summary: List cars
+      tags:
+      - Cars
   /cars/{uuid}:
     delete:
       description: Delete a car by UUID
@@ -197,6 +212,8 @@ paths:
           schema:
             $ref: '#/definitions/docs.ErrorResponseInternalServer'
       summary: Delete a car
+      tags:
+      - Cars
     get:
       description: Get a car by UUID
       operationId: get-car
@@ -227,6 +244,8 @@ paths:
           schema:
             $ref: '#/definitions/docs.ErrorResponseInternalServer'
       summary: Get a car
+      tags:
+      - Cars
     put:
       consumes:
       - application/json
@@ -266,4 +285,24 @@ paths:
           schema:
             $ref: '#/definitions/docs.ErrorResponseInternalServer'
       summary: Update a car
+      tags:
+      - Cars
+  /cities/names:
+    get:
+      description: Lists the names of all the currently supported cities
+      operationId: list-cities
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Cities name
+          schema:
+            $ref: '#/definitions/docs.ListCitiesNameResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+      summary: List cities
+      tags:
+      - Cities
 swagger: "2.0"

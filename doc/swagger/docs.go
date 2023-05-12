@@ -25,6 +25,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Cars"
+                ],
                 "summary": "Register a new car",
                 "operationId": "register-car",
                 "parameters": [
@@ -65,6 +68,9 @@ const docTemplate = `{
                 "description": "Lists cars from a city in pages of 20 elements. from_car_id parameter\nis taken as the last seen car in a previous page.",
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Cars"
                 ],
                 "summary": "List cars",
                 "operationId": "list-cars",
@@ -118,6 +124,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Cars"
+                ],
                 "summary": "Get a car",
                 "operationId": "get-car",
                 "parameters": [
@@ -164,6 +173,9 @@ const docTemplate = `{
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Cars"
                 ],
                 "summary": "Update a car",
                 "operationId": "update-car",
@@ -218,6 +230,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Cars"
+                ],
                 "summary": "Delete a car",
                 "operationId": "delete-car",
                 "parameters": [
@@ -244,6 +259,33 @@ const docTemplate = `{
                         "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/docs.ErrorResponseNotFound"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                        }
+                    }
+                }
+            }
+        },
+        "/cities/names": {
+            "get": {
+                "description": "Lists the names of all the currently supported cities",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cities"
+                ],
+                "summary": "List cities",
+                "operationId": "list-cities",
+                "responses": {
+                    "200": {
+                        "description": "Cities name",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ListCitiesNameResponse"
                         }
                     },
                     "500": {
@@ -387,6 +429,22 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/docs.CarResponse"
                     }
+                }
+            }
+        },
+        "docs.ListCitiesNameResponse": {
+            "type": "object",
+            "properties": {
+                "cities_name": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "Chicago",
+                        "Los Angeles",
+                        "New York"
+                    ]
                 }
             }
         }

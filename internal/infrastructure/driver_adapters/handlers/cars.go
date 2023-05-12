@@ -38,6 +38,7 @@ func NewCars(cs ports.CarsService) Cars {
 // @Success 201 {object} docs.CarResponse "Created car"
 // @Failure 400 {object} docs.ErrorResponseInvCityName "Bad Request"
 // @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Tags Cars
 // @Router /cars [post]
 func (ch Cars) Register(w http.ResponseWriter, r *http.Request) {
 	var newCar domain.Car
@@ -73,6 +74,7 @@ func (ch Cars) Register(w http.ResponseWriter, r *http.Request) {
 // @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
 // @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
 // @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Tags Cars
 // @Router /cars/{uuid} [get]
 func (ch Cars) Get(w http.ResponseWriter, r *http.Request) {
 	var car dtos.Car
@@ -113,6 +115,7 @@ func (ch Cars) Get(w http.ResponseWriter, r *http.Request) {
 // @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
 // @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
 // @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Tags Cars
 // @Router /cars/{uuid} [put]
 func (ch Cars) FullUpdate(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -157,6 +160,7 @@ func (ch Cars) FullUpdate(w http.ResponseWriter, r *http.Request) {
 // @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
 // @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
 // @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Tags Cars
 // @Router /cars/{uuid} [delete]
 func (ch Cars) Delete(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -191,6 +195,7 @@ func (ch Cars) Delete(w http.ResponseWriter, r *http.Request) {
 // @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
 // @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
 // @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Tags Cars
 // @Router /cars/ [get]
 func (ch Cars) List(w http.ResponseWriter, r *http.Request) {
 	city := r.URL.Query().Get("city")
