@@ -51,7 +51,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorInvCityName"
+                            "$ref": "#/definitions/docs.ErrorInvalidCityName"
                         }
                     },
                     "500": {
@@ -101,12 +101,6 @@ const docTemplate = `{
                         "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/docs.ErrorBadRequest"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/docs.ErrorNotFound"
                         }
                     },
                     "500": {
@@ -198,7 +192,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorNotFound"
+                            "$ref": "#/definitions/docs.ErrorCarNotFound"
                         }
                     },
                     "500": {
@@ -257,7 +251,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorNotFound"
+                            "$ref": "#/definitions/docs.ErrorCarNotFound"
                         }
                     },
                     "500": {
@@ -301,7 +295,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorNotFound"
+                            "$ref": "#/definitions/docs.ErrorCarNotFound"
                         }
                     },
                     "500": {
@@ -854,6 +848,23 @@ const docTemplate = `{
                 }
             }
         },
+        "docs.ErrorCarNotFound": {
+            "type": "object",
+            "properties": {
+                "detail": {
+                    "type": "string",
+                    "example": "car not found"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 404
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Not Found"
+                }
+            }
+        },
         "docs.ErrorInternalServer": {
             "type": "object",
             "properties": {
@@ -871,7 +882,7 @@ const docTemplate = `{
                 }
             }
         },
-        "docs.ErrorInvCityName": {
+        "docs.ErrorInvalidCityName": {
             "type": "object",
             "properties": {
                 "detail": {
@@ -948,11 +959,11 @@ const docTemplate = `{
                 },
                 "status": {
                     "type": "integer",
-                    "example": 400
+                    "example": 404
                 },
                 "title": {
                     "type": "string",
-                    "example": "Bad Request"
+                    "example": "Not Found"
                 }
             }
         },

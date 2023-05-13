@@ -36,7 +36,7 @@ func NewCars(cs ports.CarsService) Cars {
 // @Produce json
 // @Param car body docs.CarRequest true "Car information (allowed types: Sedan, Luxury, Sports Car, Limousine; allowed statuses: Available, Unavailable)"
 // @Success 201 {object} docs.CarResponse "Created car"
-// @Failure 400 {object} docs.ErrorInvCityName "Bad Request"
+// @Failure 400 {object} docs.ErrorInvalidCityName "Bad Request"
 // @Failure 500 {object} docs.ErrorInternalServer "Internal Server Error"
 // @Tags Cars
 // @Router /cars [post]
@@ -72,7 +72,7 @@ func (ch Cars) Register(w http.ResponseWriter, r *http.Request) {
 // @Param id path string true "Car UUID" format(uuid)
 // @Success 200 {object} docs.CarResponse "Obtained car"
 // @Failure 400 {object} docs.ErrorBadRequest "Bad Request"
-// @Failure 404 {object} docs.ErrorNotFound "Not Found"
+// @Failure 404 {object} docs.ErrorCarNotFound "Not Found"
 // @Failure 500 {object} docs.ErrorInternalServer "Internal Server Error"
 // @Tags Cars
 // @Router /cars/{id} [get]
@@ -113,7 +113,7 @@ func (ch Cars) Get(w http.ResponseWriter, r *http.Request) {
 // @Param car body docs.CarRequest true "Car information (allowed types: Sedan, Luxury, Sports Car, Limousine; allowed statuses: Available, Unavailable)"
 // @Success 200 {object} docs.CarResponse "Updated car"
 // @Failure 400 {object} docs.ErrorBadRequest "Bad Request"
-// @Failure 404 {object} docs.ErrorNotFound "Not Found"
+// @Failure 404 {object} docs.ErrorCarNotFound "Not Found"
 // @Failure 500 {object} docs.ErrorInternalServer "Internal Server Error"
 // @Tags Cars
 // @Router /cars/{id} [put]
@@ -158,7 +158,7 @@ func (ch Cars) FullUpdate(w http.ResponseWriter, r *http.Request) {
 // @Param id path string true "Car UUID" format(uuid)
 // @Success 204 "No Content"
 // @Failure 400 {object} docs.ErrorBadRequest "Bad Request"
-// @Failure 404 {object} docs.ErrorNotFound "Not Found"
+// @Failure 404 {object} docs.ErrorCarNotFound "Not Found"
 // @Failure 500 {object} docs.ErrorInternalServer "Internal Server Error"
 // @Tags Cars
 // @Router /cars/{id} [delete]
@@ -193,7 +193,6 @@ func (ch Cars) Delete(w http.ResponseWriter, r *http.Request) {
 // @Param from_car_id query string false "Last seen car ID" format(uuid)
 // @Success 200 {object} docs.ListCarsResponse "Obtained car"
 // @Failure 400 {object} docs.ErrorBadRequest "Bad Request"
-// @Failure 404 {object} docs.ErrorNotFound "Not Found"
 // @Failure 500 {object} docs.ErrorInternalServer "Internal Server Error"
 // @Tags Cars
 // @Router /cars/ [get]

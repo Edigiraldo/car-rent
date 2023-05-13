@@ -51,6 +51,18 @@ definitions:
         example: Bad Request
         type: string
     type: object
+  docs.ErrorCarNotFound:
+    properties:
+      detail:
+        example: car not found
+        type: string
+      status:
+        example: 404
+        type: integer
+      title:
+        example: Not Found
+        type: string
+    type: object
   docs.ErrorInternalServer:
     properties:
       detail:
@@ -63,7 +75,7 @@ definitions:
         example: Internal server error
         type: string
     type: object
-  docs.ErrorInvCityName:
+  docs.ErrorInvalidCityName:
     properties:
       detail:
         example: city name is not valid
@@ -117,10 +129,10 @@ definitions:
         example: reservation was not found
         type: string
       status:
-        example: 400
+        example: 404
         type: integer
       title:
-        example: Bad Request
+        example: Not Found
         type: string
     type: object
   docs.ListCarsResponse:
@@ -263,7 +275,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/docs.ErrorInvCityName'
+            $ref: '#/definitions/docs.ErrorInvalidCityName'
         "500":
           description: Internal Server Error
           schema:
@@ -299,10 +311,6 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/docs.ErrorBadRequest'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/docs.ErrorNotFound'
         "500":
           description: Internal Server Error
           schema:
@@ -362,7 +370,7 @@ paths:
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/docs.ErrorNotFound'
+            $ref: '#/definitions/docs.ErrorCarNotFound'
         "500":
           description: Internal Server Error
           schema:
@@ -394,7 +402,7 @@ paths:
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/docs.ErrorNotFound'
+            $ref: '#/definitions/docs.ErrorCarNotFound'
         "500":
           description: Internal Server Error
           schema:
@@ -435,7 +443,7 @@ paths:
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/docs.ErrorNotFound'
+            $ref: '#/definitions/docs.ErrorCarNotFound'
         "500":
           description: Internal Server Error
           schema:

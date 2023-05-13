@@ -12,28 +12,28 @@ type ErrorNotFound struct {
 	Detail string `json:"detail" example:"not found"`
 }
 
-type ErrorBadRequest struct {
-	Title  string `json:"title" example:"Bad Request"`
-	Status int    `json:"status" example:"400"`
-	Detail string `json:"detail" example:"bad request"`
-}
-
 type ErrorUserNotFound struct {
-	Title  string `json:"title" example:"Bad Request"`
-	Status int    `json:"status" example:"400"`
+	Title  string `json:"title" example:"Not Found"`
+	Status int    `json:"status" example:"404"`
 	Detail string `json:"detail" example:"user not found"`
 }
 
 type ErrorCarNotFound struct {
-	Title  string `json:"title" example:"Bad Request"`
-	Status int    `json:"status" example:"400"`
+	Title  string `json:"title" example:"Not Found"`
+	Status int    `json:"status" example:"404"`
 	Detail string `json:"detail" example:"car not found"`
 }
 
 type ErrorReservationNotFound struct {
+	Title  string `json:"title" example:"Not Found"`
+	Status int    `json:"status" example:"404"`
+	Detail string `json:"detail" example:"reservation was not found"`
+}
+
+type ErrorBadRequest struct {
 	Title  string `json:"title" example:"Bad Request"`
 	Status int    `json:"status" example:"400"`
-	Detail string `json:"detail" example:"reservation was not found"`
+	Detail string `json:"detail" example:"bad request"`
 }
 
 type ErrorInvalidReservationTimeFrame struct {
@@ -54,7 +54,7 @@ type ErrorMinimumReservationHours struct {
 	Detail string `json:"detail" example:"period is shorter than minimun allowed (6 hours)"`
 }
 
-type ErrorInvCityName struct {
+type ErrorInvalidCityName struct {
 	Title  string `json:"title" example:"Bad request"`
 	Status int    `json:"status" example:"400"`
 	Detail string `json:"detail" example:"city name is not valid"`
