@@ -118,6 +118,55 @@ const docTemplate = `{
                 }
             }
         },
+        "/cars/{car_id}/reservations": {
+            "get": {
+                "description": "Get reservations by Car id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Reservations"
+                ],
+                "summary": "Get reservations by Car id",
+                "operationId": "get-reservation-by-car",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Car id",
+                        "name": "car_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Obtained reservations",
+                        "schema": {
+                            "$ref": "#/definitions/docs.Reservations"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseBadRequest"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseNotFound"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                        }
+                    }
+                }
+            }
+        },
         "/cars/{id}": {
             "get": {
                 "description": "Get a car by UUID",
@@ -140,7 +189,7 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "201": {
+                    "200": {
                         "description": "Obtained car",
                         "schema": {
                             "$ref": "#/definitions/docs.CarResponse"
@@ -199,7 +248,7 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "201": {
+                    "200": {
                         "description": "Updated car",
                         "schema": {
                             "$ref": "#/definitions/docs.CarResponse"
@@ -297,6 +346,205 @@ const docTemplate = `{
                 }
             }
         },
+        "/reservations": {
+            "post": {
+                "description": "Create a reservation with the provided information",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Reservations"
+                ],
+                "summary": "Create a reservation",
+                "operationId": "create-reservation",
+                "parameters": [
+                    {
+                        "description": "Reservation information (allowed statuses: Reserved, Canceled, Completed; allowed payment statuses: Paid, Pending, Canceled)",
+                        "name": "reservation",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/docs.ReservationRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created reservation",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ReservationResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseBadRequest"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                        }
+                    }
+                }
+            }
+        },
+        "/reservations/{id}": {
+            "get": {
+                "description": "Get a reservation by UUID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Reservations"
+                ],
+                "summary": "Get a reservation",
+                "operationId": "get-reservation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Reservation UUID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Obtained reservation",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ReservationResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseBadRequest"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseNotFound"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update a reservation by UUID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Reservations"
+                ],
+                "summary": "Update a reservation",
+                "operationId": "update-reservation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Reservation UUID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Reservation information (allowed statuses: Reserved, Canceled, Completed; allowed payment statuses: Paid, Pending, Canceled)",
+                        "name": "reservation",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/docs.ReservationRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Updated reservation",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ReservationResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseBadRequest"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseNotFound"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a reservation by UUID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Reservations"
+                ],
+                "summary": "Delete a reservation",
+                "operationId": "delete-reservation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Reservation UUID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseBadRequest"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseNotFound"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                        }
+                    }
+                }
+            }
+        },
         "/users": {
             "post": {
                 "description": "Register a new user with the provided information",
@@ -366,7 +614,7 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "201": {
+                    "200": {
                         "description": "Obtained user",
                         "schema": {
                             "$ref": "#/definitions/docs.UserResponse"
@@ -425,7 +673,7 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "201": {
+                    "200": {
                         "description": "Updated user",
                         "schema": {
                             "$ref": "#/definitions/docs.UserResponse"
@@ -474,6 +722,55 @@ const docTemplate = `{
                 "responses": {
                     "204": {
                         "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseBadRequest"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseNotFound"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{user_id}/reservations": {
+            "get": {
+                "description": "Get reservations by User id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Reservations"
+                ],
+                "summary": "Get reservations by User id",
+                "operationId": "get-reservation-by-user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "User id",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Obtained reservations",
+                        "schema": {
+                            "$ref": "#/definitions/docs.Reservations"
+                        }
                     },
                     "400": {
                         "description": "Bad Request",
@@ -644,6 +941,79 @@ const docTemplate = `{
                         "Los Angeles",
                         "New York"
                     ]
+                }
+            }
+        },
+        "docs.ReservationRequest": {
+            "type": "object",
+            "properties": {
+                "car_id": {
+                    "type": "string",
+                    "example": "0ddac1d8-c7f2-44a6-8c7e-3d06410f7be1"
+                },
+                "end_date": {
+                    "type": "string",
+                    "example": "2023-05-16T18:00:00Z"
+                },
+                "payment_status": {
+                    "type": "string",
+                    "example": "Paid"
+                },
+                "start_date": {
+                    "type": "string",
+                    "example": "2023-05-15T10:00:00Z"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "Reserved"
+                },
+                "user_id": {
+                    "type": "string",
+                    "example": "a29b1af4-9650-4379-8a8b-7f6c4d374e7f"
+                }
+            }
+        },
+        "docs.ReservationResponse": {
+            "type": "object",
+            "properties": {
+                "car_id": {
+                    "type": "string",
+                    "example": "0ddac1d8-c7f2-44a6-8c7e-3d06410f7be1"
+                },
+                "end_date": {
+                    "type": "string",
+                    "example": "2027-05-22T18:00:00Z"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "882dfcf8-98c9-4a25-9637-ae4564928b10"
+                },
+                "payment_status": {
+                    "type": "string",
+                    "example": "Paid"
+                },
+                "start_date": {
+                    "type": "string",
+                    "example": "2027-05-15T10:00:00Z"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "Reserved"
+                },
+                "user_id": {
+                    "type": "string",
+                    "example": "a29b1af4-9650-4379-8a8b-7f6c4d374e7f"
+                }
+            }
+        },
+        "docs.Reservations": {
+            "type": "object",
+            "properties": {
+                "reservations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/docs.ReservationResponse"
+                    }
                 }
             }
         },

@@ -62,7 +62,7 @@ func (uh Users) SignUp(w http.ResponseWriter, r *http.Request) {
 // @ID get-user
 // @Produce json
 // @Param id path string true "User UUID" format(uuid)
-// @Success 201 {object} docs.UserResponse "Obtained user"
+// @Success 200 {object} docs.UserResponse "Obtained user"
 // @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
 // @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
 // @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
@@ -102,7 +102,7 @@ func (uh Users) Get(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param id path string true "User UUID" format(uuid)
 // @Param user body docs.UserRequest true "User information (allowed types: Customer, Admin; allowed statuses: Active, Inactive)"
-// @Success 201 {object} docs.UserResponse "Updated user"
+// @Success 200 {object} docs.UserResponse "Updated user"
 // @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
 // @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
 // @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"

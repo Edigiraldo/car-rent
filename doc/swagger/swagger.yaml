@@ -105,6 +105,58 @@ definitions:
           type: string
         type: array
     type: object
+  docs.ReservationRequest:
+    properties:
+      car_id:
+        example: 0ddac1d8-c7f2-44a6-8c7e-3d06410f7be1
+        type: string
+      end_date:
+        example: "2023-05-16T18:00:00Z"
+        type: string
+      payment_status:
+        example: Paid
+        type: string
+      start_date:
+        example: "2023-05-15T10:00:00Z"
+        type: string
+      status:
+        example: Reserved
+        type: string
+      user_id:
+        example: a29b1af4-9650-4379-8a8b-7f6c4d374e7f
+        type: string
+    type: object
+  docs.ReservationResponse:
+    properties:
+      car_id:
+        example: 0ddac1d8-c7f2-44a6-8c7e-3d06410f7be1
+        type: string
+      end_date:
+        example: "2027-05-22T18:00:00Z"
+        type: string
+      id:
+        example: 882dfcf8-98c9-4a25-9637-ae4564928b10
+        type: string
+      payment_status:
+        example: Paid
+        type: string
+      start_date:
+        example: "2027-05-15T10:00:00Z"
+        type: string
+      status:
+        example: Reserved
+        type: string
+      user_id:
+        example: a29b1af4-9650-4379-8a8b-7f6c4d374e7f
+        type: string
+    type: object
+  docs.Reservations:
+    properties:
+      reservations:
+        items:
+          $ref: '#/definitions/docs.ReservationResponse'
+        type: array
+    type: object
   docs.UserRequest:
     properties:
       email:
@@ -222,6 +274,39 @@ paths:
       summary: List cars
       tags:
       - Cars
+  /cars/{car_id}/reservations:
+    get:
+      description: Get reservations by Car id
+      operationId: get-reservation-by-car
+      parameters:
+      - description: Car id
+        format: uuid
+        in: path
+        name: car_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Obtained reservations
+          schema:
+            $ref: '#/definitions/docs.Reservations'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseBadRequest'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseNotFound'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+      summary: Get reservations by Car id
+      tags:
+      - Reservations
   /cars/{id}:
     delete:
       description: Delete a car by UUID
@@ -266,7 +351,7 @@ paths:
       produces:
       - application/json
       responses:
-        "201":
+        "200":
           description: Obtained car
           schema:
             $ref: '#/definitions/docs.CarResponse'
@@ -307,7 +392,7 @@ paths:
       produces:
       - application/json
       responses:
-        "201":
+        "200":
           description: Updated car
           schema:
             $ref: '#/definitions/docs.CarResponse'
@@ -344,6 +429,142 @@ paths:
       summary: List cities
       tags:
       - Cities
+  /reservations:
+    post:
+      consumes:
+      - application/json
+      description: Create a reservation with the provided information
+      operationId: create-reservation
+      parameters:
+      - description: 'Reservation information (allowed statuses: Reserved, Canceled,
+          Completed; allowed payment statuses: Paid, Pending, Canceled)'
+        in: body
+        name: reservation
+        required: true
+        schema:
+          $ref: '#/definitions/docs.ReservationRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created reservation
+          schema:
+            $ref: '#/definitions/docs.ReservationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseBadRequest'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+      summary: Create a reservation
+      tags:
+      - Reservations
+  /reservations/{id}:
+    delete:
+      description: Delete a reservation by UUID
+      operationId: delete-reservation
+      parameters:
+      - description: Reservation UUID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseBadRequest'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseNotFound'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+      summary: Delete a reservation
+      tags:
+      - Reservations
+    get:
+      description: Get a reservation by UUID
+      operationId: get-reservation
+      parameters:
+      - description: Reservation UUID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Obtained reservation
+          schema:
+            $ref: '#/definitions/docs.ReservationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseBadRequest'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseNotFound'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+      summary: Get a reservation
+      tags:
+      - Reservations
+    put:
+      consumes:
+      - application/json
+      description: Update a reservation by UUID
+      operationId: update-reservation
+      parameters:
+      - description: Reservation UUID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 'Reservation information (allowed statuses: Reserved, Canceled,
+          Completed; allowed payment statuses: Paid, Pending, Canceled)'
+        in: body
+        name: reservation
+        required: true
+        schema:
+          $ref: '#/definitions/docs.ReservationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated reservation
+          schema:
+            $ref: '#/definitions/docs.ReservationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseBadRequest'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseNotFound'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+      summary: Update a reservation
+      tags:
+      - Reservations
   /users:
     post:
       consumes:
@@ -420,7 +641,7 @@ paths:
       produces:
       - application/json
       responses:
-        "201":
+        "200":
           description: Obtained user
           schema:
             $ref: '#/definitions/docs.UserResponse'
@@ -461,7 +682,7 @@ paths:
       produces:
       - application/json
       responses:
-        "201":
+        "200":
           description: Updated user
           schema:
             $ref: '#/definitions/docs.UserResponse'
@@ -480,4 +701,37 @@ paths:
       summary: Update a user
       tags:
       - Users
+  /users/{user_id}/reservations:
+    get:
+      description: Get reservations by User id
+      operationId: get-reservation-by-user
+      parameters:
+      - description: User id
+        format: uuid
+        in: path
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Obtained reservations
+          schema:
+            $ref: '#/definitions/docs.Reservations'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseBadRequest'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseNotFound'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+      summary: Get reservations by User id
+      tags:
+      - Reservations
 swagger: "2.0"

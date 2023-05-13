@@ -24,6 +24,17 @@ func NewReservations(rs ports.ReservationsService) Reservations {
 	}
 }
 
+// @Summary Create a reservation
+// @Description Create a reservation with the provided information
+// @ID create-reservation
+// @Accept json
+// @Produce json
+// @Param reservation body docs.ReservationRequest true "Reservation information (allowed statuses: Reserved, Canceled, Completed; allowed payment statuses: Paid, Pending, Canceled)"
+// @Success 201 {object} docs.ReservationResponse "Created reservation"
+// @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
+// @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Tags Reservations
+// @Router /reservations [post]
 func (rh Reservations) Book(w http.ResponseWriter, r *http.Request) {
 	var newReservation domain.Reservation
 	reservation, err := dtos.ReservationFromBody(r.Body)
@@ -51,6 +62,17 @@ func (rh Reservations) Book(w http.ResponseWriter, r *http.Request) {
 	httphandler.WriteSuccessResponse(w, http.StatusCreated, reservation)
 }
 
+// @Summary Get a reservation
+// @Description Get a reservation by UUID
+// @ID get-reservation
+// @Produce json
+// @Param id path string true "Reservation UUID" format(uuid)
+// @Success 200 {object} docs.ReservationResponse "Obtained reservation"
+// @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
+// @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
+// @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Tags Reservations
+// @Router /reservations/{id} [get]
 func (rh Reservations) Get(w http.ResponseWriter, r *http.Request) {
 	var reservation dtos.Reservation
 
@@ -79,6 +101,19 @@ func (rh Reservations) Get(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// @Summary Update a reservation
+// @Description Update a reservation by UUID
+// @ID update-reservation
+// @Accept json
+// @Produce json
+// @Param id path string true "Reservation UUID" format(uuid)
+// @Param reservation body docs.ReservationRequest true "Reservation information (allowed statuses: Reserved, Canceled, Completed; allowed payment statuses: Paid, Pending, Canceled)"
+// @Success 200 {object} docs.ReservationResponse "Updated reservation"
+// @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
+// @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
+// @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Tags Reservations
+// @Router /reservations/{id} [put]
 func (rh Reservations) FullUpdate(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
@@ -119,6 +154,17 @@ func (rh Reservations) FullUpdate(w http.ResponseWriter, r *http.Request) {
 	httphandler.WriteSuccessResponse(w, http.StatusOK, reservation)
 }
 
+// @Summary Delete a reservation
+// @Description Delete a reservation by UUID
+// @ID delete-reservation
+// @Produce json
+// @Param id path string true "Reservation UUID" format(uuid)
+// @Success 204 "No Content"
+// @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
+// @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
+// @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Tags Reservations
+// @Router /reservations/{id} [delete]
 func (rh Reservations) Delete(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
@@ -139,6 +185,17 @@ func (rh Reservations) Delete(w http.ResponseWriter, r *http.Request) {
 	httphandler.WriteSuccessResponse(w, http.StatusNoContent, nil)
 }
 
+// @Summary Get reservations by Car id
+// @Description Get reservations by Car id
+// @ID get-reservation-by-car
+// @Produce json
+// @Param car_id path string true "Car id" format(uuid)
+// @Success 200 {object} docs.Reservations "Obtained reservations"
+// @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
+// @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
+// @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Tags Reservations
+// @Router /cars/{car_id}/reservations [get]
 func (rh Reservations) GetByCarID(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	cID := params["id"]
@@ -160,6 +217,17 @@ func (rh Reservations) GetByCarID(w http.ResponseWriter, r *http.Request) {
 	httphandler.WriteSuccessResponse(w, http.StatusOK, reservations)
 }
 
+// @Summary Get reservations by User id
+// @Description Get reservations by User id
+// @ID get-reservation-by-user
+// @Produce json
+// @Param user_id path string true "User id" format(uuid)
+// @Success 200 {object} docs.Reservations "Obtained reservations"
+// @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
+// @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
+// @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Tags Reservations
+// @Router /users/{user_id}/reservations [get]
 func (rh Reservations) GetByUserID(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	uID := params["id"]

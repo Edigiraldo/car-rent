@@ -70,7 +70,7 @@ func (ch Cars) Register(w http.ResponseWriter, r *http.Request) {
 // @ID get-car
 // @Produce json
 // @Param id path string true "Car UUID" format(uuid)
-// @Success 201 {object} docs.CarResponse "Obtained car"
+// @Success 200 {object} docs.CarResponse "Obtained car"
 // @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
 // @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
 // @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
@@ -111,7 +111,7 @@ func (ch Cars) Get(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param id path string true "Car UUID" format(uuid)
 // @Param car body docs.CarRequest true "Car information (allowed types: Sedan, Luxury, Sports Car, Limousine; allowed statuses: Available, Unavailable)"
-// @Success 201 {object} docs.CarResponse "Updated car"
+// @Success 200 {object} docs.CarResponse "Updated car"
 // @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
 // @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
 // @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
