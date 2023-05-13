@@ -109,14 +109,14 @@ func (ch Cars) Get(w http.ResponseWriter, r *http.Request) {
 // @ID update-car
 // @Accept json
 // @Produce json
-// @Param uuid path string true "Car UUID" format(uuid)
+// @Param id path string true "Car UUID" format(uuid)
 // @Param car body docs.CarRequest true "Car information (allowed types: Sedan, Luxury, Sports Car, Limousine; allowed statuses: Available, Unavailable)"
 // @Success 201 {object} docs.CarResponse "Updated car"
 // @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
 // @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
 // @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
 // @Tags Cars
-// @Router /cars/{uuid} [put]
+// @Router /cars/{id} [put]
 func (ch Cars) FullUpdate(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
@@ -155,13 +155,13 @@ func (ch Cars) FullUpdate(w http.ResponseWriter, r *http.Request) {
 // @Description Delete a car by UUID
 // @ID delete-car
 // @Produce json
-// @Param uuid path string true "Car UUID" format(uuid)
+// @Param id path string true "Car UUID" format(uuid)
 // @Success 204 "No Content"
 // @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
 // @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
 // @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
 // @Tags Cars
-// @Router /cars/{uuid} [delete]
+// @Router /cars/{id} [delete]
 func (ch Cars) Delete(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]

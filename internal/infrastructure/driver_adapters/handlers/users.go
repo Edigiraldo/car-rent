@@ -23,6 +23,17 @@ func NewUsers(us ports.UsersService) Users {
 	}
 }
 
+// @Summary Register a new user
+// @Description Register a new user with the provided information
+// @ID register-user
+// @Accept json
+// @Produce json
+// @Param user body docs.UserRequest true "User information (allowed types: Customer, Admin; allowed statuses: Active, Inactive)"
+// @Success 201 {object} docs.UserResponse "Created user"
+// @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
+// @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Tags Users
+// @Router /users [post]
 func (uh Users) SignUp(w http.ResponseWriter, r *http.Request) {
 	var newUser domain.User
 	user, err := dtos.UserFromBody(r.Body)
@@ -46,6 +57,17 @@ func (uh Users) SignUp(w http.ResponseWriter, r *http.Request) {
 	httphandler.WriteSuccessResponse(w, http.StatusCreated, user)
 }
 
+// @Summary Get a user
+// @Description Get a user by UUID
+// @ID get-user
+// @Produce json
+// @Param uuid path string true "User UUID" format(uuid)
+// @Success 201 {object} docs.UserResponse "Obtained user"
+// @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
+// @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
+// @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Tags Users
+// @Router /users/{uuid} [get]
 func (uh Users) Get(w http.ResponseWriter, r *http.Request) {
 	var user dtos.User
 
@@ -73,6 +95,19 @@ func (uh Users) Get(w http.ResponseWriter, r *http.Request) {
 	httphandler.WriteSuccessResponse(w, http.StatusOK, user)
 }
 
+// @Summary Update a user
+// @Description Update a user by UUID
+// @ID update-user
+// @Accept json
+// @Produce json
+// @Param id path string true "User UUID" format(uuid)
+// @Param user body docs.UserRequest true "User information (allowed types: Customer, Admin; allowed statuses: Active, Inactive)"
+// @Success 201 {object} docs.UserResponse "Updated user"
+// @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
+// @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
+// @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Tags Users
+// @Router /users/{id} [put]
 func (uh Users) FullUpdate(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
@@ -107,6 +142,17 @@ func (uh Users) FullUpdate(w http.ResponseWriter, r *http.Request) {
 	httphandler.WriteSuccessResponse(w, http.StatusOK, user)
 }
 
+// @Summary Delete a user
+// @Description Delete a user by UUID
+// @ID delete-user
+// @Produce json
+// @Param id path string true "User UUID" format(uuid)
+// @Success 204 "No Content"
+// @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
+// @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
+// @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Tags Users
+// @Router /users/{id} [delete]
 func (uh Users) Delete(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
@@ -118,8 +164,12 @@ func (uh Users) Delete(w http.ResponseWriter, r *http.Request) {
 
 	err = uh.UsersService.Delete(r.Context(), ID)
 	if err != nil {
-		httphandler.WriteErrorResponse(w, http.StatusInternalServerError, ErrInternalServerError)
-		log.Println(err)
+		if err.Error() == services.ErrUserNotFound {
+			httphandler.WriteErrorResponse(w, http.StatusNotFound, err.Error())
+		} else {
+			httphandler.WriteErrorResponse(w, http.StatusInternalServerError, ErrInternalServerError)
+			log.Println(err)
+		}
 
 		return
 	}

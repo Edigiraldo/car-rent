@@ -9,7 +9,7 @@ type ErrorResponseInternalServer struct {
 type ErrorResponseNotFound struct {
 	Title  string `json:"title" example:"Not Found"`
 	Status int    `json:"status" example:"404"`
-	Detail string `json:"detail" example:"not Found"`
+	Detail string `json:"detail" example:"not found"`
 }
 
 type ErrorResponseBadRequest struct {

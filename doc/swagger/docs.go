@@ -118,54 +118,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/cars/{uuid}": {
-            "get": {
-                "description": "Get a car by UUID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Cars"
-                ],
-                "summary": "Get a car",
-                "operationId": "get-car",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "format": "uuid",
-                        "description": "Car UUID",
-                        "name": "uuid",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Obtained car",
-                        "schema": {
-                            "$ref": "#/definitions/docs.CarResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseBadRequest"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseNotFound"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
-                        }
-                    }
-                }
-            },
+        "/cars/{id}": {
             "put": {
                 "description": "Update a car by UUID",
                 "consumes": [
@@ -184,7 +137,7 @@ const docTemplate = `{
                         "type": "string",
                         "format": "uuid",
                         "description": "Car UUID",
-                        "name": "uuid",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     },
@@ -240,7 +193,7 @@ const docTemplate = `{
                         "type": "string",
                         "format": "uuid",
                         "description": "Car UUID",
-                        "name": "uuid",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     }
@@ -248,6 +201,55 @@ const docTemplate = `{
                 "responses": {
                     "204": {
                         "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseBadRequest"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseNotFound"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                        }
+                    }
+                }
+            }
+        },
+        "/cars/{uuid}": {
+            "get": {
+                "description": "Get a car by UUID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cars"
+                ],
+                "summary": "Get a car",
+                "operationId": "get-car",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Car UUID",
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Obtained car",
+                        "schema": {
+                            "$ref": "#/definitions/docs.CarResponse"
+                        }
                     },
                     "400": {
                         "description": "Bad Request",
@@ -286,6 +288,207 @@ const docTemplate = `{
                         "description": "Cities name",
                         "schema": {
                             "$ref": "#/definitions/docs.ListCitiesNameResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
+            "post": {
+                "description": "Register a new user with the provided information",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Register a new user",
+                "operationId": "register-user",
+                "parameters": [
+                    {
+                        "description": "User information (allowed types: Customer, Admin; allowed statuses: Active, Inactive)",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/docs.UserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created user",
+                        "schema": {
+                            "$ref": "#/definitions/docs.UserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseBadRequest"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
+            "put": {
+                "description": "Update a user by UUID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Update a user",
+                "operationId": "update-user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "User UUID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "User information (allowed types: Customer, Admin; allowed statuses: Active, Inactive)",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/docs.UserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Updated user",
+                        "schema": {
+                            "$ref": "#/definitions/docs.UserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseBadRequest"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseNotFound"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a user by UUID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Delete a user",
+                "operationId": "delete-user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "User UUID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseBadRequest"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseNotFound"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{uuid}": {
+            "get": {
+                "description": "Get a user by UUID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get a user",
+                "operationId": "get-user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "User UUID",
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Obtained user",
+                        "schema": {
+                            "$ref": "#/definitions/docs.UserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseBadRequest"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorResponseNotFound"
                         }
                     },
                     "500": {
@@ -409,7 +612,7 @@ const docTemplate = `{
             "properties": {
                 "detail": {
                     "type": "string",
-                    "example": "not Found"
+                    "example": "not found"
                 },
                 "status": {
                     "type": "integer",
@@ -445,6 +648,60 @@ const docTemplate = `{
                         "Los Angeles",
                         "New York"
                     ]
+                }
+            }
+        },
+        "docs.UserRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "isaac.newton@cam.ac.uk"
+                },
+                "first_name": {
+                    "type": "string",
+                    "example": "Isaac"
+                },
+                "last_name": {
+                    "type": "string",
+                    "example": "Newton"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "Active"
+                },
+                "type": {
+                    "type": "string",
+                    "example": "Customer"
+                }
+            }
+        },
+        "docs.UserResponse": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "isaac.newton@cam.ac.uk"
+                },
+                "first_name": {
+                    "type": "string",
+                    "example": "Isaac"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "b6dcf3b3-ec0a-9f31-4379-4b8e7b94a387"
+                },
+                "last_name": {
+                    "type": "string",
+                    "example": "Newton"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "Active"
+                },
+                "type": {
+                    "type": "string",
+                    "example": "Customer"
                 }
             }
         }

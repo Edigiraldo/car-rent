@@ -78,7 +78,7 @@ definitions:
   docs.ErrorResponseNotFound:
     properties:
       detail:
-        example: not Found
+        example: not found
         type: string
       status:
         example: 404
@@ -104,6 +104,45 @@ definitions:
         items:
           type: string
         type: array
+    type: object
+  docs.UserRequest:
+    properties:
+      email:
+        example: isaac.newton@cam.ac.uk
+        type: string
+      first_name:
+        example: Isaac
+        type: string
+      last_name:
+        example: Newton
+        type: string
+      status:
+        example: Active
+        type: string
+      type:
+        example: Customer
+        type: string
+    type: object
+  docs.UserResponse:
+    properties:
+      email:
+        example: isaac.newton@cam.ac.uk
+        type: string
+      first_name:
+        example: Isaac
+        type: string
+      id:
+        example: b6dcf3b3-ec0a-9f31-4379-4b8e7b94a387
+        type: string
+      last_name:
+        example: Newton
+        type: string
+      status:
+        example: Active
+        type: string
+      type:
+        example: Customer
+        type: string
     type: object
 host: localhost:5050
 info:
@@ -183,7 +222,7 @@ paths:
       summary: List cars
       tags:
       - Cars
-  /cars/{uuid}:
+  /cars/{id}:
     delete:
       description: Delete a car by UUID
       operationId: delete-car
@@ -191,7 +230,7 @@ paths:
       - description: Car UUID
         format: uuid
         in: path
-        name: uuid
+        name: id
         required: true
         type: string
       produces:
@@ -214,6 +253,48 @@ paths:
       summary: Delete a car
       tags:
       - Cars
+    put:
+      consumes:
+      - application/json
+      description: Update a car by UUID
+      operationId: update-car
+      parameters:
+      - description: Car UUID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 'Car information (allowed types: Sedan, Luxury, Sports Car, Limousine;
+          allowed statuses: Available, Unavailable)'
+        in: body
+        name: car
+        required: true
+        schema:
+          $ref: '#/definitions/docs.CarRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Updated car
+          schema:
+            $ref: '#/definitions/docs.CarResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseBadRequest'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseNotFound'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+      summary: Update a car
+      tags:
+      - Cars
+  /cars/{uuid}:
     get:
       description: Get a car by UUID
       operationId: get-car
@@ -246,47 +327,6 @@ paths:
       summary: Get a car
       tags:
       - Cars
-    put:
-      consumes:
-      - application/json
-      description: Update a car by UUID
-      operationId: update-car
-      parameters:
-      - description: Car UUID
-        format: uuid
-        in: path
-        name: uuid
-        required: true
-        type: string
-      - description: 'Car information (allowed types: Sedan, Luxury, Sports Car, Limousine;
-          allowed statuses: Available, Unavailable)'
-        in: body
-        name: car
-        required: true
-        schema:
-          $ref: '#/definitions/docs.CarRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Updated car
-          schema:
-            $ref: '#/definitions/docs.CarResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/docs.ErrorResponseBadRequest'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/docs.ErrorResponseNotFound'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/docs.ErrorResponseInternalServer'
-      summary: Update a car
-      tags:
-      - Cars
   /cities/names:
     get:
       description: Lists the names of all the currently supported cities
@@ -305,4 +345,141 @@ paths:
       summary: List cities
       tags:
       - Cities
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user with the provided information
+      operationId: register-user
+      parameters:
+      - description: 'User information (allowed types: Customer, Admin; allowed statuses:
+          Active, Inactive)'
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/docs.UserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created user
+          schema:
+            $ref: '#/definitions/docs.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseBadRequest'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+      summary: Register a new user
+      tags:
+      - Users
+  /users/{id}:
+    delete:
+      description: Delete a user by UUID
+      operationId: delete-user
+      parameters:
+      - description: User UUID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseBadRequest'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseNotFound'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+      summary: Delete a user
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: Update a user by UUID
+      operationId: update-user
+      parameters:
+      - description: User UUID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 'User information (allowed types: Customer, Admin; allowed statuses:
+          Active, Inactive)'
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/docs.UserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Updated user
+          schema:
+            $ref: '#/definitions/docs.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseBadRequest'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseNotFound'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+      summary: Update a user
+      tags:
+      - Users
+  /users/{uuid}:
+    get:
+      description: Get a user by UUID
+      operationId: get-user
+      parameters:
+      - description: User UUID
+        format: uuid
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Obtained user
+          schema:
+            $ref: '#/definitions/docs.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseBadRequest'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseNotFound'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+      summary: Get a user
+      tags:
+      - Users
 swagger: "2.0"
