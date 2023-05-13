@@ -31,8 +31,8 @@ func NewReservations(rs ports.ReservationsService) Reservations {
 // @Produce json
 // @Param reservation body docs.ReservationRequest true "Reservation information (allowed statuses: Reserved, Canceled, Completed; allowed payment statuses: Paid, Pending, Canceled)"
 // @Success 201 {object} docs.ReservationResponse "Created reservation"
-// @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
-// @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Failure 400 {object} docs.ErrorMinimumReservationHours "Bad Request"
+// @Failure 500 {object} docs.ErrorInternalServer "Internal Server Error"
 // @Tags Reservations
 // @Router /reservations [post]
 func (rh Reservations) Book(w http.ResponseWriter, r *http.Request) {
@@ -68,9 +68,9 @@ func (rh Reservations) Book(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param id path string true "Reservation UUID" format(uuid)
 // @Success 200 {object} docs.ReservationResponse "Obtained reservation"
-// @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
-// @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
-// @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Failure 400 {object} docs.ErrorBadRequest "Bad Request"
+// @Failure 404 {object} docs.ErrorReservationNotFound "Not Found"
+// @Failure 500 {object} docs.ErrorInternalServer "Internal Server Error"
 // @Tags Reservations
 // @Router /reservations/{id} [get]
 func (rh Reservations) Get(w http.ResponseWriter, r *http.Request) {
@@ -109,9 +109,9 @@ func (rh Reservations) Get(w http.ResponseWriter, r *http.Request) {
 // @Param id path string true "Reservation UUID" format(uuid)
 // @Param reservation body docs.ReservationRequest true "Reservation information (allowed statuses: Reserved, Canceled, Completed; allowed payment statuses: Paid, Pending, Canceled)"
 // @Success 200 {object} docs.ReservationResponse "Updated reservation"
-// @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
-// @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
-// @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Failure 400 {object} docs.ErrorInvalidReservationTimeFrame "Bad Request"
+// @Failure 404 {object} docs.ErrorReservationNotFound "Not Found"
+// @Failure 500 {object} docs.ErrorInternalServer "Internal Server Error"
 // @Tags Reservations
 // @Router /reservations/{id} [put]
 func (rh Reservations) FullUpdate(w http.ResponseWriter, r *http.Request) {
@@ -160,9 +160,9 @@ func (rh Reservations) FullUpdate(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param id path string true "Reservation UUID" format(uuid)
 // @Success 204 "No Content"
-// @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
-// @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
-// @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Failure 400 {object} docs.ErrorBadRequest "Bad Request"
+// @Failure 404 {object} docs.ErrorReservationNotFound "Not Found"
+// @Failure 500 {object} docs.ErrorInternalServer "Internal Server Error"
 // @Tags Reservations
 // @Router /reservations/{id} [delete]
 func (rh Reservations) Delete(w http.ResponseWriter, r *http.Request) {
@@ -191,9 +191,8 @@ func (rh Reservations) Delete(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param car_id path string true "Car id" format(uuid)
 // @Success 200 {object} docs.Reservations "Obtained reservations"
-// @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
-// @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
-// @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Failure 400 {object} docs.ErrorBadRequest "Bad Request"
+// @Failure 500 {object} docs.ErrorInternalServer "Internal Server Error"
 // @Tags Reservations
 // @Router /cars/{car_id}/reservations [get]
 func (rh Reservations) GetByCarID(w http.ResponseWriter, r *http.Request) {
@@ -223,9 +222,8 @@ func (rh Reservations) GetByCarID(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param user_id path string true "User id" format(uuid)
 // @Success 200 {object} docs.Reservations "Obtained reservations"
-// @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
-// @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
-// @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Failure 400 {object} docs.ErrorBadRequest "Bad Request"
+// @Failure 500 {object} docs.ErrorInternalServer "Internal Server Error"
 // @Tags Reservations
 // @Router /users/{user_id}/reservations [get]
 func (rh Reservations) GetByUserID(w http.ResponseWriter, r *http.Request) {

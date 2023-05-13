@@ -51,13 +51,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseInvCityName"
+                            "$ref": "#/definitions/docs.ErrorInvCityName"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                            "$ref": "#/definitions/docs.ErrorInternalServer"
                         }
                     }
                 }
@@ -100,19 +100,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseBadRequest"
+                            "$ref": "#/definitions/docs.ErrorBadRequest"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseNotFound"
+                            "$ref": "#/definitions/docs.ErrorNotFound"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                            "$ref": "#/definitions/docs.ErrorInternalServer"
                         }
                     }
                 }
@@ -149,19 +149,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseBadRequest"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseNotFound"
+                            "$ref": "#/definitions/docs.ErrorBadRequest"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                            "$ref": "#/definitions/docs.ErrorInternalServer"
                         }
                     }
                 }
@@ -198,19 +192,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseBadRequest"
+                            "$ref": "#/definitions/docs.ErrorBadRequest"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseNotFound"
+                            "$ref": "#/definitions/docs.ErrorNotFound"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                            "$ref": "#/definitions/docs.ErrorInternalServer"
                         }
                     }
                 }
@@ -257,19 +251,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseBadRequest"
+                            "$ref": "#/definitions/docs.ErrorBadRequest"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseNotFound"
+                            "$ref": "#/definitions/docs.ErrorNotFound"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                            "$ref": "#/definitions/docs.ErrorInternalServer"
                         }
                     }
                 }
@@ -301,19 +295,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseBadRequest"
+                            "$ref": "#/definitions/docs.ErrorBadRequest"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseNotFound"
+                            "$ref": "#/definitions/docs.ErrorNotFound"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                            "$ref": "#/definitions/docs.ErrorInternalServer"
                         }
                     }
                 }
@@ -340,7 +334,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                            "$ref": "#/definitions/docs.ErrorInternalServer"
                         }
                     }
                 }
@@ -381,13 +375,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseBadRequest"
+                            "$ref": "#/definitions/docs.ErrorMinimumReservationHours"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                            "$ref": "#/definitions/docs.ErrorInternalServer"
                         }
                     }
                 }
@@ -424,19 +418,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseBadRequest"
+                            "$ref": "#/definitions/docs.ErrorBadRequest"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseNotFound"
+                            "$ref": "#/definitions/docs.ErrorReservationNotFound"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                            "$ref": "#/definitions/docs.ErrorInternalServer"
                         }
                     }
                 }
@@ -483,19 +477,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseBadRequest"
+                            "$ref": "#/definitions/docs.ErrorInvalidReservationTimeFrame"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseNotFound"
+                            "$ref": "#/definitions/docs.ErrorReservationNotFound"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                            "$ref": "#/definitions/docs.ErrorInternalServer"
                         }
                     }
                 }
@@ -527,19 +521,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseBadRequest"
+                            "$ref": "#/definitions/docs.ErrorBadRequest"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseNotFound"
+                            "$ref": "#/definitions/docs.ErrorReservationNotFound"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                            "$ref": "#/definitions/docs.ErrorInternalServer"
                         }
                     }
                 }
@@ -580,13 +574,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseBadRequest"
+                            "$ref": "#/definitions/docs.ErrorBadRequest"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                            "$ref": "#/definitions/docs.ErrorInternalServer"
                         }
                     }
                 }
@@ -623,19 +617,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseBadRequest"
+                            "$ref": "#/definitions/docs.ErrorBadRequest"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseNotFound"
+                            "$ref": "#/definitions/docs.ErrorNotFound"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                            "$ref": "#/definitions/docs.ErrorInternalServer"
                         }
                     }
                 }
@@ -682,19 +676,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseBadRequest"
+                            "$ref": "#/definitions/docs.ErrorBadRequest"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseNotFound"
+                            "$ref": "#/definitions/docs.ErrorNotFound"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                            "$ref": "#/definitions/docs.ErrorInternalServer"
                         }
                     }
                 }
@@ -726,19 +720,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseBadRequest"
+                            "$ref": "#/definitions/docs.ErrorBadRequest"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseNotFound"
+                            "$ref": "#/definitions/docs.ErrorNotFound"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                            "$ref": "#/definitions/docs.ErrorInternalServer"
                         }
                     }
                 }
@@ -775,19 +769,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseBadRequest"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseNotFound"
+                            "$ref": "#/definitions/docs.ErrorBadRequest"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorResponseInternalServer"
+                            "$ref": "#/definitions/docs.ErrorInternalServer"
                         }
                     }
                 }
@@ -849,7 +837,7 @@ const docTemplate = `{
                 }
             }
         },
-        "docs.ErrorResponseBadRequest": {
+        "docs.ErrorBadRequest": {
             "type": "object",
             "properties": {
                 "detail": {
@@ -866,7 +854,7 @@ const docTemplate = `{
                 }
             }
         },
-        "docs.ErrorResponseInternalServer": {
+        "docs.ErrorInternalServer": {
             "type": "object",
             "properties": {
                 "detail": {
@@ -883,7 +871,7 @@ const docTemplate = `{
                 }
             }
         },
-        "docs.ErrorResponseInvCityName": {
+        "docs.ErrorInvCityName": {
             "type": "object",
             "properties": {
                 "detail": {
@@ -900,7 +888,41 @@ const docTemplate = `{
                 }
             }
         },
-        "docs.ErrorResponseNotFound": {
+        "docs.ErrorInvalidReservationTimeFrame": {
+            "type": "object",
+            "properties": {
+                "detail": {
+                    "type": "string",
+                    "example": "reservation time frame is invalid"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 400
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Bad Request"
+                }
+            }
+        },
+        "docs.ErrorMinimumReservationHours": {
+            "type": "object",
+            "properties": {
+                "detail": {
+                    "type": "string",
+                    "example": "period is shorter than minimun allowed (6 hours)"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 400
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Bad Request"
+                }
+            }
+        },
+        "docs.ErrorNotFound": {
             "type": "object",
             "properties": {
                 "detail": {
@@ -914,6 +936,23 @@ const docTemplate = `{
                 "title": {
                     "type": "string",
                     "example": "Not Found"
+                }
+            }
+        },
+        "docs.ErrorReservationNotFound": {
+            "type": "object",
+            "properties": {
+                "detail": {
+                    "type": "string",
+                    "example": "reservation was not found"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 400
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Bad Request"
                 }
             }
         },

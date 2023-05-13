@@ -30,8 +30,8 @@ func NewUsers(us ports.UsersService) Users {
 // @Produce json
 // @Param user body docs.UserRequest true "User information (allowed types: Customer, Admin; allowed statuses: Active, Inactive)"
 // @Success 201 {object} docs.UserResponse "Created user"
-// @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
-// @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Failure 400 {object} docs.ErrorBadRequest "Bad Request"
+// @Failure 500 {object} docs.ErrorInternalServer "Internal Server Error"
 // @Tags Users
 // @Router /users [post]
 func (uh Users) SignUp(w http.ResponseWriter, r *http.Request) {
@@ -63,9 +63,9 @@ func (uh Users) SignUp(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param id path string true "User UUID" format(uuid)
 // @Success 200 {object} docs.UserResponse "Obtained user"
-// @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
-// @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
-// @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Failure 400 {object} docs.ErrorBadRequest "Bad Request"
+// @Failure 404 {object} docs.ErrorNotFound "Not Found"
+// @Failure 500 {object} docs.ErrorInternalServer "Internal Server Error"
 // @Tags Users
 // @Router /users/{id} [get]
 func (uh Users) Get(w http.ResponseWriter, r *http.Request) {
@@ -103,9 +103,9 @@ func (uh Users) Get(w http.ResponseWriter, r *http.Request) {
 // @Param id path string true "User UUID" format(uuid)
 // @Param user body docs.UserRequest true "User information (allowed types: Customer, Admin; allowed statuses: Active, Inactive)"
 // @Success 200 {object} docs.UserResponse "Updated user"
-// @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
-// @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
-// @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Failure 400 {object} docs.ErrorBadRequest "Bad Request"
+// @Failure 404 {object} docs.ErrorNotFound "Not Found"
+// @Failure 500 {object} docs.ErrorInternalServer "Internal Server Error"
 // @Tags Users
 // @Router /users/{id} [put]
 func (uh Users) FullUpdate(w http.ResponseWriter, r *http.Request) {
@@ -148,9 +148,9 @@ func (uh Users) FullUpdate(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param id path string true "User UUID" format(uuid)
 // @Success 204 "No Content"
-// @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
-// @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
-// @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Failure 400 {object} docs.ErrorBadRequest "Bad Request"
+// @Failure 404 {object} docs.ErrorNotFound "Not Found"
+// @Failure 500 {object} docs.ErrorInternalServer "Internal Server Error"
 // @Tags Users
 // @Router /users/{id} [delete]
 func (uh Users) Delete(w http.ResponseWriter, r *http.Request) {

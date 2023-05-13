@@ -39,7 +39,7 @@ definitions:
         example: Luxury
         type: string
     type: object
-  docs.ErrorResponseBadRequest:
+  docs.ErrorBadRequest:
     properties:
       detail:
         example: bad request
@@ -51,7 +51,7 @@ definitions:
         example: Bad Request
         type: string
     type: object
-  docs.ErrorResponseInternalServer:
+  docs.ErrorInternalServer:
     properties:
       detail:
         example: internal server error
@@ -63,7 +63,7 @@ definitions:
         example: Internal server error
         type: string
     type: object
-  docs.ErrorResponseInvCityName:
+  docs.ErrorInvCityName:
     properties:
       detail:
         example: city name is not valid
@@ -75,7 +75,31 @@ definitions:
         example: Bad request
         type: string
     type: object
-  docs.ErrorResponseNotFound:
+  docs.ErrorInvalidReservationTimeFrame:
+    properties:
+      detail:
+        example: reservation time frame is invalid
+        type: string
+      status:
+        example: 400
+        type: integer
+      title:
+        example: Bad Request
+        type: string
+    type: object
+  docs.ErrorMinimumReservationHours:
+    properties:
+      detail:
+        example: period is shorter than minimun allowed (6 hours)
+        type: string
+      status:
+        example: 400
+        type: integer
+      title:
+        example: Bad Request
+        type: string
+    type: object
+  docs.ErrorNotFound:
     properties:
       detail:
         example: not found
@@ -85,6 +109,18 @@ definitions:
         type: integer
       title:
         example: Not Found
+        type: string
+    type: object
+  docs.ErrorReservationNotFound:
+    properties:
+      detail:
+        example: reservation was not found
+        type: string
+      status:
+        example: 400
+        type: integer
+      title:
+        example: Bad Request
         type: string
     type: object
   docs.ListCarsResponse:
@@ -227,11 +263,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/docs.ErrorResponseInvCityName'
+            $ref: '#/definitions/docs.ErrorInvCityName'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+            $ref: '#/definitions/docs.ErrorInternalServer'
       summary: Register a new car
       tags:
       - Cars
@@ -262,15 +298,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/docs.ErrorResponseBadRequest'
+            $ref: '#/definitions/docs.ErrorBadRequest'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/docs.ErrorResponseNotFound'
+            $ref: '#/definitions/docs.ErrorNotFound'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+            $ref: '#/definitions/docs.ErrorInternalServer'
       summary: List cars
       tags:
       - Cars
@@ -295,15 +331,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/docs.ErrorResponseBadRequest'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/docs.ErrorResponseNotFound'
+            $ref: '#/definitions/docs.ErrorBadRequest'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+            $ref: '#/definitions/docs.ErrorInternalServer'
       summary: Get reservations by Car id
       tags:
       - Reservations
@@ -326,15 +358,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/docs.ErrorResponseBadRequest'
+            $ref: '#/definitions/docs.ErrorBadRequest'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/docs.ErrorResponseNotFound'
+            $ref: '#/definitions/docs.ErrorNotFound'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+            $ref: '#/definitions/docs.ErrorInternalServer'
       summary: Delete a car
       tags:
       - Cars
@@ -358,15 +390,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/docs.ErrorResponseBadRequest'
+            $ref: '#/definitions/docs.ErrorBadRequest'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/docs.ErrorResponseNotFound'
+            $ref: '#/definitions/docs.ErrorNotFound'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+            $ref: '#/definitions/docs.ErrorInternalServer'
       summary: Get a car
       tags:
       - Cars
@@ -399,15 +431,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/docs.ErrorResponseBadRequest'
+            $ref: '#/definitions/docs.ErrorBadRequest'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/docs.ErrorResponseNotFound'
+            $ref: '#/definitions/docs.ErrorNotFound'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+            $ref: '#/definitions/docs.ErrorInternalServer'
       summary: Update a car
       tags:
       - Cars
@@ -425,7 +457,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+            $ref: '#/definitions/docs.ErrorInternalServer'
       summary: List cities
       tags:
       - Cities
@@ -453,11 +485,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/docs.ErrorResponseBadRequest'
+            $ref: '#/definitions/docs.ErrorMinimumReservationHours'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+            $ref: '#/definitions/docs.ErrorInternalServer'
       summary: Create a reservation
       tags:
       - Reservations
@@ -480,15 +512,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/docs.ErrorResponseBadRequest'
+            $ref: '#/definitions/docs.ErrorBadRequest'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/docs.ErrorResponseNotFound'
+            $ref: '#/definitions/docs.ErrorReservationNotFound'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+            $ref: '#/definitions/docs.ErrorInternalServer'
       summary: Delete a reservation
       tags:
       - Reservations
@@ -512,15 +544,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/docs.ErrorResponseBadRequest'
+            $ref: '#/definitions/docs.ErrorBadRequest'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/docs.ErrorResponseNotFound'
+            $ref: '#/definitions/docs.ErrorReservationNotFound'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+            $ref: '#/definitions/docs.ErrorInternalServer'
       summary: Get a reservation
       tags:
       - Reservations
@@ -553,15 +585,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/docs.ErrorResponseBadRequest'
+            $ref: '#/definitions/docs.ErrorInvalidReservationTimeFrame'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/docs.ErrorResponseNotFound'
+            $ref: '#/definitions/docs.ErrorReservationNotFound'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+            $ref: '#/definitions/docs.ErrorInternalServer'
       summary: Update a reservation
       tags:
       - Reservations
@@ -589,11 +621,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/docs.ErrorResponseBadRequest'
+            $ref: '#/definitions/docs.ErrorBadRequest'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+            $ref: '#/definitions/docs.ErrorInternalServer'
       summary: Register a new user
       tags:
       - Users
@@ -616,15 +648,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/docs.ErrorResponseBadRequest'
+            $ref: '#/definitions/docs.ErrorBadRequest'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/docs.ErrorResponseNotFound'
+            $ref: '#/definitions/docs.ErrorNotFound'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+            $ref: '#/definitions/docs.ErrorInternalServer'
       summary: Delete a user
       tags:
       - Users
@@ -648,15 +680,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/docs.ErrorResponseBadRequest'
+            $ref: '#/definitions/docs.ErrorBadRequest'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/docs.ErrorResponseNotFound'
+            $ref: '#/definitions/docs.ErrorNotFound'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+            $ref: '#/definitions/docs.ErrorInternalServer'
       summary: Get a user
       tags:
       - Users
@@ -689,15 +721,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/docs.ErrorResponseBadRequest'
+            $ref: '#/definitions/docs.ErrorBadRequest'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/docs.ErrorResponseNotFound'
+            $ref: '#/definitions/docs.ErrorNotFound'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+            $ref: '#/definitions/docs.ErrorInternalServer'
       summary: Update a user
       tags:
       - Users
@@ -722,15 +754,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/docs.ErrorResponseBadRequest'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/docs.ErrorResponseNotFound'
+            $ref: '#/definitions/docs.ErrorBadRequest'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+            $ref: '#/definitions/docs.ErrorInternalServer'
       summary: Get reservations by User id
       tags:
       - Reservations

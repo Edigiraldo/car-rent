@@ -24,7 +24,7 @@ func NewCities(cs ports.CitiesService) Cities {
 // @ID list-cities
 // @Produce json
 // @Success 200 {object} docs.ListCitiesNameResponse "Cities name"
-// @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
+// @Failure 500 {object} docs.ErrorInternalServer "Internal Server Error"
 // @Tags Cities
 // @Router /cities/names [get]
 func (ch Cities) ListNames(w http.ResponseWriter, r *http.Request) {
