@@ -69,13 +69,13 @@ func (ch Cars) Register(w http.ResponseWriter, r *http.Request) {
 // @Description Get a car by UUID
 // @ID get-car
 // @Produce json
-// @Param uuid path string true "Car UUID" format(uuid)
+// @Param id path string true "Car UUID" format(uuid)
 // @Success 201 {object} docs.CarResponse "Obtained car"
 // @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
 // @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
 // @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
 // @Tags Cars
-// @Router /cars/{uuid} [get]
+// @Router /cars/{id} [get]
 func (ch Cars) Get(w http.ResponseWriter, r *http.Request) {
 	var car dtos.Car
 

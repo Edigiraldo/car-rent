@@ -61,13 +61,13 @@ func (uh Users) SignUp(w http.ResponseWriter, r *http.Request) {
 // @Description Get a user by UUID
 // @ID get-user
 // @Produce json
-// @Param uuid path string true "User UUID" format(uuid)
+// @Param id path string true "User UUID" format(uuid)
 // @Success 201 {object} docs.UserResponse "Obtained user"
 // @Failure 400 {object} docs.ErrorResponseBadRequest "Bad Request"
 // @Failure 404 {object} docs.ErrorResponseNotFound "Not Found"
 // @Failure 500 {object} docs.ErrorResponseInternalServer "Internal Server Error"
 // @Tags Users
-// @Router /users/{uuid} [get]
+// @Router /users/{id} [get]
 func (uh Users) Get(w http.ResponseWriter, r *http.Request) {
 	var user dtos.User
 

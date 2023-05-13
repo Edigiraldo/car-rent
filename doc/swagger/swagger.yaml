@@ -253,6 +253,38 @@ paths:
       summary: Delete a car
       tags:
       - Cars
+    get:
+      description: Get a car by UUID
+      operationId: get-car
+      parameters:
+      - description: Car UUID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Obtained car
+          schema:
+            $ref: '#/definitions/docs.CarResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseBadRequest'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseNotFound'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+      summary: Get a car
+      tags:
+      - Cars
     put:
       consumes:
       - application/json
@@ -292,39 +324,6 @@ paths:
           schema:
             $ref: '#/definitions/docs.ErrorResponseInternalServer'
       summary: Update a car
-      tags:
-      - Cars
-  /cars/{uuid}:
-    get:
-      description: Get a car by UUID
-      operationId: get-car
-      parameters:
-      - description: Car UUID
-        format: uuid
-        in: path
-        name: uuid
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Obtained car
-          schema:
-            $ref: '#/definitions/docs.CarResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/docs.ErrorResponseBadRequest'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/docs.ErrorResponseNotFound'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/docs.ErrorResponseInternalServer'
-      summary: Get a car
       tags:
       - Cars
   /cities/names:
@@ -408,6 +407,38 @@ paths:
       summary: Delete a user
       tags:
       - Users
+    get:
+      description: Get a user by UUID
+      operationId: get-user
+      parameters:
+      - description: User UUID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Obtained user
+          schema:
+            $ref: '#/definitions/docs.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseBadRequest'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseNotFound'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/docs.ErrorResponseInternalServer'
+      summary: Get a user
+      tags:
+      - Users
     put:
       consumes:
       - application/json
@@ -447,39 +478,6 @@ paths:
           schema:
             $ref: '#/definitions/docs.ErrorResponseInternalServer'
       summary: Update a user
-      tags:
-      - Users
-  /users/{uuid}:
-    get:
-      description: Get a user by UUID
-      operationId: get-user
-      parameters:
-      - description: User UUID
-        format: uuid
-        in: path
-        name: uuid
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Obtained user
-          schema:
-            $ref: '#/definitions/docs.UserResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/docs.ErrorResponseBadRequest'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/docs.ErrorResponseNotFound'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/docs.ErrorResponseInternalServer'
-      summary: Get a user
       tags:
       - Users
 swagger: "2.0"
