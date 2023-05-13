@@ -100,7 +100,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorBadRequest"
+                            "$ref": "#/definitions/docs.ErrorCityQueryParamEmpty"
                         }
                     },
                     "500": {
@@ -143,7 +143,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorBadRequest"
+                            "$ref": "#/definitions/docs.ErrorinvalidUUID"
                         }
                     },
                     "500": {
@@ -186,7 +186,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorBadRequest"
+                            "$ref": "#/definitions/docs.ErrorinvalidUUID"
                         }
                     },
                     "404": {
@@ -245,7 +245,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorBadRequest"
+                            "$ref": "#/definitions/docs.ErrorInvalidCarStatus"
                         }
                     },
                     "404": {
@@ -289,7 +289,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorBadRequest"
+                            "$ref": "#/definitions/docs.ErrorinvalidUUID"
                         }
                     },
                     "404": {
@@ -412,7 +412,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorBadRequest"
+                            "$ref": "#/definitions/docs.ErrorInvalidReservationStatus"
                         }
                     },
                     "404": {
@@ -515,7 +515,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorBadRequest"
+                            "$ref": "#/definitions/docs.ErrorinvalidUUID"
                         }
                     },
                     "404": {
@@ -568,7 +568,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorBadRequest"
+                            "$ref": "#/definitions/docs.ErrorEmailAlreadyRegistered"
                         }
                     },
                     "500": {
@@ -611,13 +611,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorBadRequest"
+                            "$ref": "#/definitions/docs.ErrorinvalidUUID"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorNotFound"
+                            "$ref": "#/definitions/docs.ErrorUserNotFound"
                         }
                     },
                     "500": {
@@ -670,13 +670,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorBadRequest"
+                            "$ref": "#/definitions/docs.ErrorInvalidEmail"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorNotFound"
+                            "$ref": "#/definitions/docs.ErrorUserNotFound"
                         }
                     },
                     "500": {
@@ -714,13 +714,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorBadRequest"
+                            "$ref": "#/definitions/docs.ErrorinvalidUUID"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorNotFound"
+                            "$ref": "#/definitions/docs.ErrorUserNotFound"
                         }
                     },
                     "500": {
@@ -763,7 +763,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/docs.ErrorBadRequest"
+                            "$ref": "#/definitions/docs.ErrorinvalidUUID"
                         }
                     },
                     "500": {
@@ -831,23 +831,6 @@ const docTemplate = `{
                 }
             }
         },
-        "docs.ErrorBadRequest": {
-            "type": "object",
-            "properties": {
-                "detail": {
-                    "type": "string",
-                    "example": "bad request"
-                },
-                "status": {
-                    "type": "integer",
-                    "example": 400
-                },
-                "title": {
-                    "type": "string",
-                    "example": "Bad Request"
-                }
-            }
-        },
         "docs.ErrorCarNotFound": {
             "type": "object",
             "properties": {
@@ -862,6 +845,40 @@ const docTemplate = `{
                 "title": {
                     "type": "string",
                     "example": "Not Found"
+                }
+            }
+        },
+        "docs.ErrorCityQueryParamEmpty": {
+            "type": "object",
+            "properties": {
+                "detail": {
+                    "type": "string",
+                    "example": "car not available"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 400
+                },
+                "title": {
+                    "type": "string",
+                    "example": "city query param can not be empty"
+                }
+            }
+        },
+        "docs.ErrorEmailAlreadyRegistered": {
+            "type": "object",
+            "properties": {
+                "detail": {
+                    "type": "string",
+                    "example": "email already registered"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 400
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Bad Request"
                 }
             }
         },
@@ -882,6 +899,23 @@ const docTemplate = `{
                 }
             }
         },
+        "docs.ErrorInvalidCarStatus": {
+            "type": "object",
+            "properties": {
+                "detail": {
+                    "type": "string",
+                    "example": "invalid car status"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 400
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Bad Request"
+                }
+            }
+        },
         "docs.ErrorInvalidCityName": {
             "type": "object",
             "properties": {
@@ -896,6 +930,40 @@ const docTemplate = `{
                 "title": {
                     "type": "string",
                     "example": "Bad request"
+                }
+            }
+        },
+        "docs.ErrorInvalidEmail": {
+            "type": "object",
+            "properties": {
+                "detail": {
+                    "type": "string",
+                    "example": "invalid email"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 400
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Bad Request"
+                }
+            }
+        },
+        "docs.ErrorInvalidReservationStatus": {
+            "type": "object",
+            "properties": {
+                "detail": {
+                    "type": "string",
+                    "example": "invalid reservation status"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 400
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Bad Request"
                 }
             }
         },
@@ -933,23 +1001,6 @@ const docTemplate = `{
                 }
             }
         },
-        "docs.ErrorNotFound": {
-            "type": "object",
-            "properties": {
-                "detail": {
-                    "type": "string",
-                    "example": "not found"
-                },
-                "status": {
-                    "type": "integer",
-                    "example": 404
-                },
-                "title": {
-                    "type": "string",
-                    "example": "Not Found"
-                }
-            }
-        },
         "docs.ErrorReservationNotFound": {
             "type": "object",
             "properties": {
@@ -964,6 +1015,40 @@ const docTemplate = `{
                 "title": {
                     "type": "string",
                     "example": "Not Found"
+                }
+            }
+        },
+        "docs.ErrorUserNotFound": {
+            "type": "object",
+            "properties": {
+                "detail": {
+                    "type": "string",
+                    "example": "user not found"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 404
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Not Found"
+                }
+            }
+        },
+        "docs.ErrorinvalidUUID": {
+            "type": "object",
+            "properties": {
+                "detail": {
+                    "type": "string",
+                    "example": "id could not be converted to uuid"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 400
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Bad Request"
                 }
             }
         },

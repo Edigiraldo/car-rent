@@ -39,18 +39,6 @@ definitions:
         example: Luxury
         type: string
     type: object
-  docs.ErrorBadRequest:
-    properties:
-      detail:
-        example: bad request
-        type: string
-      status:
-        example: 400
-        type: integer
-      title:
-        example: Bad Request
-        type: string
-    type: object
   docs.ErrorCarNotFound:
     properties:
       detail:
@@ -61,6 +49,30 @@ definitions:
         type: integer
       title:
         example: Not Found
+        type: string
+    type: object
+  docs.ErrorCityQueryParamEmpty:
+    properties:
+      detail:
+        example: car not available
+        type: string
+      status:
+        example: 400
+        type: integer
+      title:
+        example: city query param can not be empty
+        type: string
+    type: object
+  docs.ErrorEmailAlreadyRegistered:
+    properties:
+      detail:
+        example: email already registered
+        type: string
+      status:
+        example: 400
+        type: integer
+      title:
+        example: Bad Request
         type: string
     type: object
   docs.ErrorInternalServer:
@@ -75,6 +87,18 @@ definitions:
         example: Internal server error
         type: string
     type: object
+  docs.ErrorInvalidCarStatus:
+    properties:
+      detail:
+        example: invalid car status
+        type: string
+      status:
+        example: 400
+        type: integer
+      title:
+        example: Bad Request
+        type: string
+    type: object
   docs.ErrorInvalidCityName:
     properties:
       detail:
@@ -85,6 +109,30 @@ definitions:
         type: integer
       title:
         example: Bad request
+        type: string
+    type: object
+  docs.ErrorInvalidEmail:
+    properties:
+      detail:
+        example: invalid email
+        type: string
+      status:
+        example: 400
+        type: integer
+      title:
+        example: Bad Request
+        type: string
+    type: object
+  docs.ErrorInvalidReservationStatus:
+    properties:
+      detail:
+        example: invalid reservation status
+        type: string
+      status:
+        example: 400
+        type: integer
+      title:
+        example: Bad Request
         type: string
     type: object
   docs.ErrorInvalidReservationTimeFrame:
@@ -111,18 +159,6 @@ definitions:
         example: Bad Request
         type: string
     type: object
-  docs.ErrorNotFound:
-    properties:
-      detail:
-        example: not found
-        type: string
-      status:
-        example: 404
-        type: integer
-      title:
-        example: Not Found
-        type: string
-    type: object
   docs.ErrorReservationNotFound:
     properties:
       detail:
@@ -133,6 +169,30 @@ definitions:
         type: integer
       title:
         example: Not Found
+        type: string
+    type: object
+  docs.ErrorUserNotFound:
+    properties:
+      detail:
+        example: user not found
+        type: string
+      status:
+        example: 404
+        type: integer
+      title:
+        example: Not Found
+        type: string
+    type: object
+  docs.ErrorinvalidUUID:
+    properties:
+      detail:
+        example: id could not be converted to uuid
+        type: string
+      status:
+        example: 400
+        type: integer
+      title:
+        example: Bad Request
         type: string
     type: object
   docs.ListCarsResponse:
@@ -310,7 +370,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/docs.ErrorBadRequest'
+            $ref: '#/definitions/docs.ErrorCityQueryParamEmpty'
         "500":
           description: Internal Server Error
           schema:
@@ -339,7 +399,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/docs.ErrorBadRequest'
+            $ref: '#/definitions/docs.ErrorinvalidUUID'
         "500":
           description: Internal Server Error
           schema:
@@ -366,7 +426,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/docs.ErrorBadRequest'
+            $ref: '#/definitions/docs.ErrorinvalidUUID'
         "404":
           description: Not Found
           schema:
@@ -398,7 +458,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/docs.ErrorBadRequest'
+            $ref: '#/definitions/docs.ErrorinvalidUUID'
         "404":
           description: Not Found
           schema:
@@ -439,7 +499,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/docs.ErrorBadRequest'
+            $ref: '#/definitions/docs.ErrorInvalidCarStatus'
         "404":
           description: Not Found
           schema:
@@ -520,7 +580,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/docs.ErrorBadRequest'
+            $ref: '#/definitions/docs.ErrorinvalidUUID'
         "404":
           description: Not Found
           schema:
@@ -552,7 +612,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/docs.ErrorBadRequest'
+            $ref: '#/definitions/docs.ErrorInvalidReservationStatus'
         "404":
           description: Not Found
           schema:
@@ -629,7 +689,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/docs.ErrorBadRequest'
+            $ref: '#/definitions/docs.ErrorEmailAlreadyRegistered'
         "500":
           description: Internal Server Error
           schema:
@@ -656,11 +716,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/docs.ErrorBadRequest'
+            $ref: '#/definitions/docs.ErrorinvalidUUID'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/docs.ErrorNotFound'
+            $ref: '#/definitions/docs.ErrorUserNotFound'
         "500":
           description: Internal Server Error
           schema:
@@ -688,11 +748,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/docs.ErrorBadRequest'
+            $ref: '#/definitions/docs.ErrorinvalidUUID'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/docs.ErrorNotFound'
+            $ref: '#/definitions/docs.ErrorUserNotFound'
         "500":
           description: Internal Server Error
           schema:
@@ -729,11 +789,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/docs.ErrorBadRequest'
+            $ref: '#/definitions/docs.ErrorInvalidEmail'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/docs.ErrorNotFound'
+            $ref: '#/definitions/docs.ErrorUserNotFound'
         "500":
           description: Internal Server Error
           schema:
@@ -762,7 +822,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/docs.ErrorBadRequest'
+            $ref: '#/definitions/docs.ErrorinvalidUUID'
         "500":
           description: Internal Server Error
           schema:

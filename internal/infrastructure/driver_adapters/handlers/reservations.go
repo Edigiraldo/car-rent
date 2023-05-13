@@ -68,7 +68,7 @@ func (rh Reservations) Book(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param id path string true "Reservation UUID" format(uuid)
 // @Success 200 {object} docs.ReservationResponse "Obtained reservation"
-// @Failure 400 {object} docs.ErrorBadRequest "Bad Request"
+// @Failure 400 {object} docs.ErrorInvalidReservationStatus "Bad Request"
 // @Failure 404 {object} docs.ErrorReservationNotFound "Not Found"
 // @Failure 500 {object} docs.ErrorInternalServer "Internal Server Error"
 // @Tags Reservations
@@ -160,7 +160,7 @@ func (rh Reservations) FullUpdate(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param id path string true "Reservation UUID" format(uuid)
 // @Success 204 "No Content"
-// @Failure 400 {object} docs.ErrorBadRequest "Bad Request"
+// @Failure 400 {object} docs.ErrorinvalidUUID "Bad Request"
 // @Failure 404 {object} docs.ErrorReservationNotFound "Not Found"
 // @Failure 500 {object} docs.ErrorInternalServer "Internal Server Error"
 // @Tags Reservations
@@ -191,7 +191,7 @@ func (rh Reservations) Delete(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param car_id path string true "Car id" format(uuid)
 // @Success 200 {object} docs.Reservations "Obtained reservations"
-// @Failure 400 {object} docs.ErrorBadRequest "Bad Request"
+// @Failure 400 {object} docs.ErrorinvalidUUID "Bad Request"
 // @Failure 500 {object} docs.ErrorInternalServer "Internal Server Error"
 // @Tags Reservations
 // @Router /cars/{car_id}/reservations [get]
@@ -222,7 +222,7 @@ func (rh Reservations) GetByCarID(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param user_id path string true "User id" format(uuid)
 // @Success 200 {object} docs.Reservations "Obtained reservations"
-// @Failure 400 {object} docs.ErrorBadRequest "Bad Request"
+// @Failure 400 {object} docs.ErrorinvalidUUID "Bad Request"
 // @Failure 500 {object} docs.ErrorInternalServer "Internal Server Error"
 // @Tags Reservations
 // @Router /users/{user_id}/reservations [get]

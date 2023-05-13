@@ -30,10 +30,22 @@ type ErrorReservationNotFound struct {
 	Detail string `json:"detail" example:"reservation was not found"`
 }
 
-type ErrorBadRequest struct {
+type ErrorEmailAlreadyRegistered struct {
 	Title  string `json:"title" example:"Bad Request"`
 	Status int    `json:"status" example:"400"`
-	Detail string `json:"detail" example:"bad request"`
+	Detail string `json:"detail" example:"email already registered"`
+}
+
+type ErrorInvalidEmail struct {
+	Title  string `json:"title" example:"Bad Request"`
+	Status int    `json:"status" example:"400"`
+	Detail string `json:"detail" example:"invalid email"`
+}
+
+type ErrorinvalidUUID struct {
+	Title  string `json:"title" example:"Bad Request"`
+	Status int    `json:"status" example:"400"`
+	Detail string `json:"detail" example:"id could not be converted to uuid"`
 }
 
 type ErrorInvalidReservationTimeFrame struct {
@@ -46,6 +58,24 @@ type ErrorCarNotAvailable struct {
 	Title  string `json:"title" example:"Bad Request"`
 	Status int    `json:"status" example:"400"`
 	Detail string `json:"detail" example:"car not available"`
+}
+
+type ErrorInvalidCarStatus struct {
+	Title  string `json:"title" example:"Bad Request"`
+	Status int    `json:"status" example:"400"`
+	Detail string `json:"detail" example:"invalid car status"`
+}
+
+type ErrorCityQueryParamEmpty struct {
+	Title  string `json:"title" example:"city query param can not be empty"`
+	Status int    `json:"status" example:"400"`
+	Detail string `json:"detail" example:"car not available"`
+}
+
+type ErrorInvalidReservationStatus struct {
+	Title  string `json:"title" example:"Bad Request"`
+	Status int    `json:"status" example:"400"`
+	Detail string `json:"detail" example:"invalid reservation status"`
 }
 
 type ErrorMinimumReservationHours struct {
