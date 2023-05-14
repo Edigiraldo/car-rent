@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/Edigiraldo/car-rent/internal/core/domain"
-	"github.com/Edigiraldo/car-rent/internal/core/services"
 	mocks "github.com/Edigiraldo/car-rent/internal/pkg/mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
@@ -58,7 +57,7 @@ func TestUsersInsert(t *testing.T) {
 				user: du,
 			},
 			wants: wants{
-				err: errors.New(services.ErrEmailAlreadyRegistered),
+				err: errors.New("email already registered"),
 			},
 			setMocks: func(d *usersDependencies) *sql.DB {
 				dbHandle, mock, err := sqlmock.New()
@@ -175,7 +174,7 @@ func TestUsersGet(t *testing.T) {
 			},
 			wants: wants{
 				user: domain.User{},
-				err:  errors.New(services.ErrUserNotFound),
+				err:  errors.New("user not found"),
 			},
 			setMocks: func(d *usersDependencies) *sql.DB {
 				dbHandle, mock, err := sqlmock.New()
@@ -298,7 +297,7 @@ func TestUsersFullUpdate(t *testing.T) {
 				user: du,
 			},
 			wants: wants{
-				err: errors.New(services.ErrEmailAlreadyRegistered),
+				err: errors.New("email already registered"),
 			},
 			setMocks: func(d *usersDependencies) *sql.DB {
 				dbHandle, mock, err := sqlmock.New()
@@ -368,7 +367,7 @@ func TestUsersFullUpdate(t *testing.T) {
 				user: du,
 			},
 			wants: wants{
-				err: errors.New(services.ErrUserNotFound),
+				err: errors.New("user not found"),
 			},
 			setMocks: func(d *usersDependencies) *sql.DB {
 				dbHandle, mock, err := sqlmock.New()
@@ -454,7 +453,7 @@ func TestUsersDelete(t *testing.T) {
 				id:  id,
 			},
 			wants: wants{
-				err: errors.New("id not found"),
+				err: errors.New("execContext error"),
 			},
 			setMocks: func(d *usersDependencies) *sql.DB {
 				dbHandle, mock, err := sqlmock.New()
@@ -463,7 +462,55 @@ func TestUsersDelete(t *testing.T) {
 				}
 				mock.ExpectExec("DELETE FROM users").
 					WithArgs(id).
-					WillReturnError(errors.New("id not found"))
+					WillReturnError(errors.New("execContext error"))
+
+				d.db.EXPECT().GetDBHandle().Return(dbHandle)
+
+				return dbHandle
+			},
+		},
+		{
+			name: "returns error when rows affected fails",
+			args: args{
+				ctx: context.TODO(),
+				id:  id,
+			},
+			wants: wants{
+				err: errors.New("rows affected error"),
+			},
+			setMocks: func(d *usersDependencies) *sql.DB {
+				dbHandle, mock, err := sqlmock.New()
+				if err != nil {
+					t.Fatal(err)
+				}
+				result := sqlmock.NewErrorResult(errors.New("rows affected error"))
+				mock.ExpectExec("DELETE FROM users").
+					WithArgs(id).
+					WillReturnResult(result)
+
+				d.db.EXPECT().GetDBHandle().Return(dbHandle)
+
+				return dbHandle
+			},
+		},
+		{
+			name: "returns error when user was not found",
+			args: args{
+				ctx: context.TODO(),
+				id:  id,
+			},
+			wants: wants{
+				err: errors.New("user not found"),
+			},
+			setMocks: func(d *usersDependencies) *sql.DB {
+				dbHandle, mock, err := sqlmock.New()
+				if err != nil {
+					t.Fatal(err)
+				}
+				result := sqlmock.NewResult(0, 0)
+				mock.ExpectExec("DELETE FROM users").
+					WithArgs(id).
+					WillReturnResult(result)
 
 				d.db.EXPECT().GetDBHandle().Return(dbHandle)
 

@@ -6,7 +6,6 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/Edigiraldo/car-rent/internal/core/services"
 	mocks "github.com/Edigiraldo/car-rent/internal/pkg/mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
@@ -51,7 +50,7 @@ func TestCitiesGetIdByName(t *testing.T) {
 			},
 			wants: wants{
 				id:  uuid.Nil,
-				err: errors.New(services.ErrInvalidCityName),
+				err: errors.New("city name is not valid"),
 			},
 			setMocks: func(d *citiesDependencies) *sql.DB {
 				dbHandle, mock, err := sqlmock.New()
@@ -166,7 +165,7 @@ func TestCitiesGetNameByID(t *testing.T) {
 			},
 			wants: wants{
 				name: "",
-				err:  errors.New(services.ErrCityNotFound),
+				err:  errors.New("city not found"),
 			},
 			setMocks: func(d *citiesDependencies) *sql.DB {
 				dbHandle, mock, err := sqlmock.New()

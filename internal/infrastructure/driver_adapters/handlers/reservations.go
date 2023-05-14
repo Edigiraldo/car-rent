@@ -174,10 +174,13 @@ func (rh Reservations) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = rh.ReservationsService.Delete(r.Context(), ID)
-	if err != nil {
-		httphandler.WriteErrorResponse(w, http.StatusInternalServerError, ErrInternalServerError)
-		log.Println(err)
+	if err = rh.ReservationsService.Delete(r.Context(), ID); err != nil {
+		if err.Error() == services.ErrReservationNotFound {
+			httphandler.WriteErrorResponse(w, http.StatusNotFound, err.Error())
+		} else {
+			httphandler.WriteErrorResponse(w, http.StatusInternalServerError, ErrInternalServerError)
+			log.Println(err)
+		}
 
 		return
 	}

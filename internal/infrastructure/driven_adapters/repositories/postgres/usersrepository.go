@@ -78,7 +78,19 @@ func (ur *UsersRepo) FullUpdate(ctx context.Context, dc domain.User) error {
 }
 
 func (ur *UsersRepo) Delete(ctx context.Context, id uuid.UUID) error {
-	_, err := ur.GetDBHandle().ExecContext(ctx, "DELETE FROM users WHERE id=$1", id)
+	result, err := ur.GetDBHandle().ExecContext(ctx, "DELETE FROM users WHERE id=$1", id)
+	if err != nil {
+		return err
+	}
+
+	numDeletedRows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if numDeletedRows == 0 {
+		return errors.New(services.ErrUserNotFound)
+	}
 
 	return err
 }

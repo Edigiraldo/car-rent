@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/Edigiraldo/car-rent/internal/core/domain"
-	"github.com/Edigiraldo/car-rent/internal/core/services"
 	mocks "github.com/Edigiraldo/car-rent/internal/pkg/mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
@@ -60,7 +59,7 @@ func TestReservationsInsert(t *testing.T) {
 				reservation: dr,
 			},
 			wants: wants{
-				err: errors.New(services.ErrUserNotFound),
+				err: errors.New("user not found"),
 			},
 			setMocks: func(d *reservationsDependencies) *sql.DB {
 				dbHandle, mock, err := sqlmock.New()
@@ -77,13 +76,13 @@ func TestReservationsInsert(t *testing.T) {
 			},
 		},
 		{
-			name: "returns error when reservation was not found",
+			name: "returns error when car was not found",
 			args: args{
 				ctx:         context.TODO(),
 				reservation: dr,
 			},
 			wants: wants{
-				err: errors.New(services.ErrCarNotFound),
+				err: errors.New("car not found"),
 			},
 			setMocks: func(d *reservationsDependencies) *sql.DB {
 				dbHandle, mock, err := sqlmock.New()
@@ -201,7 +200,7 @@ func TestReservationsGet(t *testing.T) {
 			},
 			wants: wants{
 				reservation: domain.Reservation{},
-				err:         errors.New(services.ErrReservationNotFound),
+				err:         errors.New("reservation was not found"),
 			},
 			setMocks: func(d *reservationsDependencies) *sql.DB {
 				dbHandle, mock, err := sqlmock.New()
@@ -330,7 +329,7 @@ func TestReservationsFullUpdate(t *testing.T) {
 				reservation: dr,
 			},
 			wants: wants{
-				err: errors.New(services.ErrUserNotFound),
+				err: errors.New("user not found"),
 			},
 			setMocks: func(d *reservationsDependencies) *sql.DB {
 				dbHandle, mock, err := sqlmock.New()
@@ -353,7 +352,7 @@ func TestReservationsFullUpdate(t *testing.T) {
 				reservation: dr,
 			},
 			wants: wants{
-				err: errors.New(services.ErrCarNotFound),
+				err: errors.New("car not found"),
 			},
 			setMocks: func(d *reservationsDependencies) *sql.DB {
 				dbHandle, mock, err := sqlmock.New()
@@ -423,7 +422,7 @@ func TestReservationsFullUpdate(t *testing.T) {
 				reservation: dr,
 			},
 			wants: wants{
-				err: errors.New(services.ErrReservationNotFound),
+				err: errors.New("reservation was not found"),
 			},
 			setMocks: func(d *reservationsDependencies) *sql.DB {
 				dbHandle, mock, err := sqlmock.New()
@@ -509,7 +508,7 @@ func TestReservationsDelete(t *testing.T) {
 				id:  id,
 			},
 			wants: wants{
-				err: errors.New("id not found"),
+				err: errors.New("execContext error"),
 			},
 			setMocks: func(d *reservationsDependencies) *sql.DB {
 				dbHandle, mock, err := sqlmock.New()
@@ -518,7 +517,53 @@ func TestReservationsDelete(t *testing.T) {
 				}
 				mock.ExpectExec("DELETE FROM reservations").
 					WithArgs(id).
-					WillReturnError(errors.New("id not found"))
+					WillReturnError(errors.New("execContext error"))
+
+				d.db.EXPECT().GetDBHandle().Return(dbHandle)
+
+				return dbHandle
+			},
+		},
+		{
+			name: "returns error when rows affected fails",
+			args: args{
+				ctx: context.TODO(),
+				id:  id,
+			},
+			wants: wants{
+				err: errors.New("rows affected error"),
+			},
+			setMocks: func(d *reservationsDependencies) *sql.DB {
+				dbHandle, mock, err := sqlmock.New()
+				if err != nil {
+					t.Fatal(err)
+				}
+				result := sqlmock.NewErrorResult(errors.New("rows affected error"))
+				mock.ExpectExec("DELETE FROM reservations").
+					WithArgs(id).WillReturnResult(result)
+
+				d.db.EXPECT().GetDBHandle().Return(dbHandle)
+
+				return dbHandle
+			},
+		},
+		{
+			name: "returns error when reservation was not found",
+			args: args{
+				ctx: context.TODO(),
+				id:  id,
+			},
+			wants: wants{
+				err: errors.New("reservation was not found"),
+			},
+			setMocks: func(d *reservationsDependencies) *sql.DB {
+				dbHandle, mock, err := sqlmock.New()
+				if err != nil {
+					t.Fatal(err)
+				}
+				result := sqlmock.NewResult(0, 0)
+				mock.ExpectExec("DELETE FROM reservations").
+					WithArgs(id).WillReturnResult(result)
 
 				d.db.EXPECT().GetDBHandle().Return(dbHandle)
 

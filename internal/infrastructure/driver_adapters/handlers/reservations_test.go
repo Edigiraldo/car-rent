@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/Edigiraldo/car-rent/internal/core/domain"
-	"github.com/Edigiraldo/car-rent/internal/core/services"
 	"github.com/Edigiraldo/car-rent/internal/infrastructure/driver_adapters/dtos"
 	mocks "github.com/Edigiraldo/car-rent/internal/pkg/mocks"
 	"github.com/golang/mock/gomock"
@@ -86,7 +85,7 @@ func TestReservationsBook(t *testing.T) {
 				statusCode: http.StatusBadRequest,
 			},
 			setMocks: func(d *reservationsDependencies) {
-				d.reservationsService.EXPECT().Book(gomock.Any(), gomock.Any()).Return(domain.Reservation{}, errors.New(services.ErrCarNotFound))
+				d.reservationsService.EXPECT().Book(gomock.Any(), gomock.Any()).Return(domain.Reservation{}, errors.New("car not found"))
 			},
 		},
 		{
@@ -98,7 +97,7 @@ func TestReservationsBook(t *testing.T) {
 				statusCode: http.StatusBadRequest,
 			},
 			setMocks: func(d *reservationsDependencies) {
-				d.reservationsService.EXPECT().Book(gomock.Any(), gomock.Any()).Return(domain.Reservation{}, errors.New(services.ErrUserNotFound))
+				d.reservationsService.EXPECT().Book(gomock.Any(), gomock.Any()).Return(domain.Reservation{}, errors.New("user not found"))
 			},
 		},
 		{
@@ -194,7 +193,7 @@ func TestReservationsGet(t *testing.T) {
 				statusCode: http.StatusNotFound,
 			},
 			setMocks: func(d *reservationsDependencies) {
-				d.reservationsService.EXPECT().Get(gomock.Any(), reservation.ID).Return(domain.Reservation{}, errors.New(services.ErrReservationNotFound))
+				d.reservationsService.EXPECT().Get(gomock.Any(), reservation.ID).Return(domain.Reservation{}, errors.New("reservation was not found"))
 			},
 		},
 		{
@@ -316,7 +315,20 @@ func TestReservationsFullUpdate(t *testing.T) {
 				statusCode: http.StatusNotFound,
 			},
 			setMocks: func(d *reservationsDependencies) {
-				d.reservationsService.EXPECT().FullUpdate(gomock.Any(), gomock.Any()).Return(errors.New(services.ErrReservationNotFound))
+				d.reservationsService.EXPECT().FullUpdate(gomock.Any(), gomock.Any()).Return(errors.New("reservation was not found"))
+			},
+		},
+		{
+			name: "returns 400 status code when user was not found",
+			args: args{
+				requestID:   reservation.ID.String(),
+				reservation: reservation,
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			setMocks: func(d *reservationsDependencies) {
+				d.reservationsService.EXPECT().FullUpdate(gomock.Any(), gomock.Any()).Return(errors.New("user not found"))
 			},
 		},
 		{
@@ -410,6 +422,18 @@ func TestReservationsDelete(t *testing.T) {
 				statusCode: http.StatusBadRequest,
 			},
 			setMocks: func(d *reservationsDependencies) {
+			},
+		},
+		{
+			name: "returns 404 status code when reservation was not found",
+			args: args{
+				requestID: reservation.ID.String(),
+			},
+			wants: wants{
+				statusCode: http.StatusNotFound,
+			},
+			setMocks: func(d *reservationsDependencies) {
+				d.reservationsService.EXPECT().Delete(gomock.Any(), reservation.ID).Return(errors.New("reservation was not found"))
 			},
 		},
 		{

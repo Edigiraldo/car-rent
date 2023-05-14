@@ -10,7 +10,6 @@ import (
 	"testing"
 
 	"github.com/Edigiraldo/car-rent/internal/core/domain"
-	"github.com/Edigiraldo/car-rent/internal/core/services"
 	"github.com/Edigiraldo/car-rent/internal/infrastructure/driver_adapters/dtos"
 	"github.com/Edigiraldo/car-rent/internal/pkg/constants"
 	mocks "github.com/Edigiraldo/car-rent/internal/pkg/mocks"
@@ -84,6 +83,18 @@ func TestCarsRegister(t *testing.T) {
 				statusCode: http.StatusBadRequest,
 			},
 			setMocks: func(d *carsDependencies) {
+			},
+		},
+		{
+			name: "returns status code 400 when city name is not valid",
+			args: args{
+				car: car,
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			setMocks: func(d *carsDependencies) {
+				d.carsService.EXPECT().Register(gomock.Any(), car.ToDomain()).Return(domain.Car{}, errors.New("city name is not valid"))
 			},
 		},
 		{
@@ -179,7 +190,7 @@ func TestCarsGet(t *testing.T) {
 				statusCode: http.StatusNotFound,
 			},
 			setMocks: func(d *carsDependencies) {
-				d.carsService.EXPECT().Get(gomock.Any(), car.ID).Return(domain.Car{}, errors.New(services.ErrCarNotFound))
+				d.carsService.EXPECT().Get(gomock.Any(), car.ID).Return(domain.Car{}, errors.New("car not found"))
 			},
 		},
 		{
@@ -301,7 +312,20 @@ func TestCarsFullUpdate(t *testing.T) {
 				statusCode: http.StatusNotFound,
 			},
 			setMocks: func(d *carsDependencies) {
-				d.carsService.EXPECT().FullUpdate(gomock.Any(), car.ToDomain()).Return(errors.New(services.ErrCarNotFound))
+				d.carsService.EXPECT().FullUpdate(gomock.Any(), car.ToDomain()).Return(errors.New("car not found"))
+			},
+		},
+		{
+			name: "returns 400 status code when city name is invalid",
+			args: args{
+				requestID: car.ID.String(),
+				car:       car,
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			setMocks: func(d *carsDependencies) {
+				d.carsService.EXPECT().FullUpdate(gomock.Any(), car.ToDomain()).Return(errors.New("city name is not valid"))
 			},
 		},
 		{
@@ -395,6 +419,18 @@ func TestCarsDelete(t *testing.T) {
 				statusCode: http.StatusBadRequest,
 			},
 			setMocks: func(d *carsDependencies) {
+			},
+		},
+		{
+			name: "returns 404 status code when the car was not found",
+			args: args{
+				requestID: car.ID.String(),
+			},
+			wants: wants{
+				statusCode: http.StatusNotFound,
+			},
+			setMocks: func(d *carsDependencies) {
+				d.carsService.EXPECT().Delete(gomock.Any(), car.ID).Return(errors.New("car not found"))
 			},
 		},
 		{
@@ -512,6 +548,18 @@ func TestCarsList(t *testing.T) {
 			},
 			setMocks: func(d *carsDependencies) {
 				d.carsService.EXPECT().List(gomock.Any(), "New York", "").Return(foundCars, nil)
+			},
+		},
+		{
+			name: "returns 400 status code when there is an error with the from_car_id query param",
+			args: args{
+				city:        "New York",
+				from_car_id: "5ae5d956-5a8d-40dd-9aef-5340fda34zzz",
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			setMocks: func(d *carsDependencies) {
 			},
 		},
 		{

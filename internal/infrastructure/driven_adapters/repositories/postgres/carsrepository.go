@@ -83,7 +83,19 @@ func (cr *CarsRepo) FullUpdate(ctx context.Context, dc domain.Car) (err error) {
 }
 
 func (cr *CarsRepo) Delete(ctx context.Context, id uuid.UUID) error {
-	_, err := cr.GetDBHandle().ExecContext(ctx, "DELETE FROM cars WHERE id=$1", id)
+	result, err := cr.GetDBHandle().ExecContext(ctx, "DELETE FROM cars WHERE id=$1", id)
+	if err != nil {
+		return err
+	}
+
+	numDeletedRows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if numDeletedRows == 0 {
+		return errors.New(services.ErrCarNotFound)
+	}
 
 	return err
 }

@@ -10,7 +10,6 @@ import (
 	"testing"
 
 	"github.com/Edigiraldo/car-rent/internal/core/domain"
-	"github.com/Edigiraldo/car-rent/internal/core/services"
 	"github.com/Edigiraldo/car-rent/internal/infrastructure/driver_adapters/dtos"
 	mocks "github.com/Edigiraldo/car-rent/internal/pkg/mocks"
 	"github.com/golang/mock/gomock"
@@ -90,7 +89,7 @@ func TestUsersSingUp(t *testing.T) {
 				statusCode: http.StatusBadRequest,
 			},
 			setMocks: func(d *usersDependencies) {
-				d.usersService.EXPECT().Register(gomock.Any(), user.ToDomain()).Return(domain.User{}, errors.New(services.ErrEmailAlreadyRegistered))
+				d.usersService.EXPECT().Register(gomock.Any(), user.ToDomain()).Return(domain.User{}, errors.New("email already registered"))
 			},
 		},
 		{
@@ -186,7 +185,7 @@ func TestUsersGet(t *testing.T) {
 				statusCode: http.StatusNotFound,
 			},
 			setMocks: func(d *usersDependencies) {
-				d.usersService.EXPECT().Get(gomock.Any(), user.ID).Return(domain.User{}, errors.New(services.ErrUserNotFound))
+				d.usersService.EXPECT().Get(gomock.Any(), user.ID).Return(domain.User{}, errors.New("user not found"))
 			},
 		},
 		{
@@ -307,7 +306,7 @@ func TestUsersFullUpdate(t *testing.T) {
 				statusCode: http.StatusNotFound,
 			},
 			setMocks: func(d *usersDependencies) {
-				d.usersService.EXPECT().FullUpdate(gomock.Any(), user.ToDomain()).Return(errors.New(services.ErrUserNotFound))
+				d.usersService.EXPECT().FullUpdate(gomock.Any(), user.ToDomain()).Return(errors.New("user not found"))
 			},
 		},
 		{
@@ -320,7 +319,7 @@ func TestUsersFullUpdate(t *testing.T) {
 				statusCode: http.StatusBadRequest,
 			},
 			setMocks: func(d *usersDependencies) {
-				d.usersService.EXPECT().FullUpdate(gomock.Any(), user.ToDomain()).Return(errors.New(services.ErrEmailAlreadyRegistered))
+				d.usersService.EXPECT().FullUpdate(gomock.Any(), user.ToDomain()).Return(errors.New("email already registered"))
 			},
 		},
 		{
@@ -396,6 +395,18 @@ func TestUsersDelete(t *testing.T) {
 			},
 			setMocks: func(d *usersDependencies) {
 				d.usersService.EXPECT().Delete(gomock.Any(), userID).Return(nil)
+			},
+		},
+		{
+			name: "returns status code 404 when user was not found",
+			args: args{
+				requestID: userID.String(),
+			},
+			wants: wants{
+				statusCode: http.StatusNotFound,
+			},
+			setMocks: func(d *usersDependencies) {
+				d.usersService.EXPECT().Delete(gomock.Any(), userID).Return(errors.New("user not found"))
 			},
 		},
 		{

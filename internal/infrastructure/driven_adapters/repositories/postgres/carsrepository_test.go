@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/Edigiraldo/car-rent/internal/core/domain"
-	"github.com/Edigiraldo/car-rent/internal/core/services"
 	"github.com/Edigiraldo/car-rent/internal/pkg/constants"
 	mocks "github.com/Edigiraldo/car-rent/internal/pkg/mocks"
 	"github.com/golang/mock/gomock"
@@ -270,14 +269,14 @@ func TestCarsGet(t *testing.T) {
 			},
 		},
 		{
-			name: "returns error when no rows were found",
+			name: "returns error when car was not found",
 			args: args{
 				ctx: context.TODO(),
 				id:  dc.ID,
 			},
 			wants: wants{
 				car: domain.Car{},
-				err: errors.New(services.ErrCarNotFound),
+				err: errors.New("car not found"),
 			},
 			setMocks: func(d *carsDependencies) *sql.DB {
 				dbHandle, mock, err := sqlmock.New()
@@ -414,7 +413,7 @@ func TestCarsFullUpdate(t *testing.T) {
 				car: dc,
 			},
 			wants: wants{
-				err: errors.New(services.ErrCarNotFound),
+				err: errors.New("car not found"),
 			},
 			setMocks: func(d *carsDependencies) *sql.DB {
 				city_id := uuid.New()
@@ -507,7 +506,7 @@ func TestCarsDelete(t *testing.T) {
 				id:  id,
 			},
 			wants: wants{
-				err: errors.New("id not found"),
+				err: errors.New("execContext error"),
 			},
 			setMocks: func(d *carsDependencies) *sql.DB {
 				dbHandle, mock, err := sqlmock.New()
@@ -516,7 +515,53 @@ func TestCarsDelete(t *testing.T) {
 				}
 				mock.ExpectExec("DELETE FROM cars").
 					WithArgs(id).
-					WillReturnError(errors.New("id not found"))
+					WillReturnError(errors.New("execContext error"))
+
+				d.db.EXPECT().GetDBHandle().Return(dbHandle)
+
+				return dbHandle
+			},
+		},
+		{
+			name: "returns error when rows affected fails",
+			args: args{
+				ctx: context.TODO(),
+				id:  id,
+			},
+			wants: wants{
+				err: errors.New("rows affected error"),
+			},
+			setMocks: func(d *carsDependencies) *sql.DB {
+				dbHandle, mock, err := sqlmock.New()
+				if err != nil {
+					t.Fatal(err)
+				}
+				result := sqlmock.NewErrorResult(errors.New("rows affected error"))
+				mock.ExpectExec("DELETE FROM cars").
+					WithArgs(id).WillReturnResult(result)
+
+				d.db.EXPECT().GetDBHandle().Return(dbHandle)
+
+				return dbHandle
+			},
+		},
+		{
+			name: "returns error when car was not found",
+			args: args{
+				ctx: context.TODO(),
+				id:  id,
+			},
+			wants: wants{
+				err: errors.New("car not found"),
+			},
+			setMocks: func(d *carsDependencies) *sql.DB {
+				dbHandle, mock, err := sqlmock.New()
+				if err != nil {
+					t.Fatal(err)
+				}
+				result := sqlmock.NewResult(0, 0)
+				mock.ExpectExec("DELETE FROM cars").
+					WithArgs(id).WillReturnResult(result)
 
 				d.db.EXPECT().GetDBHandle().Return(dbHandle)
 
