@@ -1,9 +1,13 @@
 package main
 
 import (
+	"log"
 	"net/http"
+	"runtime/debug"
 
 	"github.com/Edigiraldo/car-rent/internal/core/ports"
+	"github.com/Edigiraldo/car-rent/internal/infrastructure/driver_adapters/handlers"
+	"github.com/Edigiraldo/car-rent/pkg/httphandler"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
@@ -16,33 +20,52 @@ var (
 )
 
 func BindRoutes(b *Server) {
+	// Recovery middleware
+	b.router.Use(recovery)
+
+	rv1 := b.router.PathPrefix("/api/v1").Subrouter()
+
 	// Swagger
-	b.router.PathPrefix("/api/v1/swagger").Handler(httpSwagger.WrapHandler)
+	rv1.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
 
 	// Health routes
-	b.router.HandleFunc("/api/v1/ping", healthHandler.Pong).Methods(http.MethodGet)
+	rv1.HandleFunc("/ping", healthHandler.Pong).Methods(http.MethodGet)
 
 	// Cars routes
-	b.router.HandleFunc("/api/v1/cars", carsHandler.Register).Methods(http.MethodPost)
-	b.router.HandleFunc("/api/v1/cars/{id}", carsHandler.Get).Methods(http.MethodGet)
-	b.router.HandleFunc("/api/v1/cars/{id}", carsHandler.FullUpdate).Methods(http.MethodPut)
-	b.router.HandleFunc("/api/v1/cars/{id}", carsHandler.Delete).Methods(http.MethodDelete)
-	b.router.HandleFunc("/api/v1/cars/", carsHandler.List).Methods(http.MethodGet)
-	b.router.HandleFunc("/api/v1/cars/{id}/reservations", reservationsHandler.GetByCarID).Methods(http.MethodGet)
+	rv1.HandleFunc("/cars", carsHandler.Register).Methods(http.MethodPost)
+	rv1.HandleFunc("/cars/{id}", carsHandler.Get).Methods(http.MethodGet)
+	rv1.HandleFunc("/cars/{id}", carsHandler.FullUpdate).Methods(http.MethodPut)
+	rv1.HandleFunc("/cars/{id}", carsHandler.Delete).Methods(http.MethodDelete)
+	rv1.HandleFunc("/cars/", carsHandler.List).Methods(http.MethodGet)
+	rv1.HandleFunc("/cars/{id}/reservations", reservationsHandler.GetByCarID).Methods(http.MethodGet)
 
 	// Users routes
-	b.router.HandleFunc("/api/v1/users", usersHandler.SignUp).Methods(http.MethodPost)
-	b.router.HandleFunc("/api/v1/users/{id}", usersHandler.Get).Methods(http.MethodGet)
-	b.router.HandleFunc("/api/v1/users/{id}", usersHandler.FullUpdate).Methods(http.MethodPut)
-	b.router.HandleFunc("/api/v1/users/{id}", usersHandler.Delete).Methods(http.MethodDelete)
-	b.router.HandleFunc("/api/v1/users/{id}/reservations", reservationsHandler.GetByUserID).Methods(http.MethodGet)
+	rv1.HandleFunc("/users", usersHandler.SignUp).Methods(http.MethodPost)
+	rv1.HandleFunc("/users/{id}", usersHandler.Get).Methods(http.MethodGet)
+	rv1.HandleFunc("/users/{id}", usersHandler.FullUpdate).Methods(http.MethodPut)
+	rv1.HandleFunc("/users/{id}", usersHandler.Delete).Methods(http.MethodDelete)
+	rv1.HandleFunc("/users/{id}/reservations", reservationsHandler.GetByUserID).Methods(http.MethodGet)
 
 	// Cities routes
-	b.router.HandleFunc("/api/v1/cities/names", citiesHandler.ListNames).Methods(http.MethodGet)
+	rv1.HandleFunc("/cities/names", citiesHandler.ListNames).Methods(http.MethodGet)
 
 	// Reservations routes
-	b.router.HandleFunc("/api/v1/reservations", reservationsHandler.Book).Methods(http.MethodPost)
-	b.router.HandleFunc("/api/v1/reservations/{id}", reservationsHandler.Get).Methods(http.MethodGet)
-	b.router.HandleFunc("/api/v1/reservations/{id}", reservationsHandler.FullUpdate).Methods(http.MethodPut)
-	b.router.HandleFunc("/api/v1/reservations/{id}", reservationsHandler.Delete).Methods(http.MethodDelete)
+	rv1.HandleFunc("/reservations", reservationsHandler.Book).Methods(http.MethodPost)
+	rv1.HandleFunc("/reservations/{id}", reservationsHandler.Get).Methods(http.MethodGet)
+	rv1.HandleFunc("/reservations/{id}", reservationsHandler.FullUpdate).Methods(http.MethodPut)
+	rv1.HandleFunc("/reservations/{id}", reservationsHandler.Delete).Methods(http.MethodDelete)
+}
+
+func recovery(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if err := recover(); err != nil {
+				log.Printf("Panic occurred: %v", err)
+				debug.PrintStack()
+				httphandler.WriteErrorResponse(w, http.StatusInternalServerError, handlers.ErrInternalServerError)
+			}
+		}()
+
+		next.ServeHTTP(w, r)
+	})
 }
