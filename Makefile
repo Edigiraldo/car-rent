@@ -33,4 +33,7 @@ compose-logs:
 swagger-init:
 	swag init --output doc/swagger -g cmd/api/main.go
 
+run-tests:
+	go test -cover ./...
+
 all: create-network build-db run-db build-server run-server
