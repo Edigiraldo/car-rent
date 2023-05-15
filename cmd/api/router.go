@@ -37,14 +37,12 @@ func BindRoutes(b *Server) {
 	rv1.HandleFunc("/cars/{id}", carsHandler.FullUpdate).Methods(http.MethodPut)
 	rv1.HandleFunc("/cars/{id}", carsHandler.Delete).Methods(http.MethodDelete)
 	rv1.HandleFunc("/cars/", carsHandler.List).Methods(http.MethodGet)
-	rv1.HandleFunc("/cars/{id}/reservations", reservationsHandler.GetByCarID).Methods(http.MethodGet)
 
 	// Users routes
 	rv1.HandleFunc("/users", usersHandler.SignUp).Methods(http.MethodPost)
 	rv1.HandleFunc("/users/{id}", usersHandler.Get).Methods(http.MethodGet)
 	rv1.HandleFunc("/users/{id}", usersHandler.FullUpdate).Methods(http.MethodPut)
 	rv1.HandleFunc("/users/{id}", usersHandler.Delete).Methods(http.MethodDelete)
-	rv1.HandleFunc("/users/{id}/reservations", reservationsHandler.GetByUserID).Methods(http.MethodGet)
 
 	// Cities routes
 	rv1.HandleFunc("/cities/names", citiesHandler.ListNames).Methods(http.MethodGet)
@@ -54,6 +52,10 @@ func BindRoutes(b *Server) {
 	rv1.HandleFunc("/reservations/{id}", reservationsHandler.Get).Methods(http.MethodGet)
 	rv1.HandleFunc("/reservations/{id}", reservationsHandler.FullUpdate).Methods(http.MethodPut)
 	rv1.HandleFunc("/reservations/{id}", reservationsHandler.Delete).Methods(http.MethodDelete)
+	rv1.HandleFunc("/reservations/", reservationsHandler.List).Methods(http.MethodGet)
+	rv1.HandleFunc("/cars/{id}/reservations", reservationsHandler.GetByCarID).Methods(http.MethodGet)
+	rv1.HandleFunc("/users/{id}/reservations", reservationsHandler.GetByUserID).Methods(http.MethodGet)
+
 }
 
 func recovery(next http.Handler) http.Handler {

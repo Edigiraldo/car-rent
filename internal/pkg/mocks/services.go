@@ -7,6 +7,7 @@ package mock_ports
 import (
 	context "context"
 	reflect "reflect"
+	time "time"
 
 	domain "github.com/Edigiraldo/car-rent/internal/core/domain"
 	gomock "github.com/golang/mock/gomock"
@@ -337,4 +338,19 @@ func (m *MockReservationsService) GetByUserID(ctx context.Context, userID uuid.U
 func (mr *MockReservationsServiceMockRecorder) GetByUserID(ctx, userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByUserID", reflect.TypeOf((*MockReservationsService)(nil).GetByUserID), ctx, userID)
+}
+
+// List mocks base method.
+func (m *MockReservationsService) List(ctx context.Context, fromReservationID string, startDate, endDate time.Time) ([]domain.Reservation, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "List", ctx, fromReservationID, startDate, endDate)
+	ret0, _ := ret[0].([]domain.Reservation)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// List indicates an expected call of List.
+func (mr *MockReservationsServiceMockRecorder) List(ctx, fromReservationID, startDate, endDate interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockReservationsService)(nil).List), ctx, fromReservationID, startDate, endDate)
 }

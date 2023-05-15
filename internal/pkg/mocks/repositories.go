@@ -433,3 +433,18 @@ func (mr *MockReservationsRepoMockRecorder) Insert(ctx, dr interface{}) *gomock.
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockReservationsRepo)(nil).Insert), ctx, dr)
 }
+
+// List mocks base method.
+func (m *MockReservationsRepo) List(ctx context.Context, fromReservationID string, startDate, endDate time.Time, limit uint16) ([]domain.Reservation, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "List", ctx, fromReservationID, startDate, endDate, limit)
+	ret0, _ := ret[0].([]domain.Reservation)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// List indicates an expected call of List.
+func (mr *MockReservationsRepoMockRecorder) List(ctx, fromReservationID, startDate, endDate, limit interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockReservationsRepo)(nil).List), ctx, fromReservationID, startDate, endDate, limit)
+}

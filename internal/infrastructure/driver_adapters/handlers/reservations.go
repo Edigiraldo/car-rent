@@ -1,14 +1,17 @@
 package handlers
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/Edigiraldo/car-rent/internal/core/domain"
 	"github.com/Edigiraldo/car-rent/internal/core/ports"
 	"github.com/Edigiraldo/car-rent/internal/core/services"
 	"github.com/Edigiraldo/car-rent/internal/infrastructure/driver_adapters/dtos"
+	"github.com/Edigiraldo/car-rent/internal/pkg/constants"
 	"github.com/Edigiraldo/car-rent/pkg/httphandler"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
@@ -186,6 +189,41 @@ func (rh Reservations) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	httphandler.WriteSuccessResponse(w, http.StatusNoContent, nil)
+}
+
+func (rh Reservations) List(w http.ResponseWriter, r *http.Request) {
+	var startDate, endDate time.Time
+	var err error
+
+	fromReservationID := r.URL.Query().Get("from_reservation_id")
+	if _, err := uuid.Parse(fromReservationID); fromReservationID != "" && err != nil {
+		httphandler.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("from_reservation_id: %s", err.Error()))
+		return
+	}
+	if sDate := r.URL.Query().Get("start_date"); sDate != "" {
+		if startDate, err = time.Parse(constants.Values.DATETIME_LAYOUT, sDate); err != nil {
+			httphandler.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("start_date: %s", err.Error()))
+			return
+		}
+	}
+	if eDate := r.URL.Query().Get("end_date"); eDate != "" {
+		if endDate, err = time.Parse(constants.Values.DATETIME_LAYOUT, eDate); err != nil {
+			httphandler.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("end_date: %s", err.Error()))
+			return
+		}
+	}
+
+	cars, err := rh.ReservationsService.List(r.Context(), fromReservationID, startDate, endDate)
+	if err != nil {
+		httphandler.WriteErrorResponse(w, http.StatusInternalServerError, ErrInternalServerError)
+		log.Println(err)
+
+		return
+	}
+
+	listReservationsResponse := getReservationsResponse(cars)
+
+	httphandler.WriteSuccessResponse(w, http.StatusOK, listReservationsResponse)
 }
 
 // @Summary Get reservations by Car id

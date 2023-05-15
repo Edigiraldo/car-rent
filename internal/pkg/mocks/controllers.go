@@ -329,3 +329,15 @@ func (mr *MockReservationsControllerMockRecorder) GetByUserID(w, r interface{}) 
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByUserID", reflect.TypeOf((*MockReservationsController)(nil).GetByUserID), w, r)
 }
+
+// List mocks base method.
+func (m *MockReservationsController) List(w http.ResponseWriter, r *http.Request) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "List", w, r)
+}
+
+// List indicates an expected call of List.
+func (mr *MockReservationsControllerMockRecorder) List(w, r interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockReservationsController)(nil).List), w, r)
+}

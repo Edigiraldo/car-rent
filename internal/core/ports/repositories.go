@@ -42,6 +42,7 @@ type ReservationsRepo interface {
 	Get(ctx context.Context, ID uuid.UUID) (dc domain.Reservation, err error)
 	FullUpdate(ctx context.Context, dr domain.Reservation) error
 	Delete(ctx context.Context, id uuid.UUID) error
+	List(ctx context.Context, fromReservationID string, startDate time.Time, endDate time.Time, limit uint16) ([]domain.Reservation, error)
 	GetByUserID(ctx context.Context, userID uuid.UUID) (dr []domain.Reservation, err error)
 	GetByCarID(ctx context.Context, CarID uuid.UUID) (dr []domain.Reservation, err error)
 	GetByCarIDAndTimeFrame(ctx context.Context, carID uuid.UUID, startDate time.Time, endDate time.Time) (dr []domain.Reservation, err error)

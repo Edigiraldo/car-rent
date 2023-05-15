@@ -63,6 +63,24 @@ func (rs Reservations) Delete(ctx context.Context, id uuid.UUID) error {
 	return rs.reservationsRepository.Delete(ctx, id)
 }
 
+func (rs Reservations) List(ctx context.Context, fromReservationID string, startDate time.Time, endDate time.Time) ([]domain.Reservation, error) {
+	if fromReservationID == "" {
+		fromReservationID = constants.Values.NULL_UUID
+	}
+	if startDate.IsZero() {
+		startDate = time.Now()
+	}
+	if endDate.IsZero() {
+		endDate = time.Now().Add(7 * 24 * time.Hour)
+	}
+	reservations, err := rs.reservationsRepository.List(ctx, fromReservationID, startDate, endDate, constants.Values.RESERVATIONS_PER_PAGE)
+	if err != nil {
+		return []domain.Reservation{}, err
+	}
+
+	return reservations, nil
+}
+
 func (rs Reservations) GetByCarID(ctx context.Context, carID uuid.UUID) ([]domain.Reservation, error) {
 	drs, err := rs.reservationsRepository.GetByCarID(ctx, carID)
 	if err != nil {

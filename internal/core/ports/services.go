@@ -2,6 +2,7 @@ package ports
 
 import (
 	"context"
+	"time"
 
 	"github.com/Edigiraldo/car-rent/internal/core/domain"
 	"github.com/google/uuid"
@@ -33,6 +34,7 @@ type ReservationsService interface {
 	Get(ctx context.Context, id uuid.UUID) (domain.Reservation, error)
 	FullUpdate(ctx context.Context, dr domain.Reservation) error
 	Delete(ctx context.Context, id uuid.UUID) error
+	List(ctx context.Context, fromReservationID string, startDate time.Time, endDate time.Time) ([]domain.Reservation, error)
 	GetByCarID(ctx context.Context, userID uuid.UUID) ([]domain.Reservation, error)
 	GetByUserID(ctx context.Context, userID uuid.UUID) ([]domain.Reservation, error)
 }

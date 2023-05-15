@@ -102,6 +102,31 @@ func (rr ReservationsRepo) Delete(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
+func (rr ReservationsRepo) List(ctx context.Context, fromReservationID string, startDate time.Time, endDate time.Time, limit uint16) ([]domain.Reservation, error) {
+	var reservations []domain.Reservation
+
+	query := "SELECT * FROM reservations WHERE start_date BETWEEN $1 AND $2 AND end_date BETWEEN $1 AND $2 AND id > $3 ORDER BY id ASC LIMIT $4"
+	rows, err := rr.GetDBHandle().QueryContext(ctx, query, startDate, endDate, fromReservationID, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		reservation := models.Reservation{}
+		if err := rows.Scan(&reservation.ID, &reservation.UserID, &reservation.CarID, &reservation.Status, &reservation.PaymentStatus, &reservation.StartDate, &reservation.EndDate); err != nil {
+			return nil, err
+		}
+
+		reservations = append(reservations, reservation.ToDomain())
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return reservations, nil
+}
+
 func (rr ReservationsRepo) GetByUserID(ctx context.Context, userID uuid.UUID) (dr []domain.Reservation, err error) {
 	var reservations []domain.Reservation
 
