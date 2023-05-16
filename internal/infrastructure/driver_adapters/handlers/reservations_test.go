@@ -482,6 +482,190 @@ func TestReservationsDelete(t *testing.T) {
 	}
 }
 
+func TestReservationsList(t *testing.T) {
+	initConstantsFromHandlers(t)
+	datetimeLayout := "2006-01-02T15:04:05Z07:00"
+	foundReservations := []domain.Reservation{
+		{
+			UserID:        uuid.New(),
+			CarID:         uuid.New(),
+			Status:        "Reserved",
+			PaymentStatus: "Pending",
+			StartDate:     time.Now(),
+			EndDate:       time.Now().AddDate(0, 0, 7),
+		},
+		{
+			UserID:        uuid.New(),
+			CarID:         uuid.New(),
+			Status:        "Reserved",
+			PaymentStatus: "Pending",
+			StartDate:     time.Now(),
+			EndDate:       time.Now().AddDate(0, 0, 7),
+		},
+	}
+
+	type args struct {
+		startDate         string
+		endDate           string
+		fromReservationId string
+	}
+	type wants struct {
+		statusCode int
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wants    wants
+		setMocks func(*reservationsDependencies)
+	}{
+		{
+			name: "returns status code 400 when from_reservation_id query param is not a valid uuid",
+			args: args{
+				startDate:         time.Now().AddDate(0, 0, 8).Format(datetimeLayout),
+				endDate:           time.Now().Format(datetimeLayout),
+				fromReservationId: "ttt5d956-5a8d-40dd-9aef-5340fda345e8",
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			setMocks: func(d *reservationsDependencies) {
+			},
+		},
+		{
+			name: "returns status code 400 when start_date query param is not in the expected time format",
+			args: args{
+				startDate:         time.Now().Format("2006-01-02"),
+				endDate:           time.Now().AddDate(0, 0, 8).Format(datetimeLayout),
+				fromReservationId: "5ae5d956-5a8d-40dd-9aef-5340fda345e8",
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			setMocks: func(d *reservationsDependencies) {
+			},
+		},
+		{
+			name: "returns status code 400 when end_date query param is not in the expected time format",
+			args: args{
+				startDate:         time.Now().Format(datetimeLayout),
+				endDate:           time.Now().AddDate(0, 0, 8).Format("2006-01-02"),
+				fromReservationId: "5ae5d956-5a8d-40dd-9aef-5340fda345e8",
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			setMocks: func(d *reservationsDependencies) {
+			},
+		},
+		{
+			name: "returns status code 400 when end_date is not after start_date",
+			args: args{
+				startDate:         time.Now().Format(datetimeLayout),
+				endDate:           time.Now().AddDate(0, 0, -1).Format(datetimeLayout),
+				fromReservationId: "5ae5d956-5a8d-40dd-9aef-5340fda345e8",
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			setMocks: func(d *reservationsDependencies) {
+			},
+		},
+		{
+			name: "returns status code 500 when there was an error while searching for data",
+			args: args{
+				startDate:         time.Now().Format(datetimeLayout),
+				endDate:           time.Now().AddDate(0, 0, 8).Format(datetimeLayout),
+				fromReservationId: "5ae5d956-5a8d-40dd-9aef-5340fda345e8",
+			},
+			wants: wants{
+				statusCode: http.StatusInternalServerError,
+			},
+			setMocks: func(d *reservationsDependencies) {
+				d.reservationsService.EXPECT().List(gomock.Any(), "5ae5d956-5a8d-40dd-9aef-5340fda345e8", gomock.Any(), gomock.Any()).
+					Return(nil, errors.New("internal error"))
+			},
+		},
+		{
+			name: "returns status code 200 when the data was successfully found",
+			args: args{
+				startDate:         time.Now().Format(datetimeLayout),
+				endDate:           time.Now().AddDate(0, 0, 8).Format(datetimeLayout),
+				fromReservationId: "5ae5d956-5a8d-40dd-9aef-5340fda345e8",
+			},
+			wants: wants{
+				statusCode: http.StatusOK,
+			},
+			setMocks: func(d *reservationsDependencies) {
+				d.reservationsService.EXPECT().List(gomock.Any(), "5ae5d956-5a8d-40dd-9aef-5340fda345e8", gomock.Any(), gomock.Any()).
+					Return(foundReservations, nil)
+			},
+		},
+		{
+			name: "returns status code 200 when params are empty and the data was successfully found",
+			args: args{
+				startDate:         "",
+				endDate:           "",
+				fromReservationId: "",
+			},
+			wants: wants{
+				statusCode: http.StatusOK,
+			},
+			setMocks: func(d *reservationsDependencies) {
+				d.reservationsService.EXPECT().List(gomock.Any(), "", gomock.Any(), gomock.Any()).
+					Return(foundReservations, nil)
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			mockCtlr := gomock.NewController(t)
+			reservationsSrv := mocks.NewMockReservationsService(mockCtlr)
+			d := NewReservationsDependencies(reservationsSrv)
+			test.setMocks(d)
+
+			baseURL := "/api/v1/"
+			values := url.Values{}
+			values.Set("start_date", test.args.startDate)
+			values.Set("end_date", test.args.endDate)
+			values.Set("from_reservation_id", test.args.fromReservationId)
+			urlObj, _ := url.Parse(baseURL + "reservations/?" + values.Encode())
+			URL := urlObj.String()
+
+			req, err := http.NewRequest(http.MethodGet, URL, nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// Include request vars for gorilla mux to interpret path params
+			vars := map[string]string{
+				"start_date":          test.args.startDate,
+				"end_date":            test.args.endDate,
+				"from_reservation_id": test.args.fromReservationId,
+			}
+			req = mux.SetURLVars(req, vars)
+
+			rr := httptest.NewRecorder()
+
+			reservationsHandler := NewReservations(reservationsSrv)
+			reservationsHandler.List(rr, req)
+
+			if rr.Result().StatusCode == http.StatusOK {
+				body := dtos.Reservations{}
+				err = json.Unmarshal(rr.Body.Bytes(), &body)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if len(body.Reservations) != 0 {
+					assert.Equal(t, foundReservations[0].ID, body.Reservations[0].ID)
+					assert.Equal(t, len(foundReservations), len(body.Reservations))
+				}
+			}
+			assert.Equal(t, test.wants.statusCode, rr.Code)
+		})
+	}
+}
+
 func TestReservationsListByCarID(t *testing.T) {
 	car_id := "1c6bd954-7e8d-73df-8ae9-6905fda236e8"
 	c_id, _ := uuid.Parse(car_id)

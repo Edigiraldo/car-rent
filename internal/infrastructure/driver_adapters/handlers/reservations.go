@@ -17,6 +17,10 @@ import (
 	"github.com/gorilla/mux"
 )
 
+var (
+	ErrorInvalidTimeFrame string = "Invalid time frame"
+)
+
 type Reservations struct {
 	ReservationsService ports.ReservationsService
 }
@@ -209,6 +213,12 @@ func (rh Reservations) List(w http.ResponseWriter, r *http.Request) {
 	if eDate := r.URL.Query().Get("end_date"); eDate != "" {
 		if endDate, err = time.Parse(constants.Values.DATETIME_LAYOUT, eDate); err != nil {
 			httphandler.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("end_date: %s", err.Error()))
+			return
+		}
+	}
+	if !startDate.IsZero() && !endDate.IsZero() {
+		if endDate.Before(startDate) || startDate.Equal(endDate) {
+			httphandler.WriteErrorResponse(w, http.StatusBadRequest, ErrorInvalidTimeFrame)
 			return
 		}
 	}
