@@ -521,8 +521,8 @@ func TestReservationsList(t *testing.T) {
 		{
 			name: "returns status code 400 when from_reservation_id query param is not a valid uuid",
 			args: args{
-				startDate:         time.Now().AddDate(0, 0, 8).Format(datetimeLayout),
-				endDate:           time.Now().Format(datetimeLayout),
+				startDate:         time.Now().Format(datetimeLayout),
+				endDate:           time.Now().AddDate(0, 0, 8).Format(datetimeLayout),
 				fromReservationId: "ttt5d956-5a8d-40dd-9aef-5340fda345e8",
 			},
 			wants: wants{

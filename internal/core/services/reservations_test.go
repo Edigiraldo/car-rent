@@ -325,6 +325,111 @@ func TestReservationsDelete(t *testing.T) {
 	}
 }
 
+func TestReservationsList(t *testing.T) {
+	initConstantsFromServices(t)
+	var nilTime time.Time
+
+	foundReservations := []domain.Reservation{
+		{
+			UserID:        uuid.New(),
+			CarID:         uuid.New(),
+			Status:        "Reserved",
+			PaymentStatus: "Pending",
+			StartDate:     time.Now(),
+			EndDate:       time.Now().AddDate(0, 0, 7),
+		},
+		{
+			UserID:        uuid.New(),
+			CarID:         uuid.New(),
+			Status:        "Reserved",
+			PaymentStatus: "Pending",
+			StartDate:     time.Now(),
+			EndDate:       time.Now().AddDate(0, 0, 7),
+		},
+	}
+
+	type args struct {
+		ctx               context.Context
+		startDate         time.Time
+		endDate           time.Time
+		fromReservationId string
+	}
+	type wants struct {
+		reservations []domain.Reservation
+		err          error
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wants    wants
+		setMocks func(*reservationsDependencies)
+	}{
+		{
+			name: "returns nil error when params are nil and repository did not fail",
+			args: args{
+				ctx:               context.TODO(),
+				startDate:         nilTime,
+				endDate:           nilTime,
+				fromReservationId: "",
+			},
+			wants: wants{
+				reservations: foundReservations,
+				err:          nil,
+			},
+			setMocks: func(d *reservationsDependencies) {
+				d.reservationsRepository.EXPECT().List(gomock.Any(), "00000000-0000-0000-0000-000000000000", gomock.Any(), gomock.Any(), gomock.Any()).Return(foundReservations, nil)
+			},
+		},
+		{
+			name: "returns nil error when repository did not fail",
+			args: args{
+				ctx:               context.TODO(),
+				startDate:         time.Now(),
+				endDate:           time.Now().AddDate(0, 0, 7),
+				fromReservationId: "5ae5d956-5a8d-40dd-9aef-5340fda345e8",
+			},
+			wants: wants{
+				reservations: foundReservations,
+				err:          nil,
+			},
+			setMocks: func(d *reservationsDependencies) {
+				d.reservationsRepository.EXPECT().List(gomock.Any(), "5ae5d956-5a8d-40dd-9aef-5340fda345e8", gomock.Any(), gomock.Any(), gomock.Any()).Return(foundReservations, nil)
+			},
+		},
+		{
+			name: "returns error when repository fails",
+			args: args{
+				ctx:               context.TODO(),
+				startDate:         time.Now(),
+				endDate:           time.Now().AddDate(0, 0, 7),
+				fromReservationId: "5ae5d956-5a8d-40dd-9aef-5340fda345e8",
+			},
+			wants: wants{
+				reservations: []domain.Reservation{},
+				err:          errors.New("internal server error"),
+			},
+			setMocks: func(d *reservationsDependencies) {
+				d.reservationsRepository.EXPECT().List(gomock.Any(), "5ae5d956-5a8d-40dd-9aef-5340fda345e8", gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, errors.New("internal server error"))
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			mockCtlr := gomock.NewController(t)
+			reservationsRepo := mocks.NewMockReservationsRepo(mockCtlr)
+			d := NewReservationsDependencies(reservationsRepo)
+			test.setMocks(d)
+
+			reservationsService := NewReservations(reservationsRepo)
+			reservations, err := reservationsService.List(test.args.ctx, test.args.fromReservationId, test.args.startDate, test.args.endDate)
+
+			assert.Equal(t, test.wants.reservations, reservations)
+			assert.Equal(t, test.wants.err, err)
+		})
+	}
+}
+
 func TestGetByCarID(t *testing.T) {
 	initConstantsFromServices(t)
 
