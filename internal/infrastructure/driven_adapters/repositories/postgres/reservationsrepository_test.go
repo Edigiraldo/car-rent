@@ -614,6 +614,200 @@ func TestReservationsDelete(t *testing.T) {
 	}
 }
 
+func TestReservationsList(t *testing.T) {
+	initConstantsFromRepository(t)
+
+	reservation := domain.Reservation{
+		UserID:        uuid.New(),
+		CarID:         uuid.New(),
+		Status:        "Reserved",
+		PaymentStatus: "Pending",
+		StartDate:     time.Now(),
+		EndDate:       time.Now().AddDate(0, 0, 7),
+	}
+	drs := []domain.Reservation{
+		reservation,
+		reservation,
+	}
+
+	type args struct {
+		ctx               context.Context
+		fromReservationId string
+		startDate         time.Time
+		endDate           time.Time
+		limit             uint16
+	}
+	type wants struct {
+		reservations []domain.Reservation
+		err          error
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wants    wants
+		setMocks func(*reservationsDependencies) *sql.DB
+	}{
+		{
+			name: "returns error when query context fails",
+			args: args{
+				ctx:               context.TODO(),
+				startDate:         time.Now(),
+				endDate:           time.Now().AddDate(0, 0, 7),
+				fromReservationId: "5ae5d956-5a8d-40dd-9aef-5340fda345e8",
+			},
+			wants: wants{
+				reservations: nil,
+				err:          errors.New("query context error"),
+			},
+			setMocks: func(d *reservationsDependencies) *sql.DB {
+
+				dbHandle, mock, err := sqlmock.New()
+				if err != nil {
+					t.Fatal(err)
+				}
+				mock.ExpectQuery(`^SELECT \* FROM reservations WHERE start_date BETWEEN \$1 AND \$2 AND end_date BETWEEN \$1 AND \$2 AND id > \$3 ORDER BY id ASC LIMIT \$4`).
+					WillReturnError(errors.New("query context error"))
+
+				d.db.EXPECT().GetDBHandle().Return(dbHandle)
+
+				return dbHandle
+			},
+		},
+		{
+			name: "returns error when rows are not as expected",
+			args: args{
+				ctx:               context.TODO(),
+				startDate:         time.Now(),
+				endDate:           time.Now().AddDate(0, 0, 7),
+				fromReservationId: "5ae5d956-5a8d-40dd-9aef-5340fda345e8",
+			},
+			wants: wants{
+				reservations: nil,
+				err:          errors.New("sql: expected 1 destination arguments in Scan, not 7"),
+			},
+			setMocks: func(d *reservationsDependencies) *sql.DB {
+
+				dbHandle, mock, err := sqlmock.New()
+				if err != nil {
+					t.Fatal(err)
+				}
+				reservationIdByte, err := drs[0].ID.MarshalBinary()
+				if err != nil {
+					t.Fatal(err)
+				}
+				rows := sqlmock.NewRows([]string{"id"}).
+					AddRow(reservationIdByte)
+				mock.ExpectQuery(`^SELECT \* FROM reservations WHERE start_date BETWEEN \$1 AND \$2 AND end_date BETWEEN \$1 AND \$2 AND id > \$3 ORDER BY id ASC LIMIT \$4`).
+					WillReturnRows(rows)
+
+				d.db.EXPECT().GetDBHandle().Return(dbHandle)
+
+				return dbHandle
+			},
+		},
+		{
+			name: "returns error when rows.Err fails",
+			args: args{
+				ctx:               context.TODO(),
+				startDate:         time.Now(),
+				endDate:           time.Now().AddDate(0, 0, 7),
+				fromReservationId: "5ae5d956-5a8d-40dd-9aef-5340fda345e8",
+			},
+			wants: wants{
+				reservations: nil,
+				err:          errors.New("rows.Err error"),
+			},
+			setMocks: func(d *reservationsDependencies) *sql.DB {
+
+				dbHandle, mock, err := sqlmock.New()
+				if err != nil {
+					t.Fatal(err)
+				}
+				reservationIdByte, err := drs[0].ID.MarshalBinary()
+				if err != nil {
+					t.Fatal(err)
+				}
+				userIdByte, err := drs[0].UserID.MarshalBinary()
+				if err != nil {
+					t.Fatal(err)
+				}
+				carIdByte, err := drs[0].CarID.MarshalBinary()
+				if err != nil {
+					t.Fatal(err)
+				}
+				rows := sqlmock.NewRows([]string{"id", "user_id", "car_id", "status", "payment_status", "start_date", "end_date"}).
+					AddRow(reservationIdByte, userIdByte, carIdByte, drs[0].Status, drs[0].PaymentStatus, drs[0].StartDate, drs[0].EndDate).
+					RowError(0, errors.New("rows.Err error"))
+				mock.ExpectQuery(`^SELECT \* FROM reservations WHERE start_date BETWEEN \$1 AND \$2 AND end_date BETWEEN \$1 AND \$2 AND id > \$3 ORDER BY id ASC LIMIT \$4`).
+					WillReturnRows(rows)
+
+				d.db.EXPECT().GetDBHandle().Return(dbHandle)
+
+				return dbHandle
+			},
+		},
+		{
+			name: "returns reservations when were successfully found",
+			args: args{
+				ctx:               context.TODO(),
+				startDate:         time.Now(),
+				endDate:           time.Now().AddDate(0, 0, 7),
+				fromReservationId: "5ae5d956-5a8d-40dd-9aef-5340fda345e8",
+			},
+			wants: wants{
+				reservations: drs,
+				err:          nil,
+			},
+			setMocks: func(d *reservationsDependencies) *sql.DB {
+
+				dbHandle, mock, err := sqlmock.New()
+				if err != nil {
+					t.Fatal(err)
+				}
+				reservationIdByte, err := drs[0].ID.MarshalBinary()
+				if err != nil {
+					t.Fatal(err)
+				}
+				userIdByte, err := drs[0].UserID.MarshalBinary()
+				if err != nil {
+					t.Fatal(err)
+				}
+				carIdByte, err := drs[0].CarID.MarshalBinary()
+				if err != nil {
+					t.Fatal(err)
+				}
+				rows := sqlmock.NewRows([]string{"id", "user_id", "car_id", "status", "payment_status", "start_date", "end_date"}).
+					AddRow(reservationIdByte, userIdByte, carIdByte, drs[0].Status, drs[0].PaymentStatus, drs[0].StartDate, drs[0].EndDate).
+					AddRow(reservationIdByte, userIdByte, carIdByte, drs[0].Status, drs[0].PaymentStatus, drs[0].StartDate, drs[0].EndDate)
+				mock.ExpectQuery(`^SELECT \* FROM reservations WHERE start_date BETWEEN \$1 AND \$2 AND end_date BETWEEN \$1 AND \$2 AND id > \$3 ORDER BY id ASC LIMIT \$4`).
+					WillReturnRows(rows)
+
+				d.db.EXPECT().GetDBHandle().Return(dbHandle)
+
+				return dbHandle
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			mockCtlr := gomock.NewController(t)
+			db := mocks.NewMockDatabase(mockCtlr)
+			d := NewReservationsDependencies(db)
+			dbHandle := test.setMocks(d)
+
+			reservationsRepo := NewReservationsRepository(db)
+			reservations, err := reservationsRepo.List(test.args.ctx, test.args.fromReservationId, test.args.startDate, test.args.endDate, test.args.limit)
+
+			if dbHandle != nil {
+				dbHandle.Close()
+			}
+			assert.Equal(t, test.wants.reservations, reservations)
+			assert.Equal(t, test.wants.err, err)
+		})
+	}
+}
+
 func TestReservationsGetByUserID(t *testing.T) {
 	initConstantsFromRepository(t)
 
