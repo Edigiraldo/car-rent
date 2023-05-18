@@ -374,6 +374,60 @@
                 }
             }
         },
+        "/reservations/": {
+            "get": {
+                "description": "Get reservations",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Reservations"
+                ],
+                "summary": "Get reservations",
+                "operationId": "get-reservations",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Last seen reservation",
+                        "name": "from_reservation_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Star date",
+                        "name": "start_date",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "End date",
+                        "name": "end_date",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Obtained reservations",
+                        "schema": {
+                            "$ref": "#/definitions/docs.Reservations"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorInvalidTimeFrame"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/docs.ErrorInternalServer"
+                        }
+                    }
+                }
+            }
+        },
         "/reservations/{id}": {
             "get": {
                 "description": "Get a reservation by UUID",
@@ -966,6 +1020,23 @@
                 "detail": {
                     "type": "string",
                     "example": "reservation time frame is invalid"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 400
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Bad Request"
+                }
+            }
+        },
+        "docs.ErrorInvalidTimeFrame": {
+            "type": "object",
+            "properties": {
+                "detail": {
+                    "type": "string",
+                    "example": "invalid time frame"
                 },
                 "status": {
                     "type": "integer",

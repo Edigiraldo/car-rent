@@ -23,6 +23,9 @@ func BindRoutes(b *Server) {
 	// Recovery middleware
 	b.router.Use(recovery)
 
+	// Use strict slashes
+	b.router.StrictSlash(true)
+
 	rv1 := b.router.PathPrefix("/api/v1").Subrouter()
 
 	// Swagger
@@ -52,7 +55,7 @@ func BindRoutes(b *Server) {
 	rv1.HandleFunc("/reservations/{id}", reservationsHandler.Get).Methods(http.MethodGet)
 	rv1.HandleFunc("/reservations/{id}", reservationsHandler.FullUpdate).Methods(http.MethodPut)
 	rv1.HandleFunc("/reservations/{id}", reservationsHandler.Delete).Methods(http.MethodDelete)
-	rv1.HandleFunc("/reservations/", reservationsHandler.List).Methods(http.MethodGet)
+	rv1.HandleFunc("/reservations", reservationsHandler.List).Methods(http.MethodGet)
 	rv1.HandleFunc("/cars/{id}/reservations", reservationsHandler.GetByCarID).Methods(http.MethodGet)
 	rv1.HandleFunc("/users/{id}/reservations", reservationsHandler.GetByUserID).Methods(http.MethodGet)
 

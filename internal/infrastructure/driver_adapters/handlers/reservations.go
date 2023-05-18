@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	ErrorInvalidTimeFrame string = "Invalid time frame"
+	ErrorInvalidTimeFrame string = "invalid time frame"
 )
 
 type Reservations struct {
@@ -195,6 +195,18 @@ func (rh Reservations) Delete(w http.ResponseWriter, r *http.Request) {
 	httphandler.WriteSuccessResponse(w, http.StatusNoContent, nil)
 }
 
+// @Summary Get reservations
+// @Description Get reservations
+// @ID get-reservations
+// @Produce json
+// @Param from_reservation_id query string false "Last seen reservation" format(uuid)
+// @Param start_date query string false "Star date"
+// @Param end_date query string false "End date"
+// @Success 200 {object} docs.Reservations "Obtained reservations"
+// @Failure 400 {object} docs.ErrorInvalidTimeFrame "Bad Request"
+// @Failure 500 {object} docs.ErrorInternalServer "Internal Server Error"
+// @Tags Reservations
+// @Router /reservations/ [get]
 func (rh Reservations) List(w http.ResponseWriter, r *http.Request) {
 	var startDate, endDate time.Time
 	var err error

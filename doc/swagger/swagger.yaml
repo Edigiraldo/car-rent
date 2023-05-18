@@ -147,6 +147,18 @@ definitions:
         example: Bad Request
         type: string
     type: object
+  docs.ErrorInvalidTimeFrame:
+    properties:
+      detail:
+        example: invalid time frame
+        type: string
+      status:
+        example: 400
+        type: integer
+      title:
+        example: Bad Request
+        type: string
+    type: object
   docs.ErrorMinimumReservationHours:
     properties:
       detail:
@@ -559,6 +571,42 @@ paths:
           schema:
             $ref: '#/definitions/docs.ErrorInternalServer'
       summary: Create a reservation
+      tags:
+      - Reservations
+  /reservations/:
+    get:
+      description: Get reservations
+      operationId: get-reservations
+      parameters:
+      - description: Last seen reservation
+        format: uuid
+        in: query
+        name: from_reservation_id
+        type: string
+      - description: Star date
+        in: query
+        name: start_date
+        type: string
+      - description: End date
+        in: query
+        name: end_date
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Obtained reservations
+          schema:
+            $ref: '#/definitions/docs.Reservations'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/docs.ErrorInvalidTimeFrame'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/docs.ErrorInternalServer'
+      summary: Get reservations
       tags:
       - Reservations
   /reservations/{id}:

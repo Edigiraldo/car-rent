@@ -89,3 +89,9 @@ type ErrorInvalidCityName struct {
 	Status int    `json:"status" example:"400"`
 	Detail string `json:"detail" example:"city name is not valid"`
 }
+
+type ErrorInvalidTimeFrame struct {
+	Title  string `json:"title" example:"Bad Request"`
+	Status int    `json:"status" example:"400"`
+	Detail string `json:"detail" example:"invalid time frame"`
+}
