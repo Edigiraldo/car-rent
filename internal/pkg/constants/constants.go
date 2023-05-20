@@ -25,7 +25,7 @@ type ConstantValues struct {
 func InitValues() error {
 	viper.SetConfigName("constants")
 	viper.SetConfigType("json")
-	viper.AddConfigPath("./internal/pkg/constants")
+	viper.AddConfigPath("./")
 
 	if err := viper.ReadInConfig(); err != nil {
 		return err
