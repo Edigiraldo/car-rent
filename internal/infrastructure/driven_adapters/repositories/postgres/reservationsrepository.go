@@ -178,7 +178,7 @@ func (rr ReservationsRepo) GetByCarID(ctx context.Context, carID uuid.UUID) (dr 
 func (rr ReservationsRepo) GetByCarIDAndTimeFrame(ctx context.Context, carID uuid.UUID, startDate time.Time, endDate time.Time) (dr []domain.Reservation, err error) {
 	var reservations []domain.Reservation
 
-	query := "SELECT * FROM reservations WHERE car_id=$1 AND start_date BETWEEN $2 AND $3 AND end_date BETWEEN $2 AND $3"
+	query := "SELECT * FROM reservations WHERE car_id=$1 AND start_date BETWEEN $2 AND $3 OR end_date BETWEEN $2 AND $3"
 	rows, err := rr.GetDBHandle().QueryContext(ctx, query, carID, startDate, endDate)
 	if err != nil {
 		return nil, err

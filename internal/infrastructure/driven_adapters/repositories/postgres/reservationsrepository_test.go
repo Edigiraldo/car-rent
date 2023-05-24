@@ -1221,7 +1221,7 @@ func TestReservationsGetByCarIDAndTimeFrame(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				mock.ExpectQuery(`^SELECT \* FROM reservations WHERE car_id=\$1 AND start_date BETWEEN \$2 AND \$3 AND end_date BETWEEN \$2 AND \$3$`).
+				mock.ExpectQuery(`^SELECT \* FROM reservations WHERE car_id=\$1 AND start_date BETWEEN \$2 AND \$3 OR end_date BETWEEN \$2 AND \$3$`).
 					WillReturnError(errors.New("query context error"))
 
 				d.db.EXPECT().GetDBHandle().Return(dbHandle)
@@ -1253,7 +1253,7 @@ func TestReservationsGetByCarIDAndTimeFrame(t *testing.T) {
 				}
 				rows := sqlmock.NewRows([]string{"id"}).
 					AddRow(reservationIdByte)
-				mock.ExpectQuery(`^SELECT \* FROM reservations WHERE car_id=\$1 AND start_date BETWEEN \$2 AND \$3 AND end_date BETWEEN \$2 AND \$3$`).
+				mock.ExpectQuery(`^SELECT \* FROM reservations WHERE car_id=\$1 AND start_date BETWEEN \$2 AND \$3 OR end_date BETWEEN \$2 AND \$3$`).
 					WillReturnRows(rows)
 
 				d.db.EXPECT().GetDBHandle().Return(dbHandle)
@@ -1294,7 +1294,7 @@ func TestReservationsGetByCarIDAndTimeFrame(t *testing.T) {
 				rows := sqlmock.NewRows([]string{"id", "user_id", "car_id", "status", "payment_status", "start_date", "end_date"}).
 					AddRow(reservationIdByte, userIdByte, carIdByte, drs[0].Status, drs[0].PaymentStatus, drs[0].StartDate, drs[0].EndDate).
 					RowError(0, errors.New("rows.Err error"))
-				mock.ExpectQuery(`^SELECT \* FROM reservations WHERE car_id=\$1 AND start_date BETWEEN \$2 AND \$3 AND end_date BETWEEN \$2 AND \$3$`).
+				mock.ExpectQuery(`^SELECT \* FROM reservations WHERE car_id=\$1 AND start_date BETWEEN \$2 AND \$3 OR end_date BETWEEN \$2 AND \$3$`).
 					WillReturnRows(rows)
 
 				d.db.EXPECT().GetDBHandle().Return(dbHandle)
@@ -1334,7 +1334,7 @@ func TestReservationsGetByCarIDAndTimeFrame(t *testing.T) {
 				}
 				rows := sqlmock.NewRows([]string{"id", "user_id", "car_id", "status", "payment_status", "start_date", "end_date"}).
 					AddRow(reservationIdByte, userIdByte, carIdByte, drs[0].Status, drs[0].PaymentStatus, drs[0].StartDate, drs[0].EndDate)
-				mock.ExpectQuery(`^SELECT \* FROM reservations WHERE car_id=\$1 AND start_date BETWEEN \$2 AND \$3 AND end_date BETWEEN \$2 AND \$3$`).
+				mock.ExpectQuery(`^SELECT \* FROM reservations WHERE car_id=\$1 AND start_date BETWEEN \$2 AND \$3 OR end_date BETWEEN \$2 AND \$3$`).
 					WithArgs(drs[0].CarID, start_date, end_date).
 					WillReturnRows(rows)
 
